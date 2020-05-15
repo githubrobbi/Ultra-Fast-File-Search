@@ -3,7 +3,6 @@
 ## [a.k.a Ultra Fast File Search ]
 
 ------
-
 (Professional IT admin tool to find files on Windows disks lightning fast)
 
 - [SwiftSearch (Robert Nio's version)](#swiftsearch--robert-nio-s-version-)
@@ -15,14 +14,14 @@
     + [Need more HELP?](#need-more-help-)
   * [MORE Information](#more-information)
     + [General Information](#general-information)
-    + [Where is the source? Why BINARY only?](#where-is-the-source--why-binary-only-)
+    + [Where is the source? Why BINARY only?](#where-is-the-source)
     + [Other tools](#other-tools)
       - [EVERYTHING](#everything)
       - [WizFile](#wizfile)
       - [SwiftSearch](#swiftsearch)
       - [SwiftSearch (Robert Nio's version) / [a.k.a Ultra Fast File Search ]](#swiftsearch--robert-nio-s-version-----aka-ultra-fast-file-search--)
-        * [Main Differences:](#main-differences-)
-      - [BENCHMARK:](#benchmark-)
+        * [Main Differences](#main-differences)
+      - [BENCHMARK](#benchmark)
     + [Search options](#search-options)
       - [DEFAULTS](#defaults)
       - [BASIC search](#basic-search)
@@ -62,7 +61,7 @@
 
 ### REGEX search
 
-| Regular-Expressions (REGEX)                          | Result                                                       |
+| Regular-Expressions (REGEX)                          | Result                                           |
 | ---------------------------------------------------- | ------------------------------------------------------------ |
 | MUST start with `>` and be encapsulated with `"`     | NO Error :)                                                  |
 | `uffs ">C:\\TemP.*\.txt"`                            | Finds all text files on C: in folder **temp** (by default the tool is NOT case sensitive) and its subdirectories |
@@ -70,19 +69,18 @@
 
 ### Output location
 
-| Search                                                       | Result                                                       |
+| Search                                                       | Result                                           |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `uffs d:/data** --ext=pictures --out=console`                | Finds all pictures on D: and outputs it into the CMD window  |
 | `uffs * --ext=movies --out=bigfile.csv`                      | All MOVIE files will be saved to `bigfile.csv`               |
 | `uffs * --out=bigfile.csv --header=true --sep=; --columns=path,size,created` | Creates bigfile.csv with a header line and the columns PATH, SIZE, and file CREATION |
 
 ### Need more HELP?
-
-| `uffs.com --help`        | Get more help                                 |
-| ------------------------ | --------------------------------------------- |
-| `uffs.com --help-list`   | - Displays list of available options          |
+| `uffs.com --help`       | Get more help                         |
+| ----------------------- | ------------------------------------- |
+| `uffs.com --help-list`  | - Displays list of available options   |
 | `uffs.com --help-hidden` | - Displays all options incl. advanced options |
-| `uffs.com--version`      | - Displays the version of this program        |
+| `uffs.com--version`     | - Displays the version of this program |
 
 ## MORE Information
 
@@ -110,7 +108,7 @@ Traditionally almost all file search tools / functions (e.g. os.walk in python) 
 
 I knew about this in principle, but never came across a tool that was able to do this as EFFICIENTLY as SwiftSearch (see below for more info). It can query all disks in parallel. Once a MTF is loaded ... it starts parsing the content to match your query ... this is in parallel to all the other processes too. ==> **LIGHTNING FAST !**
 
-### Where is the source? Why BINARY only?
+### Where is the source? Why BINARY only? 
 
 The creator of SwiftSearch (the core engine we use) asked me to just publish a binary version.
 
@@ -133,7 +131,6 @@ It will FORK a second process to build up the database and be ready for next cal
 **==> UFFS is 68%  faster !**
 
 #### WizFile 
-
 https://antibody-software.com/web/software/software/wizfile-finds-your-files-fast/
 
 Another tool for the retail consumer. Lots of features to slice and dice playlists.
@@ -146,7 +143,6 @@ It took a LONG time to just read the MFT of my disk of 6.5 Million records ... 5
 
 
 #### SwiftSearch
-
 https://sourceforge.net/projects/swiftsearch/
 
 Most advance use of MULTITHREADING / MULTITASKING of any of the file search tools out there.
@@ -169,7 +165,7 @@ It lends itself to automation and customizing the results in any shape or form.
 
 The core engine is the one provided by SwiftSearch, a robust and VERY fast engine.
 
-##### Main Differences:
+##### Main Differences
 
 1. Modern and powerful CLI parser.
 2. Search strings can be more windows / dos like and less complicated.
@@ -179,7 +175,7 @@ The core engine is the one provided by SwiftSearch, a robust and VERY fast engin
 
 **==> The results are similar to SwiftSearch**
 
-#### BENCHMARK:
+#### BENCHMARK
 
 1 SSD / 4 HardDisks / total of 19 Million records
 
@@ -198,9 +194,9 @@ The core engine is the one provided by SwiftSearch, a robust and VERY fast engin
 
 #### DEFAULTS
 
-| Option       | Default Value          | Type |
-| ------------ | ---------------------- | ---- |
-| --case=false | **NOT** case sensitive | bool |
+| Option        | Default Value                                                | Type   |
+| ------------- | ------------------------------------------------------------ | ------ |
+| --case=false  | **NOT** case sensitive                                       | bool   |
 
 
 #### BASIC search
@@ -212,7 +208,6 @@ The core engine is the one provided by SwiftSearch, a robust and VERY fast engin
 ​				This will search on ALL disks for **needle**
 
 #### GLOB search (DEFAULT)
-
 ​				https://en.wikipedia.org/wiki/Glob_(programming)
 
 ​				Globbing works like wildcards, but uses ****** to match backslashes. (Using ***** or **?** will not 
@@ -301,7 +296,7 @@ Specify what EXTENTIONS / file types to search for
 | ------------- | ------------------------------------------------------------ | ------ |
 | --columns=all | Will output **ALL** columns / attributes                     | string |
 | --header=true | Will **include** a header as the first line                  | bool   |
-| --neg=0       | Will be used to indicate an **INACTIVE** attribute           | string |
+| --neg=0       | Will be used to indicate an **INACTIVE** attribute            | string |
 | --out=console | Output LOCATION. Can be filename or console(con,**console**,term,terminal) | string |
 | --pos=1       | Will be used to indicate an **ACTIVE** attribute             | string |
 | --quotes="    | NAMES and PATH need to be enclosed by **DOUBLE QUOTES**      | string |
@@ -333,35 +328,35 @@ Specify what information you like to get for each file record.
 
 ​				`uffs c:/Music** --out=gibfile.csv --header=true --columns=path,created,type`
 
-| Columns Flags    | Flag Description                                             |
-| ---------------- | ------------------------------------------------------------ |
-| `all`            | "All columns will be put out                                 |
-| `path`           | File or Directory PATH + FILENAME                            |
-| `name`           | File or Directory NAME                                       |
-| `pathonly`       | File or Directory PATH ONLY                                  |
-| `type`           | File Type                                                    |
-| `size`           | Actual size of the file                                      |
-| `sizeondisk`     | Space used on disk                                           |
-| `created`        | The time the file was created                                |
-| `written`        | The time the file was last written or truncated              |
-| `accessed`       | The time the file was last accessed                          |
-| `decendents`     | Number of files / dir starting from path including all subdirectories |
-| `r`              | Read - only file attribute                                   |
-| `a`              | Archive file attribute                                       |
-| `s`              | System file attribute                                        |
-| `h`              | Hidden file attribute                                        |
-| `o`              | Offline attribute                                            |
-| `notcontent`     | Not content indexed file attribute                           |
-| `noscrub`        | No scrub file attribute                                      |
-| `integrity`      | Integrity attribute                                          |
-| `pinned`         | Pinned attribute                                             |
-| `unpinned`       | Unpinned attribute                                           |
-| `directory`      | Is a directory folder                                        |
-| `compressed`     | Is compressed                                                |
-| `encrypted`      | Is encrypted                                                 |
-| `sparse`         | Is sparse                                                    |
-| `reparse`        | Is a reparse point                                           |
-| `attributevalue` | Number representing the condensed file attributes            |
+| Columns Flags | Flag Description |
+| ------------ | ---------------- |
+|`all`| "All columns will be put out|
+|`path`| File or Directory PATH + FILENAME |
+|`name`| File or Directory NAME|
+|`pathonly`| File or Directory PATH ONLY|
+|`type`| File Type|
+|`size`| Actual size of the file|
+|`sizeondisk`| Space used on disk|
+|`created`| The time the file was created|
+|`written`| The time the file was last written or truncated|
+|`accessed`| The time the file was last accessed|
+|`decendents`| Number of files / dir starting from path including all subdirectories |
+|`r`| Read - only file attribute|
+|`a`| Archive file attribute|
+|`s`| System file attribute|
+|`h`| Hidden file attribute|
+|`o`| Offline attribute|
+|`notcontent`| Not content indexed file attribute|
+|`noscrub`| No scrub file attribute|
+|`integrity`| Integrity attribute|
+|`pinned`| Pinned attribute|
+|`unpinned`| Unpinned attribute|
+|`directory`| Is a directory folder|
+|`compressed`| Is compressed|
+|`encrypted`| Is encrypted|
+|`sparse`| Is sparse|
+|`reparse`| Is a reparse point|
+|`attributevalue`| Number representing the condensed file attributes|
 
 #### --neg
 
@@ -407,14 +402,14 @@ This specifies the column separator. Can be anything.
 
 | Special Character substitute | Special Character |
 | ---------------------------- | ----------------- |
-| **TAB**                      | `\t`              |
-| NEWLINE                      | `\n`              |
-| NEW LINE                     | `\n`              |
-| SPACE                        | ` `               |
-| RETURN                       | `\r`              |
-| DOUBLE                       | `"`               |
-| SINGLE                       | `'`               |
-| NULL                         | `\0`              |
+|**TAB**| `\t` |
+|NEWLINE| `\n`|
+|NEW LINE| `\n`|
+|SPACE| ` `|
+|RETURN| `\r`|
+|DOUBLE| `"`|
+|SINGLE| `'`|
+|NULL| `\0`|
 
 ## Known Issues
 
@@ -423,6 +418,7 @@ Needs more work on REGEX in the version based on the current source of SwiftSear
 ## TODO
 
 1. Modernize the MTF engine.
+
 2. Speed Up the REGEX matching 
 3. Make CASE sensitivity an option, rather than to just ignore CASE altogether
 4. Make SORTING more customizable. Right now ranking is different for `File` and `file`
