@@ -14,6 +14,7 @@
     + [Need more HELP?](#need-more-help-)
   * [MORE Information](#more-information)
     + [General Information](#general-information)
+    + [HASHES / SIGNATURES](#general-information)
     + [Why does the tool need elevated access](#why-does-the-tool-need-elevated-access)
     + [Where is the source? Why BINARY only?](#where-is-the-source-why-binary-only)
     + [Other tools](#other-tools)
@@ -95,13 +96,21 @@ https://docs.microsoft.com/en-us/windows/security/identity-protection/user-accou
 
 NOTE: Reading the MTF needs ADMIN rights. On Windows it will trigger a UAC prompt indicating that the tool will want to read the MTF directly. 
 
-Here are a few hashes of the **uttf.com** file
+### HASHES / SIGNATURES:
 
-SHA-256
+Command Line Utility (CLI)
 
-BLAKE-3
+**Name: 		uffs.com**
+Size: 		1541120 bytes (1505 KiB)
+SHA256:		EF3BAAEC460031B29E274CD8D977B92264F50A2547AE6BAE86275B9572486FC2
+BLAKE-3:	9045773b28ca4a0410f121df7c9444599fdf9de82e3cf5b66087da457edbd073  uffs.com
 
+Graphical User Interface (GUI)
 
+**Name: 		uffs.exe**
+Size: 		4496384 bytes (4391 KiB)
+SHA256:		152A95A56B7E37E3AAF1229BF36E7AC8FA33F3C485D377C242DC0EBECBA40005
+BLAKE-3:	b5a2959a438c1ea271365006a3e02bc109604f7b1cbafbf2f9a892878f040106  uffs.exe	
 
 ### General Information
 
