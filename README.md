@@ -3,52 +3,55 @@
 ## [a.k.a Ultra Fast File Search ]
 
 ------
+
 (Professional IT admin tool to find files on Windows disks lightning fast)
 
 - [SwiftSearch (Robert Nio's version)](#swiftsearch--robert-nio-s-version-)
   * [[a.k.a Ultra Fast File Search ]](#-aka-ultra-fast-file-search--)
   * [TL;DR](#tl-dr)
-    + [Simple search:](#simple-search-)
-    + [REGEX search:](#regex-search-)
-    + [Output location:](#output-location-)
+    + [Simple search](#simple-search)
+    + [REGEX search](#regex-search)
+    + [Output location](#output-location)
     + [Need more HELP?](#need-more-help-)
   * [MORE Information](#more-information)
-    + [General Information:](#general-information-)
+    + [General Information](#general-information)
     + [Where is the source? Why BINARY only?](#where-is-the-source--why-binary-only-)
-    + [Other tools:](#other-tools-)
+    + [Other tools](#other-tools)
       - [EVERYTHING](#everything)
       - [WizFile](#wizfile)
       - [SwiftSearch](#swiftsearch)
       - [SwiftSearch (Robert Nio's version) / [a.k.a Ultra Fast File Search ]](#swiftsearch--robert-nio-s-version-----aka-ultra-fast-file-search--)
         * [Main Differences:](#main-differences-)
       - [BENCHMARK:](#benchmark-)
-    + [Search options:](#search-options-)
-      - [DEFAULTS:](#defaults-)
-      - [BASIC search:](#basic-search-)
-      - [GLOB search (DEFAULT):](#glob-search--default--)
-      - [Regular-Expression Search (REGEX):](#regular-expression-search--regex--)
-        * [Some common regular expressions:](#some-common-regular-expressions-)
-        * ["Quantifiers" can follow any expression:](#-quantifiers--can-follow-any-expression-)
-        * [Examples of regular expressions:](#examples-of-regular-expressions-)
-      - [--case (NOT implemented yet):](#--case--not-implemented-yet--)
-      - [--drives:](#--drives-)
-      - [--ext:](#--ext-)
+    + [Search options](#search-options)
+      - [DEFAULTS](#defaults)
+      - [BASIC search](#basic-search)
+      - [GLOB search (DEFAULT)](#glob-search--default-)
+      - [Regular-Expression Search (REGEX)](#regular-expression-search--regex-)
+        * [Some common regular expressions](#some-common-regular-expressions)
+        * ["Quantifiers" can follow any expression](#-quantifiers--can-follow-any-expression)
+        * [Examples of regular expressions](#examples-of-regular-expressions)
+      - [--case (NOT implemented yet)](#--case--not-implemented-yet-)
+      - [--drives](#--drives)
+      - [--ext](#--ext)
     + [Output Options](#output-options)
-      - [DEFAULTS:](#defaults--1)
-      - [--out:](#--out-)
-      - [--header:](#--header-)
-      - [--columns:](#--columns-)
-      - [--neg:](#--neg-)
-      - [--pos:](#--pos-)
-      - [--quotes:](#--quotes-)
-      - [--sep:](#--sep-)
+      - [DEFAULTS](#defaults-1)
+      - [--out](#--out)
+      - [--header](#--header)
+      - [--columns](#--columns)
+      - [--neg](#--neg)
+      - [--pos](#--pos)
+      - [--quotes](#--quotes)
+      - [--sep](#--sep)
   * [Known Issues](#known-issues)
-  * [TODO:](#todo-)
+  * [TODO](#todo)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 
 ## TL;DR
 
-### Simple search:
+### Simple search
 
 | Search                                | Result                                                       |
 | ------------------------------------- | ------------------------------------------------------------ |
@@ -57,28 +60,29 @@
 | `uffs /pro*.txt --drives=c,d,m`       | Finds all TEXT files starting with "\pro*" on drives C:, D:, and M: |
 | `uffs /pro** --ext=jpg,mp4,documents` | Finds all DOCUMENTS, JPG, and MP4 file types, on ALL disks   |
 
-### REGEX search:
+### REGEX search
 
-| Regular-Expressions (REGEX)                          | Result                                           |
+| Regular-Expressions (REGEX)                          | Result                                                       |
 | ---------------------------------------------------- | ------------------------------------------------------------ |
 | MUST start with `>` and be encapsulated with `"`     | NO Error :)                                                  |
 | `uffs ">C:\\TemP.*\.txt"`                            | Finds all text files on C: in folder **temp** (by default the tool is NOT case sensitive) and its subdirectories |
 | `uffs ">.*\\DatA.*\d{3}-\d{2}-\d{4}.*" --drives=d,c` | Finds all files & directories with a "social security number" in their names on drive C: and D: along with `data` string in their path |
 
-### Output location:
+### Output location
 
-| Search                                                       | Result                                           |
+| Search                                                       | Result                                                       |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | `uffs d:/data** --ext=pictures --out=console`                | Finds all pictures on D: and outputs it into the CMD window  |
 | `uffs * --ext=movies --out=bigfile.csv`                      | All MOVIE files will be saved to `bigfile.csv`               |
 | `uffs * --out=bigfile.csv --header=true --sep=; --columns=path,size,created` | Creates bigfile.csv with a header line and the columns PATH, SIZE, and file CREATION |
 
 ### Need more HELP?
-| `uffs.com --help`       | Get more help                         |
-| ----------------------- | ------------------------------------- |
-| `uffs.com --help-list`  | - Displays list of available options   |
+
+| `uffs.com --help`        | Get more help                                 |
+| ------------------------ | --------------------------------------------- |
+| `uffs.com --help-list`   | - Displays list of available options          |
 | `uffs.com --help-hidden` | - Displays all options incl. advanced options |
-| `uffs.com--version`     | - Displays the version of this program |
+| `uffs.com--version`      | - Displays the version of this program        |
 
 ## MORE Information
 
@@ -92,7 +96,7 @@ BLAKE-3
 
 
 
-### General Information:
+### General Information
 
 The MAGIC behind this lightning fast search engine is reading the MTF (like a phonebook) of the disks.
 
@@ -110,7 +114,7 @@ I knew about this in principle, but never came across a tool that was able to do
 
 The creator of SwiftSearch (the core engine we use) asked me to just publish a binary version.
 
-### Other tools:
+### Other tools
 
 #### EVERYTHING
 
@@ -129,6 +133,7 @@ It will FORK a second process to build up the database and be ready for next cal
 **==> UFFS is 68%  faster !**
 
 #### WizFile 
+
 https://antibody-software.com/web/software/software/wizfile-finds-your-files-fast/
 
 Another tool for the retail consumer. Lots of features to slice and dice playlists.
@@ -141,6 +146,7 @@ It took a LONG time to just read the MFT of my disk of 6.5 Million records ... 5
 
 
 #### SwiftSearch
+
 https://sourceforge.net/projects/swiftsearch/
 
 Most advance use of MULTITHREADING / MULTITASKING of any of the file search tools out there.
@@ -171,7 +177,7 @@ The core engine is the one provided by SwiftSearch, a robust and VERY fast engin
 4. Powerful output engine; enabling you to customize every aspect of it.
 5. Speed differences between SwiftSearch and this version are due to the amount of data collected and matched
 
-**==> The results are similar to SwiftSearch **
+**==> The results are similar to SwiftSearch**
 
 #### BENCHMARK:
 
@@ -188,16 +194,16 @@ The core engine is the one provided by SwiftSearch, a robust and VERY fast engin
 
 
 
-### Search options:
+### Search options
 
-#### DEFAULTS:
+#### DEFAULTS
 
-| Option        | Default Value                                                | Type   |
-| ------------- | ------------------------------------------------------------ | ------ |
-| --case=false  | **NOT** case sensitive                                       | bool   |
+| Option       | Default Value          | Type |
+| ------------ | ---------------------- | ---- |
+| --case=false | **NOT** case sensitive | bool |
 
 
-#### BASIC search:
+#### BASIC search
 
 ​				search for **needle**
 
@@ -205,7 +211,8 @@ The core engine is the one provided by SwiftSearch, a robust and VERY fast engin
 
 ​				This will search on ALL disks for **needle**
 
-#### GLOB search (DEFAULT):	
+#### GLOB search (DEFAULT)
+
 ​				https://en.wikipedia.org/wiki/Glob_(programming)
 
 ​				Globbing works like wildcards, but uses ****** to match backslashes. (Using ***** or **?** will not 
@@ -215,7 +222,7 @@ The core engine is the one provided by SwiftSearch, a robust and VERY fast engin
 
 
 
-#### Regular-Expression Search (REGEX):
+#### Regular-Expression Search (REGEX)
 
 ​				Regular expressions are implemented using the Boost.Xpressive library, using ESMAScript
 ​				syntax.
@@ -224,7 +231,7 @@ The core engine is the one provided by SwiftSearch, a robust and VERY fast engin
 
 ​				An online REGEX expression builder: https://regex101.com/
 
-##### Some common regular expressions:
+##### Some common regular expressions
 
 ​				**.**			     = A single character
 
@@ -234,7 +241,7 @@ The core engine is the one provided by SwiftSearch, a robust and VERY fast engin
 
 ​				**(abc|def)** = Either "abc" or "def"
 
-##### "Quantifiers" can follow any expression:
+##### "Quantifiers" can follow any expression
 
 ​				*****				= Zero or more occurrences
 
@@ -242,7 +249,7 @@ The core engine is the one provided by SwiftSearch, a robust and VERY fast engin
 
 ​				**{m,n}**		= Between m and n occurrences (n is optional)
 
-##### Examples of regular expressions:
+##### Examples of regular expressions
 
  					`uffs ">C:\\TemP.*\.txt"`
 
@@ -253,7 +260,7 @@ The core engine is the one provided by SwiftSearch, a robust and VERY fast engin
 ​			Finds all files & directories, with a "social security number" in their names on drive C: and D: 
 ​			with  `data` string in their path
 
-#### --case (NOT implemented yet):
+#### --case (NOT implemented yet)
 
 ​			Switch case sensitivity on or off
 
@@ -261,7 +268,7 @@ The core engine is the one provided by SwiftSearch, a robust and VERY fast engin
 
 ​					This will find all files with "DuaLippa" in its name ... but NOT "dualippa"
 
-#### --drives:
+#### --drives
 
 Specify which drives to search.
 
@@ -273,7 +280,7 @@ The tool will ONLY accept physical drives, which are currently accessible.
 
 ​				`uffs DuaLippa --drives=D,E`
 
-#### --ext:
+#### --ext
 
 Specify what EXTENTIONS / file types to search for
 
@@ -288,19 +295,19 @@ Specify what EXTENTIONS / file types to search for
 
 ### Output Options
 
-#### DEFAULTS:
+#### DEFAULTS
 
 | Option        | Default Value                                                | Type   |
 | ------------- | ------------------------------------------------------------ | ------ |
 | --columns=all | Will output **ALL** columns / attributes                     | string |
 | --header=true | Will **include** a header as the first line                  | bool   |
-| --neg=0       | Will be used to indicate an **INACTIVE** attribute            | string |
+| --neg=0       | Will be used to indicate an **INACTIVE** attribute           | string |
 | --out=console | Output LOCATION. Can be filename or console(con,**console**,term,terminal) | string |
 | --pos=1       | Will be used to indicate an **ACTIVE** attribute             | string |
 | --quotes="    | NAMES and PATH need to be enclosed by **DOUBLE QUOTES**      | string |
 | --sep=,       | Columns are SEPARTED by **comma** by default.                | string |
 
-#### --out:
+#### --out
 
 The output of the tool can be saved to a file, put out on the console, or piped to another tool for further processing:
 
@@ -312,7 +319,7 @@ The output of the tool can be saved to a file, put out on the console, or piped 
 
 ​				``uffs c:/Music** | grep dualippa | musicplayer`
 
-#### --header:
+#### --header
 
 The header will be just for the columns you selected (see `--columns` switch)
 
@@ -320,43 +327,43 @@ The header will be just for the columns you selected (see `--columns` switch)
 
 ​				Looks like: "Path","Name","Size"
 
-#### --columns:
+#### --columns
 
 Specify what information you like to get for each file record.
 
 ​				`uffs c:/Music** --out=gibfile.csv --header=true --columns=path,created,type`
 
-| Columns Flags | Flag Description |
-| ------------ | ---------------- |
-|`all`| "All columns will be put out|
-|`path`| File or Directory PATH + FILENAME |
-|`name`| File or Directory NAME|
-|`pathonly`| File or Directory PATH ONLY|
-|`type`| File Type|
-|`size`| Actual size of the file|
-|`sizeondisk`| Space used on disk|
-|`created`| The time the file was created|
-|`written`| The time the file was last written or truncated|
-|`accessed`| The time the file was last accessed|
-|`decendents`| Number of files / dir starting from path including all subdirectories |
-|`r`| Read - only file attribute|
-|`a`| Archive file attribute|
-|`s`| System file attribute|
-|`h`| Hidden file attribute|
-|`o`| Offline attribute|
-|`notcontent`| Not content indexed file attribute|
-|`noscrub`| No scrub file attribute|
-|`integrity`| Integrity attribute|
-|`pinned`| Pinned attribute|
-|`unpinned`| Unpinned attribute|
-|`directory`| Is a directory folder|
-|`compressed`| Is compressed|
-|`encrypted`| Is encrypted|
-|`sparse`| Is sparse|
-|`reparse`| Is a reparse point|
-|`attributevalue`| Number representing the condensed file attributes|
+| Columns Flags    | Flag Description                                             |
+| ---------------- | ------------------------------------------------------------ |
+| `all`            | "All columns will be put out                                 |
+| `path`           | File or Directory PATH + FILENAME                            |
+| `name`           | File or Directory NAME                                       |
+| `pathonly`       | File or Directory PATH ONLY                                  |
+| `type`           | File Type                                                    |
+| `size`           | Actual size of the file                                      |
+| `sizeondisk`     | Space used on disk                                           |
+| `created`        | The time the file was created                                |
+| `written`        | The time the file was last written or truncated              |
+| `accessed`       | The time the file was last accessed                          |
+| `decendents`     | Number of files / dir starting from path including all subdirectories |
+| `r`              | Read - only file attribute                                   |
+| `a`              | Archive file attribute                                       |
+| `s`              | System file attribute                                        |
+| `h`              | Hidden file attribute                                        |
+| `o`              | Offline attribute                                            |
+| `notcontent`     | Not content indexed file attribute                           |
+| `noscrub`        | No scrub file attribute                                      |
+| `integrity`      | Integrity attribute                                          |
+| `pinned`         | Pinned attribute                                             |
+| `unpinned`       | Unpinned attribute                                           |
+| `directory`      | Is a directory folder                                        |
+| `compressed`     | Is compressed                                                |
+| `encrypted`      | Is encrypted                                                 |
+| `sparse`         | Is sparse                                                    |
+| `reparse`        | Is a reparse point                                           |
+| `attributevalue` | Number representing the condensed file attributes            |
 
-#### --neg:
+#### --neg
 
 Some attributes are BINARY and this option specifies what the output should be for MISSING attributes.
 
@@ -370,7 +377,7 @@ It can be BLANK, a single number or character, or it can even be a string (e.g. 
 
 Usually you want to set `--neg` together with `--pos`
 
-#### --pos:
+#### --pos
 
 See `--neg` for details.
 
@@ -380,7 +387,7 @@ Setting the representation in the output for active file attributes.
 
 BTW, when you read the output file into a **python pandas dataframe**, these `--neg` / `--pos` allow you to see some statistics right away.
 
-#### --quotes:
+#### --quotes
 
 The PATH, NAME, PATHONLY column output can sometimes contain very "strange" characters. E.g. a file name can contain a **,** and thus be taken for a column separator ...
 
@@ -388,7 +395,7 @@ With `--quotes` you can specify SINGLE or DOUBLE quotes or anything else for tha
 
 ​				`uffs c:/Music** --out=gibfile.csv --quotes='`
 
-#### --sep:
+#### --sep
 
 This specifies the column separator. Can be anything.
 
@@ -400,23 +407,22 @@ This specifies the column separator. Can be anything.
 
 | Special Character substitute | Special Character |
 | ---------------------------- | ----------------- |
-|**TAB**| `\t` |
-|NEWLINE| `\n`|
-|NEW LINE| `\n`|
-|SPACE| ` `|
-|RETURN| `\r`|
-|DOUBLE| `"`|
-|SINGLE| `'`|
-|NULL| `\0`|
+| **TAB**                      | `\t`              |
+| NEWLINE                      | `\n`              |
+| NEW LINE                     | `\n`              |
+| SPACE                        | ` `               |
+| RETURN                       | `\r`              |
+| DOUBLE                       | `"`               |
+| SINGLE                       | `'`               |
+| NULL                         | `\0`              |
 
 ## Known Issues
 
 Needs more work on REGEX in the version based on the current source of SwiftSearch. SwiftSearch binaries do seem to have better REGEX processing.
 
-## TODO:
+## TODO
 
 1. Modernize the MTF engine.
-
 2. Speed Up the REGEX matching 
 3. Make CASE sensitivity an option, rather than to just ignore CASE altogether
 4. Make SORTING more customizable. Right now ranking is different for `File` and `file`
@@ -425,4 +431,3 @@ Needs more work on REGEX in the version based on the current source of SwiftSear
 7. With that it makes sense to have a trigger to update the search results periodically.
 8. Symbolic Links are not always correctly followed.
 9. Support multiple search location at the same time. E.g. all TXT files in `c:/data` and `d:/family`
-
