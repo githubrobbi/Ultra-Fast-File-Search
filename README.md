@@ -19,7 +19,7 @@
       - [EVERYTHING](#everything)
       - [WizFile](#wizfile)
       - [SwiftSearch](#swiftsearch)
-      - [SwiftSearch (Robert Nio's version) / [a.k.a Ultra Fast File Search ]](#swiftsearch--robert-nio-s-version-----aka-ultra-fast-file-search--)
+      - [SwiftSearch (Robert Nio's version) / [a.k.a Ultra Fast File Search ]](#swiftsearch-robert-nios-version--aka-ultra-fast-file-search-)
         * [Main Differences](#main-differences)
       - [BENCHMARK](#benchmark)
     + [Search options](#search-options)
