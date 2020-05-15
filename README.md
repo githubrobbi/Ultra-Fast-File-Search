@@ -14,7 +14,7 @@
     + [Need more HELP?](#need-more-help-)
   * [MORE Information](#more-information)
     + [General Information](#general-information)
-    + [Why does the tool need elevated access](#general-information)
+    + [Why does the tool need elevated access](#why-does-the-tool-need-elevated-access)
     + [Where is the source? Why BINARY only?](#where-is-the-source-why-binary-only)
     + [Other tools](#other-tools)
       - [EVERYTHING](#everything)
