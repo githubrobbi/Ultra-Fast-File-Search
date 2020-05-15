@@ -5,9 +5,9 @@
 ------
 (Professional IT admin tool to find files on Windows disks lightning fast)
 
-- [SwiftSearch (Robert Nio's version)](#swiftsearch--robert-nio-s-version-)
-  * [[a.k.a Ultra Fast File Search ]](#-aka-ultra-fast-file-search--)
-  * [TL;DR](#tl-dr)
+- [SwiftSearch (Robert Nio's version)](#swiftsearch-robert-nios-version)
+  * [[a.k.a Ultra Fast File Search ]](#aka-ultra-fast-file-search-)
+  * [TL;DR](#tldr)
     + [Simple search](#simple-search)
     + [REGEX search](#regex-search)
     + [Output location](#output-location)
