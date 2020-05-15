@@ -14,6 +14,7 @@
     + [Need more HELP?](#need-more-help-)
   * [MORE Information](#more-information)
     + [General Information](#general-information)
+    + [Why does the tool need elevated access](#general-information)
     + [Where is the source? Why BINARY only?](#where-is-the-source-why-binary-only)
     + [Other tools](#other-tools)
       - [EVERYTHING](#everything)
@@ -47,6 +48,16 @@
 
 
 ## TL;DR
+
+### Why does the tool need elevated access:
+
+**UFFS** and any other tools in this category require administrative privileges for low level read access to NTFS volumes. Windows manages this through it's **U**ser **A**ccess **C**ontrol (UAC).
+
+Some people do not want this "nag" and work around it: https://sourceforge.net/p/swiftsearch/discussion/General/thread/12e048f1/#b2b4
+
+UAC explained:
+
+https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/how-user-account-control-works
 
 ### Simple search
 
