@@ -94,7 +94,7 @@ https://docs.microsoft.com/en-us/windows/security/identity-protection/user-accou
 
 ## MORE Information
 
-NOTE: Reading the MTF needs ADMIN rights. On Windows it will trigger a UAC prompt indicating that the tool will want to read the MTF directly. 
+NOTE: Reading the MFT needs ADMIN rights. On Windows it will trigger a UAC prompt indicating that the tool will want to read the MFT directly. 
 
 ### HASHES / SIGNATURES:
 
@@ -122,17 +122,17 @@ b5a2959a438c1ea271365006a3e02bc109604f7b1cbafbf2f9a892878f040106
 
 ### General Information
 
-The MAGIC behind this lightning fast search engine is reading the MTF (like a phonebook) of the disks.
+The MAGIC behind this lightning fast search engine is reading the MFT (like a phonebook) of the disks.
 
 Traditionally almost all file search tools / functions (e.g. os.walk in python) use this simple process:
 
 1. Ask the OS to find a file (or next one).
-2. The OS will go and get the MTF (the COMPLETE phonebook) and get the file info & attributes.
-3. This info (NOT the MTF) is passed on to the tool/function.
-4. Throw away the MTF (BTW. it has ALL the info for ALL the files and we just took ONE file info)
+2. The OS will go and get the MFT (the COMPLETE phonebook) and get the file info & attributes.
+3. This info (NOT the MFT) is passed on to the tool/function.
+4. Throw away the MFT (BTW. it has ALL the info for ALL the files and we just took ONE file info)
 5. Repeat for the NEXT file.
 
-I knew about this in principle, but never came across a tool that was able to do this as EFFICIENTLY as SwiftSearch (see below for more info). It can query all disks in parallel. Once a MTF is loaded ... it starts parsing the content to match your query ... this is in parallel to all the other processes too. ==> **LIGHTNING FAST !**
+I knew about this in principle, but never came across a tool that was able to do this as EFFICIENTLY as SwiftSearch (see below for more info). It can query all disks in parallel. Once a MFT is loaded ... it starts parsing the content to match your query ... this is in parallel to all the other processes too. ==> **LIGHTNING FAST !**
 
 ### Where is the source? Why BINARY only? 
 
@@ -173,7 +173,7 @@ https://sourceforge.net/projects/swiftsearch/
 
 Most advance use of MULTITHREADING / MULTITASKING of any of the file search tools out there.
 
-It will start reading the MTF on all drives in parallel. Once a MTF is loaded it will start parsing it while every other process is still running in parallel.
+It will start reading the MFT on all drives in parallel. Once a MFT is loaded it will start parsing it while every other process is still running in parallel.
 
 There were a few areas to improve on the core design:
 
@@ -443,7 +443,7 @@ Needs more work on REGEX in the version based on the current source of SwiftSear
 
 ## TODO
 
-1. Modernize the MTF engine.
+1. Modernize the MFT engine.
 
 2. Speed Up the REGEX matching 
 3. Make CASE sensitivity an option, rather than to just ignore CASE altogether
