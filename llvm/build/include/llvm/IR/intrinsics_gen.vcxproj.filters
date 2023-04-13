@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\Attributes.inc.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicImpl.inc.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicEnums.inc.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsAArch64.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsAMDGPU.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsARM.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsBPF.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsHexagon.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsMips.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsNVPTX.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsPowerPC.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsR600.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsRISCV.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsS390.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsWebAssembly.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsX86.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\98c7776259742da48ba1cba2fabda628\IntrinsicsXCore.h.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\build\CMakeFiles\9f9fb10ac7842a6838f1c42820229300\intrinsics_gen.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="S:\source\llvm\llvm\include\llvm\IR\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="S:\source\llvm\build\include\llvm\IR\CMakeFiles\intrinsics_gen" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{8F02C865-60EE-3849-8D47-58D330D787F3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

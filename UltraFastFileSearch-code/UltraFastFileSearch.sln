@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UltraFastFileSearch", "UltraFastFileSearch.vcxproj", "{3F046A88-FF9F-491A-BA43-36DB07EFF73C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		COM DEBUG|x64 = COM DEBUG|x64
+		COM|x64 = COM|x64
+		EXE DEBUG|x64 = EXE DEBUG|x64
+		EXE|x64 = EXE|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F046A88-FF9F-491A-BA43-36DB07EFF73C}.COM DEBUG|x64.ActiveCfg = COM DEBUG|x64
+		{3F046A88-FF9F-491A-BA43-36DB07EFF73C}.COM DEBUG|x64.Build.0 = COM DEBUG|x64
+		{3F046A88-FF9F-491A-BA43-36DB07EFF73C}.COM|x64.ActiveCfg = COM|x64
+		{3F046A88-FF9F-491A-BA43-36DB07EFF73C}.COM|x64.Build.0 = COM|x64
+		{3F046A88-FF9F-491A-BA43-36DB07EFF73C}.EXE DEBUG|x64.ActiveCfg = EXE DEBUG|x64
+		{3F046A88-FF9F-491A-BA43-36DB07EFF73C}.EXE DEBUG|x64.Build.0 = EXE DEBUG|x64
+		{3F046A88-FF9F-491A-BA43-36DB07EFF73C}.EXE|x64.ActiveCfg = EXE|x64
+		{3F046A88-FF9F-491A-BA43-36DB07EFF73C}.EXE|x64.Build.0 = EXE|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8F819995-771A-420C-B17B-0BA48EB51FB0}
+	EndGlobalSection
+EndGlobal

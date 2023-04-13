@@ -1,0 +1,3 @@
+# CMake generation dependency list for this directory.
+S:/source/llvm/llvm/include/llvm/CMakeLists.txt
+S:/source/llvm/llvm/include/llvm/module.modulemap.build

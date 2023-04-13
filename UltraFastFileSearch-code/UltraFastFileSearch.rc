@@ -1,0 +1,311 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define WINVER 0x0501
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#define WINVER 0x0501\r\n"
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG1 DIALOGEX 0, 0, 604, 352
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+MENU IDR_MENU1
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDITFILENAME,88,1,414,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "",IDOK,503,0,50,13
+    PUSHBUTTON      "",IDC_BUTTON_BROWSE,553,0,50,13
+    CONTROL         "",IDC_LISTFILES,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_AUTOARRANGE | LVS_ALIGNLEFT | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP,1,14,603,336
+    COMBOBOX        IDC_LISTVOLUMES,1,1,86,200,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_DIALOGPROGRESS DIALOGEX 0, 0, 274, 69
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION | WS_THICKFRAME
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "",IDCANCEL,217,48,50,14
+    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",PBS_SMOOTH,7,35,260,9,WS_EX_TRANSPARENT
+    PUSHBUTTON      "",IDRETRY,165,48,50,14,NOT WS_VISIBLE
+    LTEXT           "Please wait...",IDC_RICHEDITPROGRESS,7,7,260,25,0,WS_EX_TRANSPARENT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOG1, DIALOG
+    BEGIN
+        LEFTMARGIN, 1
+        RIGHTMARGIN, 603
+        TOPMARGIN, 1
+        BOTTOMMARGIN, 351
+    END
+
+    IDD_DIALOGPROGRESS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 267
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 62
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "Search Drive.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "Auto-&size Columns",          ID_VIEW_AUTOSIZECOLUMNS
+        MENUITEM "Fit &Columns to Window",      ID_VIEW_FITCOLUMNSTOWINDOW
+        MENUITEM "&Gridlines",                  ID_VIEW_GRIDLINES, CHECKED
+        MENUITEM "&Large Icons",                ID_VIEW_LARGEICONS
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "&Fast Path Search (EXPERIMENTAL! might produce WRONG results!)", ID_OPTIONS_FAST_PATH_SEARCH
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&Bugs? Features?",            ID_HELP_BUGS
+        MENUITEM "&Translation",                ID_HELP_TRANSLATION
+        MENUITEM "&Donate",                     ID_HELP_DONATE
+        MENUITEM SEPARATOR
+        MENUITEM "&Copying",                    ID_HELP_COPYING
+        MENUITEM "NTFS Metadata",               ID_HELP_NTFSMETADATA
+        MENUITEM "Searc&hing by depth",         ID_HELP_SEARCHINGBYDEPTH
+        MENUITEM "Sorting by &bulkiness",       ID_HELP_SORTINGBYBULKINESS
+        MENUITEM "Sorting by &depth",           ID_HELP_SORTINGBYDEPTH
+        MENUITEM "Using regular e&xpressions",  ID_HELP_USINGREGULAREXPRESSIONS
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR1 ACCELERATORS
+BEGIN
+    VK_F5,          ID_ACCELERATOR40006,    VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOG1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_DIALOGPROGRESS AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_SEARCH_PATTERN_TITLE "Search Pattern"
+    IDS_SEARCH_PATTERN_BODY "Enter a pattern to match against the file's name or path, such as:"
+    IDS_SEARCH_PATTERN_BANNER "Search by name or path (hover for help)"
+    IDS_SEARCH_VOLUME_BANNER "Search where?"
+    IDS_SEARCH_VOLUME_ALL   "(All drives)"
+    IDS_STATUS_DEFAULT      "Type in a file name and press Enter."
+    IDS_INVALID_NTFS_VOLUME_BODY 
+                            "This does not appear to be a valid NTFS volume."
+    IDS_ERROR_TITLE         "Error"
+    IDS_SEARCHING_TITLE     "Searching..."
+    IDS_REGEX_ERROR_TITLE   "Regex Error"
+    IDS_REGEX_UNSUPPORTED_ERROR_MESSAGE "Regex support not included."
+    IDS_COLUMN_NAME_HEADER  "Name"
+    IDS_COLUMN_PATH_HEADER  "Path"
+    IDS_COLUMN_SIZE_HEADER  "Size"
+    IDS_COLUMN_SIZE_ON_DISK_HEADER "Size on Disk"
+    IDS_COLUMN_CREATION_TIME_HEADER "Created"
+    IDS_COLUMN_WRITE_TIME_HEADER "Last Written"
+    IDS_COLUMN_ACCESS_TIME_HEADER "Last Accessed"
+    IDS_COLUMN_DESCENDENTS_HEADER "Descendents"
+    IDS_TEXT_READING_FILE_TABLES "Reading file tables..."
+    IDS_TEXT_COMMA          ","
+    IDS_TEXT_OF             "of"
+    IDS_TEXT_AVERAGE_SPEED  "Average speed"
+    IDS_TEXT_MIB_S          "MiB/s"
+    IDS_TEXT_MIB_READ       "MiB read"
+    IDS_TEXT_SPACE          " "
+    IDS_TEXT_PAREN_OPEN     "("
+    IDS_TEXT_PAREN_CLOSE    ")"
+    IDS_TEXT_COLON          ":"
+    IDS_DUMPING_TITLE       "Dumping..."
+    IDS_TEXT_DUMPING_SELECTION "Dumping selection"
+    IDS_HELP_REGEX_TITLE    "Regular expressions"
+    IDS_HELP_REGEX_BODY     "To find a file, select the drive you want to search, enter part of the file name or path, and click Search.\r\n\r\nYou can either use globbing, which is the default, or regular expressions, which require starting the pattern with a '>' character.\r\n\r\nGlobbing works like wildcards, but uses ** to match backslashes. (Using * or ? will not match a backslash.)\r\n\r\nRegular expressions are implemented using the Boost.Xpressive library, using ESMAScript syntax.\r\n\r\nSome common regular expressions:\r\n.\t= A single character\r\n\\+\t= A plus symbol (backslash is the escape character)\r\n[a-cG-K]\t= A single character from a to c or from G to K\r\n(abc|def)\t= Either ""abc"" or ""def""\r\n\r\n""Quantifiers"" can follow any expression:\r\n*\t= Zero or more occurrences\r\n+\t= One or more occurrences\r\n{m,n}\t= Between m and n occurrences (n is optional)\r\n\r\nExamples of regular expressions:\r\n\n>C:\\TemP.*txt   ==> Finds all text files on C: in folder >>temp<< (by default the tool is NOT case sensitive) and its subdirectories\r\n\n>.*\\DatA.*{3}-{2}-{4}.*   ==> Finds all files & directories with a ""social security number"" in their names, with >>data<< string in their path name\r\n"
+    IDS_BROWSE_BODY         "If you would like to filter the results such that they include only the subfolders and files of a specific folder, specify that folder here:"
+    IDS_MENU_DUMP_TO_TABLE  "Dump to table..."
+    IDS_MENU_FILE_NUMBER    "File #"
+    IDS_MENU_OPEN_CONTAINING_FOLDER "Open &Containing Folder"
+    IDS_SAVE_TABLE_TITLE    "Save Table"
+    IDS_SAVE_OPTION_UTF8_CSV "Comma-separated values [UTF-8] (*.csv)"
+    IDS_SAVE_OPTION_UTF8_TSV "Tab-separated values [UTF-8] (*.tsv)"
+    IDS_TEXT_SEARCHING      "Searching"
+    IDS_TEXT_ELLIPSIS       "..."
+    IDS_HELP_BUGS_TITLE     "Bugs & Feature Requests"
+    IDS_TEXT_BUILD_DATE     "Build date:"
+    IDS_BUTTON_BROWSE       "&Browse..."
+    IDS_BUTTON_SEARCH       "&Search"
+    IDS_BUTTON_PAUSE        "&Pause"
+    IDS_BUTTON_STOP         "Stop"
+    IDS_APPNAME             "SwiftSearch (Robert Nio's version)"
+    IDS_HELP_SORTING_BY_DEPTH_TITLE "Sorting by Depth"
+    IDS_HELP_SORTING_BY_DEPTH_BODY "Hold the Shift key sort level-by-level."
+    IDS_HELP_SORTING_BY_BULKINESS_TITLE "Sorting by Bulkiness"
+    IDS_HELP_SORTING_BY_BULKINESS_BODY 
+                            "Hold the ALT key when clicking ""Size on Disk"" to find the most bulky files and folders, to help you free up space.\r\n(This is a vague concept; the details are not well-defined.)"
+    IDS_HELP_SEARCHING_BY_DEPTH_TITLE "Searching by Depth"
+    IDS_HELP_SEARCHING_BY_DEPTH_BODY 
+                            "Use Shift+Enter to search level-by-level (slightly slower)."
+    IDS_STATUS_FOUND_RESULTS "%s results in %.2lf seconds"
+    IDS_STATUS_SORTED_RESULTS "Sorted %s results in %.2lf seconds"
+    IDS_STATUS_SORTING_RESULTS "Sorting %s results..."
+    IDS_MENU_COPY_PATHS     "Copy path(s)"
+    IDS_TEXT_COPYING_SELECTION "Copying selection"
+    IDS_COPYING_TITLE       "Copying..."
+    IDS_MENU_COPY_TABLE     "Copy row(s)"
+    IDS_WARNING_TITLE       "Warning"
+    IDS_COPY_MAY_USE_TOO_MUCH_MEMORY_BODY 
+                            "Copying this many items may consume a lot of memory.\r\nOther applications may have difficulty handling so much data.\r\n\r\nContinue anyway?"
+    IDS_MENU_COPY           "Copy"
+    IDS_HELP_COPYING_TITLE  "Copying"
+    IDS_HELP_COPYING_BODY   "Use Shift+Ctrl+C to copy file paths.\r\nUse Ctrl+C to copy files."
+    IDS_TEXT_REPORT_ISSUES  "Please report issues at: %s\r\n\r\nWould you like to go to the project website?\r\n\r\nDiagnostic information:\r\n"
+    IDS_HELP_DONATE_TITLE   "Donation"
+    IDS_HELP_DONATE_BODY    "Thank you, but I don't need donations for now!\r\n\r\nPlease just leave a rating at: %s\r\n\r\nAnd please tell your friends about this software!\r\n\r\nWould you like to go to the project website?"
+    IDS_PROJECT_USER_FRIENDLY_URL 
+                            "https://github.com/githubrobbi/Ultra-Fast-File-Search"
+    IDS_PROJECT_ROBUST_URL  "https://github.com/githubrobbi/Ultra-Fast-File-Search"
+    IDS_PROJECT_NAME        "SwiftSearch (Robert Nio's version)"
+    IDS_INVALID_PATTERN     "Invalid pattern."
+    IDS_HELP_NTFS_METADATA_TITLE "NTFS Attributes"
+    IDS_HELP_NTFS_METADATA_BODY 
+                            "Use Ctrl+Enter to show special NTFS files ($MFT, $Extend, etc.) and interesting metadata (::$EA, ::$REPARSE_POINT, etc.)."
+    IDS_TEXT_UI_LOCALE_NAME "UI locale name:"
+    IDS_HELP_TRANSLATION_TITLE "Translation"
+    IDS_HELP_TRANSLATION_BODY 
+                            "Translation files may be found on the project website.\r\nThey are generously provided by other users, not by me.\r\n\r\nWould you like to go to the project website?\r\n\r\nYour detected user interface locale is: %s"
+    IDS_COLUMN_TYPE_HEADER  "Type"
+    IDS_COPYING_ADS_PROBLEM_BODY 
+                            "You have selected one or more alternate data streams (file names with ':' in them).\r\nThese will be skipped, as they cannot be copied separately from the main file."
+    IDS_COLUMN_INDEX_IS_REPARSEPOINT_HEADER "Reparse"
+    IDS_COLUMN_INDEX_IS_READONLY_HEADER "R"
+    IDS_COLUMN_INDEX_IS_ARCHIVE_HEADER "A"
+    IDS_COLUMN_INDEX_IS_SYSTEM_HEADER "S"
+    IDS_COLUMN_INDEX_IS_HIDDEN_HEADER "H"
+    IDS_COLUMN_INDEX_IS_OFFLINE_HEADER "O"
+    IDS_COLUMN_INDEX_IS_NOTCONTENTIDX_HEADER "I"
+    IDS_COLUMN_INDEX_IS_NOSCRUBDATA_HEADER "X"
+    IDS_COLUMN_INDEX_IS_INTEGRETYSTREAM_HEADER "V"
+    IDS_COLUMN_INDEX_IS_PINNED_HEADER "P"
+    IDS_COLUMN_INDEX_IS_UNPINNED_HEADER "U"
+    IDS_COLUMN_INDEX_IS_DIRECTORY_HEADER "DIR"
+    IDS_COLUMN_INDEX_IS_COMPRESSED_HEADER "Compressed"
+    IDS_COLUMN_INDEX_IS_ENCRYPTED_HEADER "Encrypted"
+    IDS_COLUMN_INDEX_IS_SPARSEFILE_HEADER "Sparse"
+    IDS_COLUMN_INDEX_IS_ATTRIBUTE_HEADER "Attrib"
+    IDS_ISSUES_URL          "https://github.com/githubrobbi/Ultra-Fast-File-Search/issues"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

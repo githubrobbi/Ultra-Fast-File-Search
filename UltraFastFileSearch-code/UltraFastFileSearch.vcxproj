@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="COM DEBUG|x64">
+      <Configuration>COM DEBUG</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="COM|x64">
+      <Configuration>COM</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="EXE DEBUG|x64">
+      <Configuration>EXE DEBUG</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="EXE|x64">
+      <Configuration>EXE</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3F046A88-FF9F-491A-BA43-36DB07EFF73C}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>UltraFastFileSearch</RootNamespace>
+    <ProjectName>UltraFastFileSearch</ProjectName>
+    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDEBUGLibraries>true</UseDEBUGLibraries>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EXE|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDEBUGLibraries>false</UseDEBUGLibraries>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='COM|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDEBUGLibraries>false</UseDEBUGLibraries>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDEBUGLibraries>true</UseDEBUGLibraries>
+    <PlatformToolset>v141_xp</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Project.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='EXE|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Project.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='COM|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Project.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Project.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>uffs</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='COM|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.com</TargetExt>
+    <TargetName>uffs</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.com</TargetExt>
+    <TargetName>uffs</TargetName>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link Condition="'$(TargetExt)'=='.com'">
+      <Subsystem>Console</Subsystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDEBUG</RuntimeLibrary>
+      <DEBUGInformationFormat>ProgramDatabase</DEBUGInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\uffs\llvm\llvm\include;C:\uffs\boost_1_73_0;C:\uffs\llvm\build\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDEBUGInformation>true</GenerateDEBUGInformation>
+      <IgnoreSpecificDefaultLibraries>msvcprt.lib</IgnoreSpecificDefaultLibraries>
+      <AdditionalDependencies>C:\uffs\llvm\lib\Debug\LLVMSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <DEBUGInformationFormat>ProgramDatabase</DEBUGInformationFormat>
+      <Optimization>Full</Optimization>
+      <AdditionalIncludeDirectories>C:\uffs\llvm\llvm\include;C:\uffs\boost_1_73_0;C:\uffs\llvm\build\include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDEBUGInformation>true</GenerateDEBUGInformation>
+      <IgnoreSpecificDefaultLibraries>msvcprt.lib</IgnoreSpecificDefaultLibraries>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>C:\uffs\llvm\lib\Release\LLVMSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+    </Link>
+    <PostBuildEvent />
+    <PreLinkEvent />
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='COM|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <DEBUGInformationFormat>ProgramDatabase</DEBUGInformationFormat>
+      <Optimization>Full</Optimization>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>C:\uffs\llvm\llvm\include;C:\uffs\boost_1_73_0;C:\uffs\llvm\build\include</AdditionalIncludeDirectories>
+      <WarningLevel>Level4</WarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDEBUGInformation>true</GenerateDEBUGInformation>
+      <IgnoreSpecificDefaultLibraries>msvcprt.lib</IgnoreSpecificDefaultLibraries>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalDependencies>C:\uffs\llvm\lib\Release\LLVMSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX64</TargetMachine>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <PostBuildEvent />
+    <PreLinkEvent />
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <DEBUGInformationFormat>ProgramDatabase</DEBUGInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>C:\uffs\llvm\llvm\include;C:\uffs\boost_1_73_0;C:\uffs\llvm\build\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDEBUGInformation>true</GenerateDEBUGInformation>
+      <IgnoreSpecificDefaultLibraries>msvcprt.lib</IgnoreSpecificDefaultLibraries>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <AdditionalDependencies>C:\uffs\llvm\lib\Debug\LLVMSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Link>
+    <PostBuildEvent />
+    <PreLinkEvent />
+    <PreBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\cpp_regex_traits.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\cregex.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\c_regex_traits.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\fileiter.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\icu.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\instances.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\posix_api.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\regex.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\regex_debug.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\regex_raw_buffer.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\regex_traits_defaults.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\static_mutex.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\usinstances.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\w32_regex_traits.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\wc_regex_traits.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\wide_posix_api.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\winstances.cpp">
+      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='COM|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="string_matcher.cpp" />
+    <ClCompile Include="UltraFastFileSearch.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="UltraFastFileSearch.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="CxxFrameHandler.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='COM|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'">true</ExcludedFromBuild>
+      <Command Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">ml64.exe /Fo"$(IntDir)%(Filename).obj" /D_WIN64 /c /nologo /W3 /Zi /Ta "%(FullPath)" </Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">ml64.exe /Fo"$(IntDir)%(Filename).obj" /D_WIN64 /c /nologo /W3 /Zi /Ta "%(FullPath)" </Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='COM|x64'">ml64.exe /Fo"$(IntDir)%(Filename).obj" /D_WIN64 /c /nologo /W3 /Zi /Ta "%(FullPath)" </Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">$(IntDir)%(Filename).obj;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">$(IntDir)%(Filename).obj;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='COM|x64'">$(IntDir)%(Filename).obj;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'">ml64.exe /Fo"$(IntDir)%(Filename).obj" /D_WIN64 /c /nologo /W3 /Zi /Ta "%(FullPath)" </Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'">$(IntDir)%(Filename).obj;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Clang-Compile.bat">
+      <FileType>Document</FileType>
+      <Command>"%(FullPath)" -fsyntax-only -Wno-unused-command-line-argument -m"$(PlatformArchitecture)" &gt; "$(IntDir)%(Filename).log"</Command>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='COM|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'">true</ExcludedFromBuild>
+      <Outputs>$(IntDir)%(FileName).log;%(Outputs)</Outputs>
+      <AdditionalInputs>$(ProjectName)$(DefaultLanguageSourceExtension);string_matcher.cpp;stdafx.h;$(ProjectName).rc;%(AdditionalInputs)</AdditionalInputs>
+      <Message>Compiling with Clang...</Message>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Search Drive.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

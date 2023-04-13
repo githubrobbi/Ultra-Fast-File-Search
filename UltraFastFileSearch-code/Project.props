@@ -1,0 +1,30 @@
+﻿<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+	<BOOST_ROOT>C:\uffs\boost_1_73_0\</BOOST_ROOT>
+    <XPDeprecationWarning>false</XPDeprecationWarning>
+	<IncludePath>C:\uffs\wtl-code-r636-trunk\wtl\Include;$(IncludePath)</IncludePath>  </PropertyGroup>
+	<ItemDefinitionGroup>
+		<PreBuildEvent>
+			<Command>CScript //nologo "$(ProjectDir)$(ProjectName).js" PreBuild "$(TargetPath)" "$(Configuration)" "$(Platform)" "$(LangID)" "$(LangName)"</Command>
+		</PreBuildEvent>
+		<PreLinkEvent>
+			<Command>CScript //nologo "$(ProjectDir)$(ProjectName).js" PreLink "$(TargetPath)" "$(Configuration)" "$(Platform)" "$(LangID)" "$(LangName)"</Command>
+		</PreLinkEvent>
+		<PostBuildEvent>
+			<Command>CScript //nologo "$(ProjectDir)$(ProjectName).js" PostBuild "$(TargetPath)" "$(Configuration)" "$(Platform)" "$(LangID)" "$(LangName)"</Command>
+		</PostBuildEvent>
+		<ClCompile>
+			<ForcedIncludeFiles>stdafx.h;$(ProjectDir)targetver.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+			<AdditionalOptions>/d2Zi+ %(AdditionalOptions)</AdditionalOptions>
+			<WarningLevel>EnableAllWarnings</WarningLevel>
+			<MinimalRebuild>false</MinimalRebuild>
+			<SupportJustMyCode>false</SupportJustMyCode>
+		</ClCompile>
+		<Link>
+			<UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+			<SubSystem>Windows</SubSystem>
+		</Link>
+	</ItemDefinitionGroup>
+</Project>

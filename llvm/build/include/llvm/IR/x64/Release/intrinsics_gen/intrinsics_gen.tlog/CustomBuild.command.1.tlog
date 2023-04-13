@@ -1,0 +1,188 @@
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\ATTRIBUTES.INC.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-attrs -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Attributes.td -o S:/source/llvm/build/include/llvm/IR/Attributes.inc
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICIMPL.INC.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-impl -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicImpl.inc
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICENUMS.INC.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicEnums.inc
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSAARCH64.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=aarch64 -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsAArch64.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSAMDGPU.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=amdgcn -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsAMDGPU.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSARM.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=arm -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsARM.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSBPF.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=bpf -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsBPF.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSHEXAGON.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=hexagon -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsHexagon.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSMIPS.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=mips -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsMips.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSNVPTX.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=nvvm -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsNVPTX.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSPOWERPC.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=ppc -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsPowerPC.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSR600.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=r600 -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsR600.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSRISCV.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=riscv -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsRISCV.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSS390.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=s390 -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsS390.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSWEBASSEMBLY.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=wasm -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsWebAssembly.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSX86.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=x86 -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsX86.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\98C7776259742DA48BA1CBA2FABDA628\INTRINSICSXCORE.H.RULE
+setlocal
+..\..\..\Release\bin\llvm-tblgen.exe -gen-intrinsic-enums -intrinsic-prefix=xcore -I S:/source/llvm/llvm/include/llvm/IR -I S:/source/llvm/build/include -I S:/source/llvm/llvm/include --long-string-literals=0 S:/source/llvm/llvm/include/llvm/IR/Intrinsics.td -o S:/source/llvm/build/include/llvm/IR/IntrinsicsXCore.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\BUILD\CMAKEFILES\9F9FB10AC7842A6838F1C42820229300\INTRINSICS_GEN.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^S:\SOURCE\LLVM\LLVM\INCLUDE\LLVM\IR\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SS:/source/llvm/llvm -BS:/source/llvm/build --check-stamp-file S:/source/llvm/build/include/llvm/IR/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

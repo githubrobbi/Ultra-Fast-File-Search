@@ -1,0 +1,13 @@
+Original Work:
+
+Title: SwiftSearch
+Author: wfunction (https://sourceforge.net/u/wfunction/profile/)
+Source: https://sourceforge.net/projects/swiftsearch/
+License: Creative Commons Attribution Non-Commercial License 2.0 (https://creativecommons.org/licenses/by-nc/2.0/legalcode)
+
+Modifications:
+Adapted by Robert Nio on 2023-03-24
+Changes: Added an industrial-strength CLI interface and cleaned up the source code for better readability.
+
+Disclaimer:
+The original licensor, wfunction, does not endorse this adaptation or its use. This adapted work is licensed under the same Creative Commons Attribution Non-Commercial License 2.0. (https://creativecommons.org/licenses/by-nc/2.0/)

@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="UltraFastFileSearch.cpp" />
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\c_regex_traits.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\cpp_regex_traits.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\cregex.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\fileiter.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\icu.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\instances.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\posix_api.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\regex.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\regex_debug.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\regex_raw_buffer.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\regex_traits_defaults.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\w32_regex_traits.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\wc_regex_traits.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\wide_posix_api.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\winstances.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\usinstances.cpp">
+      <Filter>BOOST Regex</Filter>
+    </ClCompile>
+    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\static_mutex.cpp">
+      <Filter>Include Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Include Files</Filter>
+    </ClCompile>
+    <ClCompile Include="string_matcher.cpp">
+      <Filter>Include Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Clang-Compile.bat" />
+    <CustomBuild Include="CxxFrameHandler.asm">
+      <Filter>Include Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="BOOST Regex">
+      <UniqueIdentifier>{8da6af04-4674-43f9-8907-3c87bbf225f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{a56efbef-6231-4013-ba7f-c9fbb77c523c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include Files">
+      <UniqueIdentifier>{671cc37b-775b-4612-a822-7d82c235f927}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="UltraFastFileSearch.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Search Drive.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
