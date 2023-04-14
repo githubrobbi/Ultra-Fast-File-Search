@@ -1,7 +1,7 @@
 # Ultra Fast File Search
 
 ------
-(Professional IT Admin Tool to find files on Windows disks lightning fast for Personal Use Only )
+Ultra Fast File Search for Windows: Command-line tool for lightning-fast searches (non-commercial use only)
 
 - [Ultra Fast File Search](#ultra-fast-file-search)
   * [TL;DR](#tldr)
