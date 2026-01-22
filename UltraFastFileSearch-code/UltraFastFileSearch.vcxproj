@@ -23,33 +23,33 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>UltraFastFileSearch</RootNamespace>
     <ProjectName>UltraFastFileSearch</ProjectName>
-    <WindowsTargetPlatformVersion>7.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDEBUGLibraries>true</UseDEBUGLibraries>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='EXE|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDEBUGLibraries>false</UseDEBUGLibraries>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='COM|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDEBUGLibraries>false</UseDEBUGLibraries>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDEBUGLibraries>true</UseDEBUGLibraries>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -99,36 +99,38 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <RuntimeLibrary>MultiThreadedDEBUG</RuntimeLibrary>
-      <DEBUGInformationFormat>ProgramDatabase</DEBUGInformationFormat>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\uffs\llvm\llvm\include;C:\uffs\boost_1_73_0;C:\uffs\llvm\build\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(UFFS_LLVM)\llvm\include;$(UFFS_BOOST);$(UFFS_LLVM)\build\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <GenerateDEBUGInformation>true</GenerateDEBUGInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcprt.lib</IgnoreSpecificDefaultLibraries>
-      <AdditionalDependencies>C:\uffs\llvm\lib\Debug\LLVMSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(UFFS_LLVM)\lib\Debug\LLVMSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <DEBUGInformationFormat>ProgramDatabase</DEBUGInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>C:\uffs\llvm\llvm\include;C:\uffs\boost_1_73_0;C:\uffs\llvm\build\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(UFFS_LLVM)\llvm\include;$(UFFS_BOOST);$(UFFS_LLVM)\build\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <GenerateDEBUGInformation>true</GenerateDEBUGInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcprt.lib</IgnoreSpecificDefaultLibraries>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>C:\uffs\llvm\lib\Release\LLVMSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(UFFS_LLVM)\lib\Release\LLVMSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -141,23 +143,24 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <DEBUGInformationFormat>ProgramDatabase</DEBUGInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>C:\uffs\llvm\llvm\include;C:\uffs\boost_1_73_0;C:\uffs\llvm\build\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(UFFS_LLVM)\llvm\include;$(UFFS_BOOST);$(UFFS_LLVM)\build\include</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <BufferSecurityCheck>false</BufferSecurityCheck>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <GenerateDEBUGInformation>true</GenerateDEBUGInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcprt.lib</IgnoreSpecificDefaultLibraries>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <AdditionalDependencies>C:\uffs\llvm\lib\Release\LLVMSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(UFFS_LLVM)\lib\Release\LLVMSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX64</TargetMachine>
       <OptimizeReferences>true</OptimizeReferences>
@@ -170,17 +173,18 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <DEBUGInformationFormat>ProgramDatabase</DEBUGInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>C:\uffs\llvm\llvm\include;C:\uffs\boost_1_73_0;C:\uffs\llvm\build\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(UFFS_LLVM)\llvm\include;$(UFFS_BOOST);$(UFFS_LLVM)\build\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <GenerateDEBUGInformation>true</GenerateDEBUGInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>msvcprt.lib</IgnoreSpecificDefaultLibraries>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
-      <AdditionalDependencies>C:\uffs\llvm\lib\Debug\LLVMSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(UFFS_LLVM)\lib\Debug\LLVMSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent />

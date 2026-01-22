@@ -1,10 +1,22 @@
 ﻿<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
-  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="UserMacros">
+    <!--
+      Dependencies are relative to the repo root.
+      Override with environment variables if needed:
+        UFFS_BOOST = path to Boost headers
+        UFFS_WTL   = path to WTL Include folder
+        UFFS_LLVM  = path to LLVM root
+    -->
+    <UFFS_ROOT>$(ProjectDir)..</UFFS_ROOT>
+    <UFFS_BOOST Condition="'$(UFFS_BOOST)'==''">$(UFFS_ROOT)\boost</UFFS_BOOST>
+    <UFFS_WTL Condition="'$(UFFS_WTL)'==''">$(UFFS_ROOT)\wtl\Include</UFFS_WTL>
+    <UFFS_LLVM Condition="'$(UFFS_LLVM)'==''">$(UFFS_ROOT)\llvm</UFFS_LLVM>
+  </PropertyGroup>
   <PropertyGroup>
-	<BOOST_ROOT>C:\uffs\boost_1_73_0\</BOOST_ROOT>
     <XPDeprecationWarning>false</XPDeprecationWarning>
-	<IncludePath>C:\uffs\wtl-code-r636-trunk\wtl\Include;$(IncludePath)</IncludePath>  </PropertyGroup>
+    <IncludePath>$(UFFS_WTL);$(IncludePath)</IncludePath>
+  </PropertyGroup>
 	<ItemDefinitionGroup>
 		<PreBuildEvent>
 			<Command>CScript //nologo "$(ProjectDir)$(ProjectName).js" PreBuild "$(TargetPath)" "$(Configuration)" "$(Platform)" "$(LangID)" "$(LangName)"</Command>
