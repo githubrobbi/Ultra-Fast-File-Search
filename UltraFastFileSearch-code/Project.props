@@ -12,6 +12,8 @@
     <UFFS_BOOST Condition="'$(UFFS_BOOST)'==''">$(UFFS_ROOT)\boost</UFFS_BOOST>
     <UFFS_WTL Condition="'$(UFFS_WTL)'==''">$(UFFS_ROOT)\wtl\Include</UFFS_WTL>
     <UFFS_LLVM Condition="'$(UFFS_LLVM)'==''">$(UFFS_ROOT)\llvm</UFFS_LLVM>
+    <!-- Legacy variable for Boost.Regex source files -->
+    <BOOST_ROOT>$(UFFS_BOOST)\</BOOST_ROOT>
   </PropertyGroup>
   <PropertyGroup>
     <XPDeprecationWarning>false</XPDeprecationWarning>
