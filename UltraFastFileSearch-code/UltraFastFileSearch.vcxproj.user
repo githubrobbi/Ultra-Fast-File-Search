@@ -13,5 +13,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='COM|x64'">
     <LocalDebuggerCommandArguments>**\Users\**\AppData\** --columns=path  --drives=c,d</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArgumentsHistory>**\Users\**\AppData\** --columns=path  --drives=c,d|</LocalDebuggerCommandArgumentsHistory>
   </PropertyGroup>
 </Project>
