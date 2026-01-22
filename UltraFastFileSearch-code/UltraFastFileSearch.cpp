@@ -11505,7 +11505,7 @@ public:
 		RefCountedCString body;
 		body.Format(this->LoadString(IDS_TEXT_REPORT_ISSUES), this->get_project_url(IDS_PROJECT_USER_FRIENDLY_URL).c_str());
 		{
-			body += _T("\x2022");
+			body += L"\u2022";  // Unicode bullet character
 			body += this->LoadString(IDS_TEXT_SPACE);
 			body += this->LoadString(IDS_TEXT_UI_LOCALE_NAME);
 			body += this->LoadString(IDS_TEXT_SPACE);
@@ -11517,7 +11517,7 @@ public:
 			std::tvstring buf_localized, buf_invariant;
 			SystemTimeToString(ticks, buf_localized, false, false);
 			SystemTimeToString(ticks, buf_invariant, true, false);
-			body += _T("\x2022");
+			body += L"\u2022";  // Unicode bullet character
 			body += this->LoadString(IDS_TEXT_SPACE);
 			body += this->LoadString(IDS_TEXT_BUILD_DATE);
 			body += this->LoadString(IDS_TEXT_SPACE);
