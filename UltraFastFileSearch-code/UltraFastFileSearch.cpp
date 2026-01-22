@@ -12303,7 +12303,7 @@ int main(int argc, char* argv[])
 		static int gotdrives = 0;
 		laufwerke = L"";
 
-		std::experimental::filesystem::path tempath;
+		std::filesystem::path tempath;
 		static char driveletter = '\0';
 		std::string searchsubstring = "";
 		searchPathCopy[0] == '>' ? searchsubstring = searchPathCopy.substr(1, 4) : searchsubstring = searchPathCopy.substr(0, 3);
@@ -12405,7 +12405,7 @@ int main(int argc, char* argv[])
 				if (drives.getNumOccurrences() == 1) searchPathCopy = std::string(laufwerke.begin(), laufwerke.end()) + searchPathCopy;
 			}
 
-			std::experimental::filesystem::path tempath = searchPathCopy;
+			std::filesystem::path tempath = searchPathCopy;
 
 			// do we have an EXTENTION?
 			if (tempath.has_extension())
@@ -12875,7 +12875,7 @@ int main(int argc, char* argv[])
 
 									std::tvstring pathstr, namestr, pathonlystr, temp;
 									i->get_path(key, temp, false);
-									std::experimental::filesystem::path tempath = temp.c_str();
+									std::filesystem::path tempath = temp.c_str();
 
 									pathstr = tempath.c_str();
 									namestr = tempath.filename().c_str();
@@ -13089,7 +13089,7 @@ int main(int argc, char* argv[])
 
 									std::tvstring pathstr, namestr, pathonlystr, temp;
 									i->get_path(key, temp, false);
-									std::experimental::filesystem::path tempath = temp.c_str();
+									std::filesystem::path tempath = temp.c_str();
 
 									pathstr = tempath.c_str();
 									namestr = tempath.filename().c_str();
