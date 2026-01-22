@@ -1,0 +1,25 @@
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Rust MFT Reader (separate project, prevent VS confusion)
+mft-reader-rs/
+
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+*.obj
+*.o
+*.a
+*.lib
+*.pdb
+
+# OS files
+.DS_Store
+Thumbs.db
+
