@@ -5,6 +5,17 @@
 *.swo
 *~
 
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.suo
+*.user
+ipch/
+
 # Rust MFT Reader (separate project, prevent VS confusion)
 mft-reader-rs/
 
@@ -18,6 +29,21 @@ mft-reader-rs/
 *.a
 *.lib
 *.pdb
+bin/
+x64/
+Debug/
+Release/
+
+# Dependencies (downloaded locally)
+boost/
+boost_*/
+wtl/
+llvm/
+
+# Original packages (large archives)
+Original Packages/
+*.7z
+*.zip
 
 # OS files
 .DS_Store
