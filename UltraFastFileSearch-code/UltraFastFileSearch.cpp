@@ -19,6 +19,7 @@
 #include <time.h>
 #include <wchar.h>
 #include <algorithm>
+#include <memory>
 #include <mmintrin.h>
 #include <map>
 #include <fstream>
@@ -8118,7 +8119,7 @@ class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResi
 	StringLoader LoadString;
 	static DWORD WINAPI SHOpenFolderAndSelectItemsThread(IN LPVOID lpParameter)
 	{
-		std::auto_ptr<std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList > >> p(static_cast<std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList > > *> (lpParameter));
+		std::unique_ptr<std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList > >> p(static_cast<std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList > > *> (lpParameter));
 		// This is in a separate thread because of a BUG:
 		// Try this with RmMetadata:
 		// 1. Double-click it.
@@ -10171,7 +10172,7 @@ public:
 		WTL::CMenu menu;
 		menu.CreatePopupMenu();
 		ATL::CComPtr<IContextMenu> contextMenu;
-		std::auto_ptr<std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList > >> p(new std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList >>());
+		std::unique_ptr<std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList > >> p(new std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList >>());
 		p->second.reserve(indices.size());	// REQUIRED, to avoid copying CShellItemIDList objects (they're not copyable!)
 		if (indices.size() <= (1 << 10))	// if not too many files... otherwise the shell context menu this will take a long time
 		{
@@ -10656,7 +10657,7 @@ public:
 		std::tvstring path;
 		path = i->root_path(), lock(i)->get_path(this->results[static_cast<size_t> (index)].key(), path, false);
 		remove_path_stream_and_trailing_sep(path);
-		std::auto_ptr<std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList > >> p(new std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList >>());
+		std::unique_ptr<std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList > >> p(new std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList >>());
 		SFGAOF sfgao = 0;
 		std::tstring
 			const path_directory(path.begin(), dirname(path.begin(), path.end()));

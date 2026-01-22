@@ -6,6 +6,7 @@
 #include <limits.h>
 #include <process.h>
 #include <deque>
+#include <memory>
 #include <utility>
 #include <Windows.h>
 #include <Objbase.h>
@@ -53,9 +54,9 @@ public:
 			FThunk(Func const &func) : func(func) { }
 			bool operator()() { return this->func() != 0; }
 		};
-		std::auto_ptr<Thunk> pThunk(new FThunk(func));
+		std::unique_ptr<Thunk> pThunk(new FThunk(func));
 		this->add(pThunk.get(), insert_before_timestamp);
-		pThunk.release();
+		(void)pThunk.release();
 	}
 };
 
@@ -143,16 +144,16 @@ public:
 				CSLock lock(this->criticalSection);
 				if (!this->todo.empty())
 				{
-					std::auto_ptr<Thunk> next(this->todo.front().second);
+					std::unique_ptr<Thunk> nextThunk(this->todo.front().second);
 					this->todo.pop_front();
-					pThunk = next.release();
+					pThunk = nextThunk.release();
 				}
 			}
 			if (pThunk)
 			{
-				std::auto_ptr<Thunk> thunk(pThunk);
+				std::unique_ptr<Thunk> thunkPtr(pThunk);
 				pThunk = NULL;
-				if (!(*thunk)())
+				if (!(*thunkPtr)())
 				{
 					result = ERROR_REQUEST_ABORTED;
 					break;
