@@ -49,3 +49,5 @@ Original Packages/
 .DS_Store
 Thumbs.db
 
+llvm-10.0.0.src.tar.xz
+llvm-10.0.0.src/
