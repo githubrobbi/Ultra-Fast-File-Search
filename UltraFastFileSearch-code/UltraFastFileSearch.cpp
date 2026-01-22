@@ -12537,6 +12537,238 @@ int dump_mft_extents(char drive_letter, const char* output_path, bool verify_ext
 // ============================================================================
 
 // ============================================================================
+// MFT Read Benchmark Tool Implementation
+// ============================================================================
+
+// Benchmark raw MFT reading speed (read-only, no output file)
+// Returns 0 on success, error code on failure
+int benchmark_mft_read(char drive_letter, llvm::raw_ostream& OS)
+{
+    OS << "\n=== MFT Read Benchmark Tool ===\n";
+    OS << "Drive: " << drive_letter << ":\n\n";
+
+    // Build volume path: \\.\X:
+    std::wstring volume_path = L"\\\\.\\";
+    volume_path += static_cast<wchar_t>(toupper(drive_letter));
+    volume_path += L":";
+
+    // Open volume handle
+    HANDLE volume_handle = CreateFileW(
+        volume_path.c_str(),
+        FILE_READ_DATA | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        NULL,
+        OPEN_EXISTING,
+        FILE_FLAG_NO_BUFFERING,
+        NULL
+    );
+
+    if (volume_handle == INVALID_HANDLE_VALUE) {
+        DWORD err = GetLastError();
+        OS << "ERROR: Failed to open volume " << drive_letter << ": (error " << err << ")\n";
+        OS << "Make sure you are running as Administrator.\n";
+        return static_cast<int>(err);
+    }
+
+    // Get NTFS volume data
+    NTFS_VOLUME_DATA_BUFFER volume_data = {};
+    DWORD bytes_returned = 0;
+
+    if (!DeviceIoControl(
+        volume_handle,
+        FSCTL_GET_NTFS_VOLUME_DATA,
+        NULL, 0,
+        &volume_data, sizeof(volume_data),
+        &bytes_returned,
+        NULL
+    )) {
+        DWORD err = GetLastError();
+        CloseHandle(volume_handle);
+        OS << "ERROR: Failed to get NTFS volume data (error " << err << ")\n";
+        return static_cast<int>(err);
+    }
+
+    OS << "Volume Information:\n";
+    OS << "  BytesPerSector: " << volume_data.BytesPerSector << "\n";
+    OS << "  BytesPerCluster: " << volume_data.BytesPerCluster << "\n";
+    OS << "  BytesPerFileRecordSegment: " << volume_data.BytesPerFileRecordSegment << "\n";
+    OS << "  MftValidDataLength: " << volume_data.MftValidDataLength.QuadPart << "\n";
+    OS << "  MftStartLcn: " << volume_data.MftStartLcn.QuadPart << "\n\n";
+
+    // Get MFT extents using get_retrieval_pointers
+    long long mft_size = 0;
+    std::vector<std::pair<unsigned long long, long long>> ret_ptrs;
+
+    try {
+        std::tstring mft_path_t;
+        mft_path_t = drive_letter;
+        mft_path_t += _T(":\\$MFT");
+        ret_ptrs = get_retrieval_pointers(mft_path_t.c_str(), &mft_size,
+            volume_data.MftStartLcn.QuadPart, volume_data.BytesPerFileRecordSegment);
+    } catch (...) {
+        CloseHandle(volume_handle);
+        OS << "ERROR: Failed to get MFT retrieval pointers\n";
+        return ERROR_READ_FAULT;
+    }
+
+    if (ret_ptrs.empty()) {
+        CloseHandle(volume_handle);
+        OS << "ERROR: No MFT extents found\n";
+        return ERROR_READ_FAULT;
+    }
+
+    // Calculate sizes
+    uint32_t record_size = volume_data.BytesPerFileRecordSegment;
+    uint64_t record_count = static_cast<uint64_t>(mft_size) / record_size;
+    uint64_t total_bytes = record_count * record_size;
+    uint64_t cluster_size = volume_data.BytesPerCluster;
+
+    OS << "MFT Information:\n";
+    OS << "  Extents: " << ret_ptrs.size() << "\n";
+    OS << "  MFT Size: " << mft_size << " bytes (" << (mft_size / (1024 * 1024)) << " MB)\n";
+    OS << "  Record Size: " << record_size << " bytes\n";
+    OS << "  Record Count: " << record_count << "\n";
+    OS << "  Total Bytes to Read: " << total_bytes << "\n\n";
+
+    // Allocate aligned read buffer (must be sector-aligned for FILE_FLAG_NO_BUFFERING)
+    size_t buffer_size = 1024 * 1024;  // 1MB buffer
+    buffer_size = (buffer_size / volume_data.BytesPerSector) * volume_data.BytesPerSector;
+    std::vector<unsigned char> read_buffer(buffer_size);
+
+    // Variables to capture first and last 4 bytes
+    unsigned char first_4_bytes[4] = {0, 0, 0, 0};
+    unsigned char last_4_bytes[4] = {0, 0, 0, 0};
+    bool captured_first = false;
+
+    OS << "Starting MFT read benchmark...\n";
+    OS.flush();
+
+    // Start timing
+    auto start_time = std::chrono::high_resolution_clock::now();
+
+    // Read MFT data extent by extent
+    uint64_t bytes_read_total = 0;
+    unsigned long long prev_vcn = 0;
+
+    for (size_t i = 0; i < ret_ptrs.size(); ++i) {
+        unsigned long long next_vcn = ret_ptrs[i].first;
+        long long lcn = ret_ptrs[i].second;
+
+        // Calculate cluster count for this extent
+        unsigned long long cluster_count = next_vcn - prev_vcn;
+        if (cluster_count == 0) continue;
+
+        // Calculate byte offset and length
+        long long byte_offset = lcn * static_cast<long long>(cluster_size);
+        unsigned long long byte_length = cluster_count * cluster_size;
+
+        // Read in chunks
+        unsigned long long extent_bytes_read = 0;
+        while (extent_bytes_read < byte_length && bytes_read_total < total_bytes) {
+            // Seek to position
+            LARGE_INTEGER seek_pos;
+            seek_pos.QuadPart = byte_offset + static_cast<long long>(extent_bytes_read);
+            if (!SetFilePointerEx(volume_handle, seek_pos, NULL, FILE_BEGIN)) {
+                DWORD err = GetLastError();
+                CloseHandle(volume_handle);
+                OS << "ERROR: Failed to seek (error " << err << ")\n";
+                return static_cast<int>(err);
+            }
+
+            // Calculate how much to read
+            unsigned long long remaining_in_extent = byte_length - extent_bytes_read;
+            unsigned long long remaining_total = total_bytes - bytes_read_total;
+            size_t to_read = static_cast<size_t>(std::min({
+                static_cast<unsigned long long>(buffer_size),
+                remaining_in_extent,
+                remaining_total
+            }));
+            // Align to sector size for reading
+            to_read = (to_read / volume_data.BytesPerSector) * volume_data.BytesPerSector;
+            if (to_read == 0) to_read = volume_data.BytesPerSector;
+
+            DWORD bytes_read = 0;
+            if (!ReadFile(volume_handle, read_buffer.data(), static_cast<DWORD>(to_read), &bytes_read, NULL)) {
+                DWORD err = GetLastError();
+                CloseHandle(volume_handle);
+                OS << "ERROR: Failed to read from volume (error " << err << ")\n";
+                return static_cast<int>(err);
+            }
+
+            // Capture first 4 bytes (from very first read)
+            if (!captured_first && bytes_read >= 4) {
+                memcpy(first_4_bytes, read_buffer.data(), 4);
+                captured_first = true;
+            }
+
+            // Always update last 4 bytes (from the actual MFT data portion)
+            size_t actual_data_in_buffer = static_cast<size_t>(std::min(
+                static_cast<unsigned long long>(bytes_read),
+                total_bytes - bytes_read_total
+            ));
+            if (actual_data_in_buffer >= 4) {
+                memcpy(last_4_bytes, read_buffer.data() + actual_data_in_buffer - 4, 4);
+            }
+
+            bytes_read_total += actual_data_in_buffer;
+            extent_bytes_read += bytes_read;
+        }
+
+        prev_vcn = next_vcn;
+    }
+
+    // Stop timing
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    double seconds = duration.count() / 1000.0;
+    double mb_per_sec = (seconds > 0) ? (bytes_read_total / (1024.0 * 1024.0)) / seconds : 0;
+
+    CloseHandle(volume_handle);
+
+    // Output results
+    OS << "\n=== Benchmark Results ===\n";
+    OS << "Total bytes read: " << bytes_read_total << " (" << (bytes_read_total / (1024 * 1024)) << " MB)\n";
+    OS << "Total records: " << record_count << "\n";
+    OS << "Time elapsed: " << duration.count() << " ms (" << llvm::format("%.3f", seconds) << " seconds)\n";
+    OS << "Read speed: " << llvm::format("%.2f", mb_per_sec) << " MB/s\n\n";
+
+    // Proof of reading - first and last 4 bytes
+    OS << "=== Proof of Complete Read ===\n";
+    OS << "First 4 bytes (hex): ";
+    for (int i = 0; i < 4; ++i) {
+        OS << llvm::format("%02X", first_4_bytes[i]);
+        if (i < 3) OS << " ";
+    }
+    OS << "  (ASCII: ";
+    for (int i = 0; i < 4; ++i) {
+        char c = static_cast<char>(first_4_bytes[i]);
+        OS << (isprint(c) ? c : '.');
+    }
+    OS << ")\n";
+
+    OS << "Last 4 bytes (hex):  ";
+    for (int i = 0; i < 4; ++i) {
+        OS << llvm::format("%02X", last_4_bytes[i]);
+        if (i < 3) OS << " ";
+    }
+    OS << "  (ASCII: ";
+    for (int i = 0; i < 4; ++i) {
+        char c = static_cast<char>(last_4_bytes[i]);
+        OS << (isprint(c) ? c : '.');
+    }
+    OS << ")\n";
+
+    // Note about expected values
+    OS << "\nNote: First 4 bytes should be 'FILE' (46 49 4C 45) - the MFT record signature.\n";
+
+    return 0;
+}
+
+// ============================================================================
+// End MFT Read Benchmark Tool Implementation
+// ============================================================================
+
+// ============================================================================
 // End Raw MFT Dump Implementation
 // ============================================================================
 
@@ -12681,6 +12913,12 @@ int main(int argc, char* argv[])
 			cl::init(false),
 			cl::cat(OutputOptions));
 
+		// MFT read benchmark option
+		static cl::opt<std::string> benchmarkMftDrive("benchmark-mft",
+			cl::desc("Benchmark MFT read speed (read-only, no output). Usage: --benchmark-mft=<drive_letter>"),
+			cl::value_desc("drive_letter"),
+			cl::cat(OutputOptions));
+
 		//cl::AddExtraVersionPrinter(PrintVersion);
 
 		static cl::bits<File_Attributes> output_columns("columns",
@@ -12798,6 +13036,21 @@ int main(int argc, char* argv[])
 			std::string output_file = dumpExtentsOutput.getValue();
 			bool verify = dumpExtentsVerify.getValue();
 			return dump_mft_extents(drive_letter, output_file.c_str(), verify, OS);
+		}
+
+		// Handle --benchmark-mft option (MFT read speed benchmark)
+		if (benchmarkMftDrive.getNumOccurrences() > 0) {
+			std::string drive_str = benchmarkMftDrive.getValue();
+			if (drive_str.empty()) {
+				OS << "ERROR: --benchmark-mft requires a drive letter (e.g., --benchmark-mft=C)\n";
+				return ERROR_BAD_ARGUMENTS;
+			}
+			char drive_letter = drive_str[0];
+			if (!isalpha(drive_letter)) {
+				OS << "ERROR: Invalid drive letter: " << drive_str << "\n";
+				return ERROR_BAD_ARGUMENTS;
+			}
+			return benchmark_mft_read(drive_letter, OS);
 		}
 
 		//OS << "\n Done reading arguments \n";
