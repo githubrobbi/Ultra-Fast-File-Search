@@ -51,8 +51,10 @@
 #include "NtUserCallHook.hpp"
 #include "string_matcher.hpp"
 #include <boost/algorithm/string.hpp>
+#include <chrono>
 #include <codecvt>
 #include <filesystem>
+#include <sstream>
 #include <strsafe.h>
 #include "BackgroundWorker.hpp"
 #include "CModifiedDialogImpl.hpp"
@@ -12323,6 +12325,218 @@ int dump_raw_mft(char drive_letter, const char* output_path, llvm::raw_ostream& 
 }
 
 // ============================================================================
+// MFT Extent Diagnostic Tool Implementation
+// ============================================================================
+
+// Dump MFT extents as JSON for diagnostic purposes
+// Returns 0 on success, error code on failure
+int dump_mft_extents(char drive_letter, const char* output_path, bool verify_extents, llvm::raw_ostream& OS)
+{
+    // Get current timestamp in ISO 8601 format
+    auto now = std::chrono::system_clock::now();
+    auto time_t_now = std::chrono::system_clock::to_time_t(now);
+    struct tm tm_now;
+    gmtime_s(&tm_now, &time_t_now);
+    char timestamp[32];
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%dT%H:%M:%SZ", &tm_now);
+
+    // Build volume path: \\.\X:
+    std::wstring volume_path = L"\\\\.\\";
+    volume_path += static_cast<wchar_t>(toupper(drive_letter));
+    volume_path += L":";
+
+    // Open volume handle
+    HANDLE volume_handle = CreateFileW(
+        volume_path.c_str(),
+        FILE_READ_DATA | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        NULL,
+        OPEN_EXISTING,
+        FILE_FLAG_NO_BUFFERING,
+        NULL
+    );
+
+    if (volume_handle == INVALID_HANDLE_VALUE) {
+        DWORD err = GetLastError();
+        OS << "{\"error\": \"Failed to open volume " << drive_letter << ": (error " << err << ")\"}\n";
+        return static_cast<int>(err);
+    }
+
+    // Get NTFS volume data
+    NTFS_VOLUME_DATA_BUFFER volume_data = {};
+    DWORD bytes_returned = 0;
+
+    if (!DeviceIoControl(
+        volume_handle,
+        FSCTL_GET_NTFS_VOLUME_DATA,
+        NULL, 0,
+        &volume_data, sizeof(volume_data),
+        &bytes_returned,
+        NULL
+    )) {
+        DWORD err = GetLastError();
+        CloseHandle(volume_handle);
+        OS << "{\"error\": \"Failed to get NTFS volume data (error " << err << ")\"}\n";
+        return static_cast<int>(err);
+    }
+
+    // Get MFT extents using get_retrieval_pointers
+    long long mft_size = 0;
+    std::vector<std::pair<unsigned long long, long long>> ret_ptrs;
+
+    try {
+        std::tstring mft_path_t;
+        mft_path_t = drive_letter;
+        mft_path_t += _T(":\\$MFT");
+        ret_ptrs = get_retrieval_pointers(mft_path_t.c_str(), &mft_size,
+            volume_data.MftStartLcn.QuadPart, volume_data.BytesPerFileRecordSegment);
+    } catch (...) {
+        CloseHandle(volume_handle);
+        OS << "{\"error\": \"Failed to get MFT retrieval pointers\"}\n";
+        return ERROR_READ_FAULT;
+    }
+
+    if (ret_ptrs.empty()) {
+        CloseHandle(volume_handle);
+        OS << "{\"error\": \"No MFT extents found\"}\n";
+        return ERROR_READ_FAULT;
+    }
+
+    uint64_t bytes_per_cluster = volume_data.BytesPerCluster;
+    uint32_t record_size = volume_data.BytesPerFileRecordSegment;
+    uint64_t records_per_cluster = bytes_per_cluster / record_size;
+
+    // Build JSON output
+    std::ostringstream json;
+    json << "{\n";
+    json << "  \"drive\": \"" << static_cast<char>(toupper(drive_letter)) << "\",\n";
+    json << "  \"timestamp\": \"" << timestamp << "\",\n";
+    json << "  \"volume_info\": {\n";
+    json << "    \"bytes_per_sector\": " << volume_data.BytesPerSector << ",\n";
+    json << "    \"bytes_per_cluster\": " << bytes_per_cluster << ",\n";
+    json << "    \"bytes_per_file_record\": " << record_size << ",\n";
+    json << "    \"mft_start_lcn\": " << volume_data.MftStartLcn.QuadPart << ",\n";
+    json << "    \"mft_valid_data_length\": " << volume_data.MftValidDataLength.QuadPart << ",\n";
+    json << "    \"total_clusters\": " << volume_data.TotalClusters.QuadPart << "\n";
+    json << "  },\n";
+    json << "  \"mft_extents\": [\n";
+
+    uint64_t total_clusters = 0;
+    uint64_t total_records = 0;
+    uint64_t prev_vcn = 0;
+
+    // Allocate buffer for verification reads (one cluster)
+    std::vector<uint8_t> verify_buffer;
+    if (verify_extents) {
+        verify_buffer.resize(static_cast<size_t>(bytes_per_cluster));
+    }
+
+    for (size_t i = 0; i < ret_ptrs.size(); ++i) {
+        uint64_t next_vcn = ret_ptrs[i].first;
+        int64_t lcn = ret_ptrs[i].second;
+        uint64_t cluster_count = next_vcn - prev_vcn;
+        uint64_t start_frs = prev_vcn * records_per_cluster;
+        uint64_t end_frs = start_frs + (cluster_count * records_per_cluster) - 1;
+        uint64_t byte_offset = static_cast<uint64_t>(lcn) * bytes_per_cluster;
+        uint64_t byte_length = cluster_count * bytes_per_cluster;
+
+        total_clusters += cluster_count;
+        total_records = end_frs + 1;
+
+        json << "    {\n";
+        json << "      \"index\": " << i << ",\n";
+        json << "      \"vcn\": " << prev_vcn << ",\n";
+        json << "      \"lcn\": " << lcn << ",\n";
+        json << "      \"cluster_count\": " << cluster_count << ",\n";
+        json << "      \"start_frs\": " << start_frs << ",\n";
+        json << "      \"end_frs\": " << end_frs << ",\n";
+        json << "      \"byte_offset\": " << byte_offset << ",\n";
+        json << "      \"byte_length\": " << byte_length;
+
+        // Verification: read first record from this extent and check FRS number
+        if (verify_extents && lcn >= 0) {
+            LARGE_INTEGER seek_pos;
+            seek_pos.QuadPart = static_cast<LONGLONG>(byte_offset);
+
+            if (SetFilePointerEx(volume_handle, seek_pos, NULL, FILE_BEGIN)) {
+                DWORD bytes_read = 0;
+                if (ReadFile(volume_handle, verify_buffer.data(),
+                    static_cast<DWORD>(bytes_per_cluster), &bytes_read, NULL) && bytes_read >= record_size) {
+                    // Check FILE signature and extract FRS number from record header
+                    // MFT record header: offset 0x2C (44) contains the FRS number (48-bit)
+                    bool valid_signature = (verify_buffer[0] == 'F' && verify_buffer[1] == 'I' &&
+                                           verify_buffer[2] == 'L' && verify_buffer[3] == 'E');
+                    uint64_t header_frs = 0;
+                    if (record_size >= 48) {
+                        // FRS is at offset 44 (0x2C), 6 bytes (48-bit) in little-endian
+                        header_frs = static_cast<uint64_t>(verify_buffer[44]) |
+                                    (static_cast<uint64_t>(verify_buffer[45]) << 8) |
+                                    (static_cast<uint64_t>(verify_buffer[46]) << 16) |
+                                    (static_cast<uint64_t>(verify_buffer[47]) << 24) |
+                                    (static_cast<uint64_t>(verify_buffer[48]) << 32) |
+                                    (static_cast<uint64_t>(verify_buffer[49]) << 40);
+                    }
+                    json << ",\n      \"verify\": {\n";
+                    json << "        \"valid_signature\": " << (valid_signature ? "true" : "false") << ",\n";
+                    json << "        \"header_frs\": " << header_frs << ",\n";
+                    json << "        \"expected_frs\": " << start_frs << ",\n";
+                    json << "        \"match\": " << ((header_frs == start_frs) ? "true" : "false") << "\n";
+                    json << "      }";
+                } else {
+                    json << ",\n      \"verify\": {\"error\": \"read_failed\"}";
+                }
+            } else {
+                json << ",\n      \"verify\": {\"error\": \"seek_failed\"}";
+            }
+        }
+
+        json << "\n    }";
+        if (i < ret_ptrs.size() - 1) {
+            json << ",";
+        }
+        json << "\n";
+
+        prev_vcn = next_vcn;
+    }
+
+    json << "  ],\n";
+    json << "  \"summary\": {\n";
+    json << "    \"extent_count\": " << ret_ptrs.size() << ",\n";
+    json << "    \"total_clusters\": " << total_clusters << ",\n";
+    json << "    \"total_records\": " << total_records << ",\n";
+    json << "    \"total_bytes\": " << (total_clusters * bytes_per_cluster) << ",\n";
+    json << "    \"is_fragmented\": " << (ret_ptrs.size() > 1 ? "true" : "false") << "\n";
+    json << "  }\n";
+    json << "}\n";
+
+    CloseHandle(volume_handle);
+
+    // Output to file or stdout
+    std::string json_str = json.str();
+
+    if (output_path && strlen(output_path) > 0) {
+        std::ofstream out_file(output_path, std::ios::binary);
+        if (!out_file) {
+            OS << "{\"error\": \"Failed to create output file: " << output_path << "\"}\n";
+            return ERROR_CANNOT_MAKE;
+        }
+        out_file.write(json_str.c_str(), json_str.size());
+        out_file.close();
+        OS << "MFT extent data written to: " << output_path << "\n";
+        OS << "Extents: " << ret_ptrs.size() << ", Total records: " << total_records << "\n";
+    } else {
+        // Output to stdout
+        OS << json_str;
+    }
+
+    return 0;
+}
+
+// ============================================================================
+// End MFT Extent Diagnostic Tool Implementation
+// ============================================================================
+
+// ============================================================================
 // End Raw MFT Dump Implementation
 // ============================================================================
 
@@ -12450,6 +12664,23 @@ int main(int argc, char* argv[])
 			cl::init("mft_dump.raw"),
 			cl::cat(OutputOptions));
 
+		// MFT extent diagnostic options
+		static cl::opt<std::string> dumpExtentsDrive("dump-extents",
+			cl::desc("Dump MFT extent map as JSON. Usage: --dump-extents=<drive_letter>"),
+			cl::value_desc("drive_letter"),
+			cl::cat(OutputOptions));
+
+		static cl::opt<std::string> dumpExtentsOutput("dump-extents-out",
+			cl::desc("Output file path for MFT extent JSON (default: stdout)"),
+			cl::value_desc("file_path"),
+			cl::init(""),
+			cl::cat(OutputOptions));
+
+		static cl::opt<bool> dumpExtentsVerify("verify",
+			cl::desc("Verify extent mapping by reading first record from each extent"),
+			cl::init(false),
+			cl::cat(OutputOptions));
+
 		//cl::AddExtraVersionPrinter(PrintVersion);
 
 		static cl::bits<File_Attributes> output_columns("columns",
@@ -12550,6 +12781,23 @@ int main(int argc, char* argv[])
 			}
 			std::string output_file = dumpMftOutput.getValue();
 			return dump_raw_mft(drive_letter, output_file.c_str(), OS);
+		}
+
+		// Handle --dump-extents option (MFT extent diagnostic tool)
+		if (dumpExtentsDrive.getNumOccurrences() > 0) {
+			std::string drive_str = dumpExtentsDrive.getValue();
+			if (drive_str.empty()) {
+				OS << "ERROR: --dump-extents requires a drive letter (e.g., --dump-extents=F)\n";
+				return ERROR_BAD_ARGUMENTS;
+			}
+			char drive_letter = drive_str[0];
+			if (!isalpha(drive_letter)) {
+				OS << "ERROR: Invalid drive letter: " << drive_str << "\n";
+				return ERROR_BAD_ARGUMENTS;
+			}
+			std::string output_file = dumpExtentsOutput.getValue();
+			bool verify = dumpExtentsVerify.getValue();
+			return dump_mft_extents(drive_letter, output_file.c_str(), verify, OS);
 		}
 
 		//OS << "\n Done reading arguments \n";
