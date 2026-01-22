@@ -12068,6 +12068,264 @@ std::string GetLastErrorAsString()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// ============================================================================
+// Raw MFT Dump Implementation (UFFS-MFT format)
+// See: mft-reader-rs/CPP_RAW_MFT_DUMP_TOOL_SPEC.md
+// ============================================================================
+
+// UFFS-MFT Header structure (64 bytes)
+#pragma pack(push, 1)
+struct UffsMftHeader {
+    char magic[8];           // "UFFS-MFT"
+    uint32_t version;        // 1
+    uint32_t flags;          // 0 = no compression
+    uint32_t record_size;    // e.g., 1024
+    uint64_t record_count;   // number of MFT records
+    uint64_t original_size;  // total bytes = record_size * record_count
+    uint64_t compressed_size;// 0 for uncompressed
+    uint8_t reserved[20];    // padding to 64 bytes
+};
+#pragma pack(pop)
+
+static_assert(sizeof(UffsMftHeader) == 64, "UffsMftHeader must be exactly 64 bytes");
+
+// Dump raw MFT to file in UFFS-MFT format
+// Returns 0 on success, error code on failure
+int dump_raw_mft(char drive_letter, const char* output_path, llvm::raw_ostream& OS)
+{
+    OS << "\n=== Raw MFT Dump Tool ===\n";
+    OS << "Drive: " << drive_letter << ":\n";
+    OS << "Output: " << output_path << "\n\n";
+
+    // Build volume path: \\.\X:
+    std::wstring volume_path = L"\\\\.\\";
+    volume_path += static_cast<wchar_t>(toupper(drive_letter));
+    volume_path += L":";
+
+    // Open volume handle
+    HANDLE volume_handle = CreateFileW(
+        volume_path.c_str(),
+        FILE_READ_DATA | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
+        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        NULL,
+        OPEN_EXISTING,
+        FILE_FLAG_NO_BUFFERING,
+        NULL
+    );
+
+    if (volume_handle == INVALID_HANDLE_VALUE) {
+        DWORD err = GetLastError();
+        OS << "ERROR: Failed to open volume " << drive_letter << ": (error " << err << ")\n";
+        OS << "Make sure you are running as Administrator.\n";
+        return static_cast<int>(err);
+    }
+
+    // Get NTFS volume data
+    NTFS_VOLUME_DATA_BUFFER volume_data = {};
+    DWORD bytes_returned = 0;
+
+    if (!DeviceIoControl(
+        volume_handle,
+        FSCTL_GET_NTFS_VOLUME_DATA,
+        NULL, 0,
+        &volume_data, sizeof(volume_data),
+        &bytes_returned,
+        NULL
+    )) {
+        DWORD err = GetLastError();
+        CloseHandle(volume_handle);
+        OS << "ERROR: Failed to get NTFS volume data (error " << err << ")\n";
+        return static_cast<int>(err);
+    }
+
+    OS << "Volume Information:\n";
+    OS << "  BytesPerSector: " << volume_data.BytesPerSector << "\n";
+    OS << "  BytesPerCluster: " << volume_data.BytesPerCluster << "\n";
+    OS << "  BytesPerFileRecordSegment: " << volume_data.BytesPerFileRecordSegment << "\n";
+    OS << "  MftValidDataLength: " << volume_data.MftValidDataLength.QuadPart << "\n";
+    OS << "  MftStartLcn: " << volume_data.MftStartLcn.QuadPart << "\n\n";
+
+    // Build $MFT path for retrieval pointers
+    std::wstring mft_path = L"\\\\.\\";
+    mft_path += static_cast<wchar_t>(toupper(drive_letter));
+    mft_path += L":\\$MFT";
+
+    // Get MFT extents using get_retrieval_pointers
+    long long mft_size = 0;
+    std::vector<std::pair<unsigned long long, long long>> ret_ptrs;
+
+    try {
+        std::tstring mft_path_t;
+        mft_path_t = drive_letter;
+        mft_path_t += _T(":\\$MFT");
+        ret_ptrs = get_retrieval_pointers(mft_path_t.c_str(), &mft_size,
+            volume_data.MftStartLcn.QuadPart, volume_data.BytesPerFileRecordSegment);
+    } catch (...) {
+        CloseHandle(volume_handle);
+        OS << "ERROR: Failed to get MFT retrieval pointers\n";
+        return ERROR_READ_FAULT;
+    }
+
+    if (ret_ptrs.empty()) {
+        CloseHandle(volume_handle);
+        OS << "ERROR: No MFT extents found\n";
+        return ERROR_READ_FAULT;
+    }
+
+    OS << "MFT Extents: " << ret_ptrs.size() << "\n";
+    OS << "MFT Size: " << mft_size << " bytes\n";
+
+    // Calculate record count
+    uint32_t record_size = volume_data.BytesPerFileRecordSegment;
+    uint64_t record_count = static_cast<uint64_t>(mft_size) / record_size;
+    uint64_t total_bytes = record_count * record_size;
+
+    OS << "Record Size: " << record_size << " bytes\n";
+    OS << "Record Count: " << record_count << "\n";
+    OS << "Total Bytes to Write: " << total_bytes << "\n\n";
+
+    // Open output file
+    HANDLE out_handle = CreateFileA(
+        output_path,
+        GENERIC_WRITE,
+        0,
+        NULL,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        NULL
+    );
+
+    if (out_handle == INVALID_HANDLE_VALUE) {
+        DWORD err = GetLastError();
+        CloseHandle(volume_handle);
+        OS << "ERROR: Failed to create output file (error " << err << ")\n";
+        return static_cast<int>(err);
+    }
+
+    // Write UFFS-MFT header
+    UffsMftHeader header = {};
+    memcpy(header.magic, "UFFS-MFT", 8);
+    header.version = 1;
+    header.flags = 0;  // No compression
+    header.record_size = record_size;
+    header.record_count = record_count;
+    header.original_size = total_bytes;
+    header.compressed_size = 0;
+    memset(header.reserved, 0, sizeof(header.reserved));
+
+    DWORD written = 0;
+    if (!WriteFile(out_handle, &header, sizeof(header), &written, NULL) || written != sizeof(header)) {
+        DWORD err = GetLastError();
+        CloseHandle(out_handle);
+        CloseHandle(volume_handle);
+        OS << "ERROR: Failed to write header (error " << err << ")\n";
+        return static_cast<int>(err);
+    }
+
+    OS << "Reading MFT data...\n";
+
+    // Read MFT data extent by extent
+    uint64_t bytes_written = 0;
+    uint64_t cluster_size = volume_data.BytesPerCluster;
+
+    // Allocate aligned read buffer (must be sector-aligned for FILE_FLAG_NO_BUFFERING)
+    size_t buffer_size = 1024 * 1024;  // 1MB buffer
+    // Align to sector size
+    buffer_size = (buffer_size / volume_data.BytesPerSector) * volume_data.BytesPerSector;
+    std::vector<unsigned char> read_buffer(buffer_size);
+
+    unsigned long long prev_vcn = 0;
+    for (size_t i = 0; i < ret_ptrs.size(); ++i) {
+        unsigned long long next_vcn = ret_ptrs[i].first;
+        long long lcn = ret_ptrs[i].second;
+
+        // Calculate cluster count for this extent
+        unsigned long long cluster_count = next_vcn - prev_vcn;
+        if (cluster_count == 0) continue;
+
+        // Calculate byte offset and length
+        long long byte_offset = lcn * static_cast<long long>(cluster_size);
+        unsigned long long byte_length = cluster_count * cluster_size;
+
+        // Read in chunks
+        unsigned long long extent_bytes_read = 0;
+        while (extent_bytes_read < byte_length && bytes_written < total_bytes) {
+            // Seek to position
+            LARGE_INTEGER seek_pos;
+            seek_pos.QuadPart = byte_offset + static_cast<long long>(extent_bytes_read);
+            if (!SetFilePointerEx(volume_handle, seek_pos, NULL, FILE_BEGIN)) {
+                DWORD err = GetLastError();
+                CloseHandle(out_handle);
+                CloseHandle(volume_handle);
+                OS << "ERROR: Failed to seek (error " << err << ")\n";
+                return static_cast<int>(err);
+            }
+
+            // Calculate how much to read
+            unsigned long long remaining_in_extent = byte_length - extent_bytes_read;
+            unsigned long long remaining_total = total_bytes - bytes_written;
+            size_t to_read = static_cast<size_t>(std::min({
+                static_cast<unsigned long long>(buffer_size),
+                remaining_in_extent,
+                remaining_total
+            }));
+            // Align to sector size for reading
+            to_read = (to_read / volume_data.BytesPerSector) * volume_data.BytesPerSector;
+            if (to_read == 0) to_read = volume_data.BytesPerSector;
+
+            DWORD bytes_read = 0;
+            if (!ReadFile(volume_handle, read_buffer.data(), static_cast<DWORD>(to_read), &bytes_read, NULL)) {
+                DWORD err = GetLastError();
+                CloseHandle(out_handle);
+                CloseHandle(volume_handle);
+                OS << "ERROR: Failed to read from volume (error " << err << ")\n";
+                return static_cast<int>(err);
+            }
+
+            // Write to output (may need to trim to not exceed total_bytes)
+            size_t to_write = static_cast<size_t>(std::min(
+                static_cast<unsigned long long>(bytes_read),
+                total_bytes - bytes_written
+            ));
+
+            DWORD out_written = 0;
+            if (!WriteFile(out_handle, read_buffer.data(), static_cast<DWORD>(to_write), &out_written, NULL)) {
+                DWORD err = GetLastError();
+                CloseHandle(out_handle);
+                CloseHandle(volume_handle);
+                OS << "ERROR: Failed to write to output (error " << err << ")\n";
+                return static_cast<int>(err);
+            }
+
+            bytes_written += out_written;
+            extent_bytes_read += bytes_read;
+
+            // Progress indicator
+            if ((bytes_written % (100 * 1024 * 1024)) == 0) {
+                OS << "  Progress: " << (bytes_written / (1024 * 1024)) << " MB / "
+                   << (total_bytes / (1024 * 1024)) << " MB\n";
+            }
+        }
+
+        prev_vcn = next_vcn;
+    }
+
+    CloseHandle(out_handle);
+    CloseHandle(volume_handle);
+
+    OS << "\n=== Dump Complete ===\n";
+    OS << "Total extents: " << ret_ptrs.size() << "\n";
+    OS << "Total bytes written: " << bytes_written << "\n";
+    OS << "Record count: " << record_count << "\n";
+    OS << "Output file: " << output_path << "\n";
+
+    return 0;
+}
+
+// ============================================================================
+// End Raw MFT Dump Implementation
+// ============================================================================
+
 // Command Line Version
 //int _tmain(int argc, TCHAR *argv[])
 using namespace llvm;
@@ -12180,6 +12438,18 @@ int main(int argc, char* argv[])
 		temp_string8 = "Bypass User Access Control (UAC) \t\t\tDEFAULT: False";
 		static cl::opt<bool> uac("pass", cl::desc(temp_string8), cl::value_desc("bool"), cl::init(false), cl::cat(FiltersOptions), cl::ReallyHidden);
 
+		// Raw MFT dump option (UFFS-MFT format)
+		static cl::opt<std::string> dumpMftDrive("dump-mft",
+			cl::desc("Dump raw MFT to file in UFFS-MFT format. Usage: --dump-mft=<drive_letter> --dump-mft-out=<output_file>"),
+			cl::value_desc("drive_letter"),
+			cl::cat(OutputOptions));
+
+		static cl::opt<std::string> dumpMftOutput("dump-mft-out",
+			cl::desc("Output file path for raw MFT dump"),
+			cl::value_desc("file_path"),
+			cl::init("mft_dump.raw"),
+			cl::cat(OutputOptions));
+
 		//cl::AddExtraVersionPrinter(PrintVersion);
 
 		static cl::bits<File_Attributes> output_columns("columns",
@@ -12265,6 +12535,22 @@ int main(int argc, char* argv[])
 			"\t\tThe entire file system can be quickly sorted by name, size \n"
 			"\t\tor date.Ultra Fast File Search supports all types of hard \n"
 			"\t\tdrives, hard drive folders and network shares\n\n");
+
+		// Handle --dump-mft option (raw MFT dump in UFFS-MFT format)
+		if (dumpMftDrive.getNumOccurrences() > 0) {
+			std::string drive_str = dumpMftDrive.getValue();
+			if (drive_str.empty()) {
+				OS << "ERROR: --dump-mft requires a drive letter (e.g., --dump-mft=C)\n";
+				return ERROR_BAD_ARGUMENTS;
+			}
+			char drive_letter = drive_str[0];
+			if (!isalpha(drive_letter)) {
+				OS << "ERROR: Invalid drive letter: " << drive_str << "\n";
+				return ERROR_BAD_ARGUMENTS;
+			}
+			std::string output_file = dumpMftOutput.getValue();
+			return dump_raw_mft(drive_letter, output_file.c_str(), OS);
+		}
 
 		//OS << "\n Done reading arguments \n";
 
