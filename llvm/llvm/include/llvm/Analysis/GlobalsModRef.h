@@ -83,9 +83,6 @@ public:
   GlobalsAAResult(GlobalsAAResult &&Arg);
   ~GlobalsAAResult();
 
-  bool invalidate(Module &M, const PreservedAnalyses &PA,
-                  ModuleAnalysisManager::Invalidator &);
-
   static GlobalsAAResult
   analyzeModule(Module &M,
                 std::function<const TargetLibraryInfo &(Function &F)> GetTLI,

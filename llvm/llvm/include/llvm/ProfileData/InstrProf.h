@@ -23,7 +23,6 @@
 #include "llvm/IR/GlobalValue.h"
 #include "llvm/IR/ProfileSummary.h"
 #include "llvm/ProfileData/InstrProfData.inc"
-#include "llvm/Support/CommandLine.h"
 #include "llvm/Support/Compiler.h"
 #include "llvm/Support/Endian.h"
 #include "llvm/Support/Error.h"
@@ -152,10 +151,6 @@ inline StringRef getInstrProfRuntimeHookVarName() {
 /// runtime hook variable. The function is a weak global.
 inline StringRef getInstrProfRuntimeHookVarUseFuncName() {
   return "__llvm_profile_runtime_user";
-}
-
-inline StringRef getInstrProfCounterBiasVarName() {
-  return "__llvm_profile_counter_bias";
 }
 
 /// Return the marker used to separate PGO names during serialization.
@@ -563,7 +558,7 @@ StringRef InstrProfSymtab::getFuncName(uint64_t FuncMD5Hash) {
   finalizeSymtab();
   auto Result =
       std::lower_bound(MD5NameMap.begin(), MD5NameMap.end(), FuncMD5Hash,
-                       [](const std::pair<uint64_t, StringRef> &LHS,
+                       [](const std::pair<uint64_t, std::string> &LHS,
                           uint64_t RHS) { return LHS.first < RHS; });
   if (Result != MD5NameMap.end() && Result->first == FuncMD5Hash)
     return Result->second;
@@ -1139,10 +1134,6 @@ void createIRLevelProfileFlagVar(Module &M, bool IsCS);
 
 // Create the variable for the profile file name.
 void createProfileFileNameVar(Module &M, StringRef InstrProfileOutput);
-
-// Whether to compress function names in profile records, and filenames in
-// code coverage mappings. Used by the Instrumentation library and unit tests.
-extern cl::opt<bool> DoInstrProfNameCompression;
 
 } // end namespace llvm
 #endif // LLVM_PROFILEDATA_INSTRPROF_H

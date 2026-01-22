@@ -96,10 +96,12 @@ public:
   }
 
   /// Forward dereference to the underlying iterator.
-  decltype(auto) operator*() { return *I; }
+  auto operator*() -> decltype(*std::declval<Underlying>()) { return *I; }
 
   /// Forward const dereference to the underlying iterator.
-  decltype(auto) operator*() const { return *I; }
+  auto operator*() const -> decltype(*std::declval<const Underlying>()) {
+    return *I;
+  }
 
   /// Forward structure dereference to the underlying iterator (if the
   /// underlying iterator supports it).

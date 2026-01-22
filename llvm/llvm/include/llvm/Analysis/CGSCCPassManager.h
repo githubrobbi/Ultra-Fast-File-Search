@@ -95,6 +95,7 @@
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Analysis/LazyCallGraph.h"
+#include "llvm/IR/CallSite.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/InstIterator.h"
 #include "llvm/IR/PassManager.h"
@@ -417,16 +418,6 @@ LazyCallGraph::SCC &updateCGAndAnalysisManagerForFunctionPass(
     LazyCallGraph &G, LazyCallGraph::SCC &C, LazyCallGraph::Node &N,
     CGSCCAnalysisManager &AM, CGSCCUpdateResult &UR);
 
-/// Helper to update the call graph after running a CGSCC pass.
-///
-/// CGSCC passes can only mutate the call graph in specific ways. This
-/// routine provides a helper that updates the call graph in those ways
-/// including returning whether any changes were made and populating a CG
-/// update result struct for the overall CGSCC walk.
-LazyCallGraph::SCC &updateCGAndAnalysisManagerForCGSCCPass(
-    LazyCallGraph &G, LazyCallGraph::SCC &C, LazyCallGraph::Node &N,
-    CGSCCAnalysisManager &AM, CGSCCUpdateResult &UR);
-
 /// Adaptor that maps from a SCC to its functions.
 ///
 /// Designed to allow composition of a FunctionPass(Manager) and
@@ -493,11 +484,7 @@ public:
       if (!PI.runBeforePass<Function>(Pass, F))
         continue;
 
-      PreservedAnalyses PassPA;
-      {
-        TimeTraceScope TimeScope(Pass.name());
-        PassPA = Pass.run(F, FAM);
-      }
+      PreservedAnalyses PassPA = Pass.run(F, FAM);
 
       PI.runAfterPass<Function>(Pass, F);
 
@@ -604,8 +591,8 @@ public:
             CallCounts.insert(std::make_pair(&N.getFunction(), CountLocal))
                 .first->second;
         for (Instruction &I : instructions(N.getFunction()))
-          if (auto *CB = dyn_cast<CallBase>(&I)) {
-            if (CB->getCalledFunction()) {
+          if (auto CS = CallSite(&I)) {
+            if (CS.getCalledFunction()) {
               ++Count.Direct;
             } else {
               ++Count.Indirect;
@@ -647,17 +634,17 @@ public:
       auto IsDevirtualizedHandle = [&](WeakTrackingVH &CallH) {
         if (!CallH)
           return false;
-        auto *CB = dyn_cast<CallBase>(CallH);
-        if (!CB)
+        auto CS = CallSite(CallH);
+        if (!CS)
           return false;
 
         // If the call is still indirect, leave it alone.
-        Function *F = CB->getCalledFunction();
+        Function *F = CS.getCalledFunction();
         if (!F)
           return false;
 
         LLVM_DEBUG(dbgs() << "Found devirtualized call from "
-                          << CB->getParent()->getParent()->getName() << " to "
+                          << CS.getParent()->getParent()->getName() << " to "
                           << F->getName() << "\n");
 
         // We now have a direct call where previously we had an indirect call,
@@ -873,11 +860,7 @@ ModuleToPostOrderCGSCCPassAdaptor<CGSCCPassT>::run(Module &M,
           if (!PI.runBeforePass<LazyCallGraph::SCC>(Pass, *C))
             continue;
 
-          PreservedAnalyses PassPA;
-          {
-            TimeTraceScope TimeScope(Pass.name());
-            PassPA = Pass.run(*C, CGAM, CG, UR);
-          }
+          PreservedAnalyses PassPA = Pass.run(*C, CGAM, CG, UR);
 
           if (UR.InvalidatedSCCs.count(C))
             PI.runAfterPassInvalidated<LazyCallGraph::SCC>(Pass);

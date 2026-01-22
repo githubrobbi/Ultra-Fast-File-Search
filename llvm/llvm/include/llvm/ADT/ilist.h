@@ -198,12 +198,10 @@ public:
   iplist_impl &operator=(const iplist_impl &) = delete;
 
   iplist_impl(iplist_impl &&X)
-      : TraitsT(std::move(static_cast<TraitsT &>(X))),
-        IntrusiveListT(std::move(static_cast<IntrusiveListT &>(X))) {}
+      : TraitsT(std::move(X)), IntrusiveListT(std::move(X)) {}
   iplist_impl &operator=(iplist_impl &&X) {
-    *static_cast<TraitsT *>(this) = std::move(static_cast<TraitsT &>(X));
-    *static_cast<IntrusiveListT *>(this) =
-        std::move(static_cast<IntrusiveListT &>(X));
+    *static_cast<TraitsT *>(this) = std::move(X);
+    *static_cast<IntrusiveListT *>(this) = std::move(X);
     return *this;
   }
 

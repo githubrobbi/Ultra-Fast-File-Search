@@ -135,9 +135,6 @@ namespace llvm {
     ///                              profile collection.
     /// \param NameTableKind  Whether to emit .debug_gnu_pubnames,
     ///                      .debug_pubnames, or no pubnames at all.
-    /// \param SysRoot       The clang system root (value of -isysroot).
-    /// \param SDK           The SDK name. On Darwin, this is the last component
-    ///                      of the sysroot.
     DICompileUnit *
     createCompileUnit(unsigned Lang, DIFile *File, StringRef Producer,
                       bool isOptimized, StringRef Flags, unsigned RV,
@@ -148,8 +145,7 @@ namespace llvm {
                       bool DebugInfoForProfiling = false,
                       DICompileUnit::DebugNameTableKind NameTableKind =
                           DICompileUnit::DebugNameTableKind::Default,
-                      bool RangesBaseAddress = false, StringRef SysRoot = {},
-                      StringRef SDK = {});
+                      bool RangesBaseAddress = false);
 
     /// Create a file descriptor to hold debugging information for a file.
     /// \param Filename  File name.
@@ -446,22 +442,19 @@ namespace llvm {
     /// \param Scope        Scope in which this type is defined.
     /// \param Name         Type parameter name.
     /// \param Ty           Parameter type.
-    /// \param IsDefault    Parameter is default or not
-    DITemplateTypeParameter *createTemplateTypeParameter(DIScope *Scope,
-                                                         StringRef Name,
-                                                         DIType *Ty,
-                                                         bool IsDefault);
+    DITemplateTypeParameter *
+    createTemplateTypeParameter(DIScope *Scope, StringRef Name, DIType *Ty);
 
     /// Create debugging information for template
     /// value parameter.
     /// \param Scope        Scope in which this type is defined.
     /// \param Name         Value parameter name.
     /// \param Ty           Parameter type.
-    /// \param IsDefault    Parameter is default or not
     /// \param Val          Constant parameter value.
-    DITemplateValueParameter *
-    createTemplateValueParameter(DIScope *Scope, StringRef Name, DIType *Ty,
-                                 bool IsDefault, Constant *Val);
+    DITemplateValueParameter *createTemplateValueParameter(DIScope *Scope,
+                                                           StringRef Name,
+                                                           DIType *Ty,
+                                                           Constant *Val);
 
     /// Create debugging information for a template template parameter.
     /// \param Scope        Scope in which this type is defined.
@@ -741,10 +734,11 @@ namespace llvm {
     ///                    A space-separated shell-quoted list of -D macro
     ///                    definitions as they would appear on a command line.
     /// \param IncludePath The path to the module map file.
-    /// \param APINotesFile The path to an API notes file for this module.
+    /// \param SysRoot     The clang system root (value of -isysroot).
     DIModule *createModule(DIScope *Scope, StringRef Name,
                            StringRef ConfigurationMacros,
-                           StringRef IncludePath, StringRef APINotesFile = {});
+                           StringRef IncludePath,
+                           StringRef SysRoot);
 
     /// This creates a descriptor for a lexical block with a new file
     /// attached. This merely extends the existing

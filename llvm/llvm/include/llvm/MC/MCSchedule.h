@@ -14,6 +14,7 @@
 #ifndef LLVM_MC_MCSCHEDULE_H
 #define LLVM_MC_MCSCHEDULE_H
 
+#include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/Optional.h"
 #include "llvm/Config/llvm-config.h"
 #include "llvm/Support/DataTypes.h"
@@ -21,7 +22,6 @@
 
 namespace llvm {
 
-template <typename T> class ArrayRef;
 struct InstrItinerary;
 class MCSubtargetInfo;
 class MCInstrInfo;

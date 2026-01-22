@@ -15,14 +15,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if !defined(LLVM_PASS_H) || defined(LLVM_PASSANALYSISSUPPORT_H)
-#error "Do not include <PassAnalysisSupport.h>; include <Pass.h> instead"
-#endif 
-
 #ifndef LLVM_PASSANALYSISSUPPORT_H
 #define LLVM_PASSANALYSISSUPPORT_H
 
+#include "Pass.h"
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/StringRef.h"
 #include <cassert>
 #include <utility>
 #include <vector>
@@ -32,7 +30,6 @@ namespace llvm {
 class Function;
 class Pass;
 class PMDataManager;
-class StringRef;
 
 //===----------------------------------------------------------------------===//
 /// Represent the analysis usage information of a pass.  This tracks analyses

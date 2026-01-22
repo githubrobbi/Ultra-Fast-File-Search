@@ -14,6 +14,7 @@
 #ifndef LLVM_ANALYSIS_UTILS_LOCAL_H
 #define LLVM_ANALYSIS_UTILS_LOCAL_H
 
+#include "llvm/ADT/Twine.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/GetElementPtrTypeIterator.h"
 
@@ -62,8 +63,7 @@ Value *EmitGEPOffset(IRBuilderTy *Builder, const DataLayout &DL, User *GEP,
 
       // Splat the constant if needed.
       if (IntIdxTy->isVectorTy() && !OpC->getType()->isVectorTy())
-        OpC = ConstantVector::getSplat(
-            cast<VectorType>(IntIdxTy)->getElementCount(), OpC);
+        OpC = ConstantVector::getSplat(IntIdxTy->getVectorNumElements(), OpC);
 
       Constant *Scale = ConstantInt::get(IntIdxTy, Size);
       Constant *OC = ConstantExpr::getIntegerCast(OpC, IntIdxTy, true /*SExt*/);
@@ -76,8 +76,7 @@ Value *EmitGEPOffset(IRBuilderTy *Builder, const DataLayout &DL, User *GEP,
 
     // Splat the index if needed.
     if (IntIdxTy->isVectorTy() && !Op->getType()->isVectorTy())
-      Op = Builder->CreateVectorSplat(
-          cast<VectorType>(IntIdxTy)->getNumElements(), Op);
+      Op = Builder->CreateVectorSplat(IntIdxTy->getVectorNumElements(), Op);
 
     // Convert to correct type.
     if (Op->getType() != IntIdxTy)

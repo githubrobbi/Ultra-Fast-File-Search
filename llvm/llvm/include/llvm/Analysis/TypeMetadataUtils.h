@@ -15,7 +15,7 @@
 #define LLVM_ANALYSIS_TYPEMETADATAUTILS_H
 
 #include "llvm/ADT/SmallVector.h"
-#include "llvm/IR/Instructions.h"
+#include "llvm/IR/CallSite.h"
 
 namespace llvm {
 
@@ -33,7 +33,7 @@ struct DevirtCallSite {
   /// The offset from the address point to the virtual function.
   uint64_t Offset;
   /// The call site itself.
-  CallBase &CB;
+  CallSite CS;
 };
 
 /// Given a call to the intrinsic \@llvm.type.test, find all devirtualizable

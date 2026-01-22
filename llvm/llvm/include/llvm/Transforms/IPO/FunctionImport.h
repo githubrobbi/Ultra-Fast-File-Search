@@ -105,10 +105,8 @@ public:
       std::function<Expected<std::unique_ptr<Module>>(StringRef Identifier)>;
 
   /// Create a Function Importer.
-  FunctionImporter(const ModuleSummaryIndex &Index, ModuleLoaderTy ModuleLoader,
-                   bool ClearDSOLocalOnDeclarations)
-      : Index(Index), ModuleLoader(std::move(ModuleLoader)),
-        ClearDSOLocalOnDeclarations(ClearDSOLocalOnDeclarations) {}
+  FunctionImporter(const ModuleSummaryIndex &Index, ModuleLoaderTy ModuleLoader)
+      : Index(Index), ModuleLoader(std::move(ModuleLoader)) {}
 
   /// Import functions in Module \p M based on the supplied import list.
   Expected<bool> importFunctions(Module &M, const ImportMapTy &ImportList);
@@ -119,10 +117,6 @@ private:
 
   /// Factory function to load a Module for a given identifier
   ModuleLoaderTy ModuleLoader;
-
-  /// See the comment of ClearDSOLocalOnDeclarations in
-  /// Utils/FunctionImportUtils.h.
-  bool ClearDSOLocalOnDeclarations;
 };
 
 /// The function importing pass

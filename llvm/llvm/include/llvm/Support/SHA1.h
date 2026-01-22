@@ -15,12 +15,14 @@
 #ifndef LLVM_SUPPORT_SHA1_H
 #define LLVM_SUPPORT_SHA1_H
 
+#include "llvm/ADT/ArrayRef.h"
+#include "llvm/ADT/StringRef.h"
+
 #include <array>
 #include <cstdint>
 
 namespace llvm {
 template <typename T> class ArrayRef;
-class StringRef;
 
 /// A class that wrap the SHA1 algorithm.
 class SHA1 {
@@ -34,7 +36,10 @@ public:
   void update(ArrayRef<uint8_t> Data);
 
   /// Digest more data.
-  void update(StringRef Str);
+  void update(StringRef Str) {
+    update(ArrayRef<uint8_t>((uint8_t *)const_cast<char *>(Str.data()),
+                             Str.size()));
+  }
 
   /// Return a reference to the current raw 160-bits SHA1 for the digested data
   /// since the last call to init(). This call will add data to the internal

@@ -30,7 +30,6 @@
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/CodeGen/ISDOpcodes.h"
 #include "llvm/CodeGen/MachineMemOperand.h"
-#include "llvm/CodeGen/Register.h"
 #include "llvm/CodeGen/ValueTypes.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DebugLoc.h"
@@ -369,6 +368,7 @@ private:
   bool NoInfs : 1;
   bool NoSignedZeros : 1;
   bool AllowReciprocal : 1;
+  bool VectorReduction : 1;
   bool AllowContract : 1;
   bool ApproximateFuncs : 1;
   bool AllowReassociation : 1;
@@ -385,7 +385,7 @@ public:
   SDNodeFlags()
       : AnyDefined(false), NoUnsignedWrap(false), NoSignedWrap(false),
         Exact(false), NoNaNs(false), NoInfs(false),
-        NoSignedZeros(false), AllowReciprocal(false),
+        NoSignedZeros(false), AllowReciprocal(false), VectorReduction(false),
         AllowContract(false), ApproximateFuncs(false),
         AllowReassociation(false), NoFPExcept(false) {}
 
@@ -434,6 +434,10 @@ public:
     setDefined();
     AllowReciprocal = b;
   }
+  void setVectorReduction(bool b) {
+    setDefined();
+    VectorReduction = b;
+  }
   void setAllowContract(bool b) {
     setDefined();
     AllowContract = b;
@@ -459,10 +463,16 @@ public:
   bool hasNoInfs() const { return NoInfs; }
   bool hasNoSignedZeros() const { return NoSignedZeros; }
   bool hasAllowReciprocal() const { return AllowReciprocal; }
+  bool hasVectorReduction() const { return VectorReduction; }
   bool hasAllowContract() const { return AllowContract; }
   bool hasApproximateFuncs() const { return ApproximateFuncs; }
   bool hasAllowReassociation() const { return AllowReassociation; }
   bool hasNoFPExcept() const { return NoFPExcept; }
+
+  bool isFast() const {
+    return NoSignedZeros && AllowReciprocal && NoNaNs && NoInfs && NoFPExcept &&
+           AllowContract && ApproximateFuncs && AllowReassociation;
+  }
 
   /// Clear any flags in this flag set that aren't also set in Flags.
   /// If the given Flags are undefined then don't do anything.
@@ -476,6 +486,7 @@ public:
     NoInfs &= Flags.NoInfs;
     NoSignedZeros &= Flags.NoSignedZeros;
     AllowReciprocal &= Flags.AllowReciprocal;
+    VectorReduction &= Flags.VectorReduction;
     AllowContract &= Flags.AllowContract;
     ApproximateFuncs &= Flags.ApproximateFuncs;
     AllowReassociation &= Flags.AllowReassociation;
@@ -690,9 +701,7 @@ public:
     switch (NodeType) {
       default:
         return false;
-      case ISD::STRICT_FP16_TO_FP:
-      case ISD::STRICT_FP_TO_FP16:
-#define DAG_INSTRUCTION(NAME, NARG, ROUND_MODE, INTRINSIC, DAGN)               \
+#define INSTRUCTION(NAME, NARG, ROUND_MODE, INTRINSIC, DAGN)                   \
       case ISD::STRICT_##DAGN:
 #include "llvm/IR/ConstrainedOps.def"
         return true;
@@ -979,6 +988,7 @@ public:
 
   const SDNodeFlags getFlags() const { return Flags; }
   void setFlags(SDNodeFlags NewFlags) { Flags = NewFlags; }
+  bool isFast() { return Flags.isFast(); }
 
   /// Clear any flags in this node that aren't also set in Flags.
   /// If Flags is not in a defined state then this has no effect.
@@ -1011,9 +1021,6 @@ public:
 
   value_iterator value_begin() const { return ValueList; }
   value_iterator value_end() const { return ValueList+NumValues; }
-  iterator_range<value_iterator> values() const {
-    return llvm::make_range(value_begin(), value_end());
-  }
 
   /// Return the opcode of this operation for printing.
   std::string getOperationName(const SelectionDAG *G = nullptr) const;
@@ -1293,14 +1300,12 @@ public:
   bool writeMem() const { return MMO->isStore(); }
 
   /// Returns alignment and volatility of the memory access
-  Align getOriginalAlign() const { return MMO->getBaseAlign(); }
-  Align getAlign() const { return MMO->getAlign(); }
-  LLVM_ATTRIBUTE_DEPRECATED(unsigned getOriginalAlignment() const,
-                            "Use getOriginalAlign() instead") {
-    return MMO->getBaseAlign().value();
+  unsigned getOriginalAlignment() const {
+    return MMO->getBaseAlignment();
   }
-  // FIXME: Remove once transition to getAlign is over.
-  unsigned getAlignment() const { return MMO->getAlign().value(); }
+  unsigned getAlignment() const {
+    return MMO->getAlignment();
+  }
 
   /// Return the SubclassData value, without HasDebugValue. This contains an
   /// encoding of the volatile flag, as well as bits used by subclasses. This
@@ -2035,13 +2040,13 @@ public:
 class RegisterSDNode : public SDNode {
   friend class SelectionDAG;
 
-  Register Reg;
+  unsigned Reg;
 
-  RegisterSDNode(Register reg, EVT VT)
+  RegisterSDNode(unsigned reg, EVT VT)
     : SDNode(ISD::Register, 0, DebugLoc(), getSDVTList(VT)), Reg(reg) {}
 
 public:
-  Register getReg() const { return Reg; }
+  unsigned getReg() const { return Reg; }
 
   static bool classof(const SDNode *N) {
     return N->getOpcode() == ISD::Register;
@@ -2670,16 +2675,6 @@ namespace ISD {
       SDValue LHS, SDValue RHS,
       std::function<bool(ConstantSDNode *, ConstantSDNode *)> Match,
       bool AllowUndefs = false, bool AllowTypeMismatch = false);
-
-  /// Returns true if the specified value is the overflow result from one
-  /// of the overflow intrinsic nodes.
-  inline bool isOverflowIntrOpRes(SDValue Op) {
-    unsigned Opc = Op.getOpcode();
-    return (Op.getResNo() == 1 &&
-            (Opc == ISD::SADDO || Opc == ISD::UADDO || Opc == ISD::SSUBO ||
-             Opc == ISD::USUBO || Opc == ISD::SMULO || Opc == ISD::UMULO));
-  }
-
 } // end namespace ISD
 
 } // end namespace llvm

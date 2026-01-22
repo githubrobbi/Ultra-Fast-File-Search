@@ -90,7 +90,6 @@ class JumpThreadingPass : public PassInfoMixin<JumpThreadingPass> {
 #endif
 
   unsigned BBDupThreshold;
-  unsigned DefaultBBDupThreshold;
 
 public:
   JumpThreadingPass(int T = -1);
@@ -128,22 +127,18 @@ public:
   bool ComputeValueKnownInPredecessorsImpl(
       Value *V, BasicBlock *BB, jumpthreading::PredValueInfo &Result,
       jumpthreading::ConstantPreference Preference,
-      DenseSet<Value *> &RecursionSet, Instruction *CxtI = nullptr);
+      DenseSet<std::pair<Value *, BasicBlock *>> &RecursionSet,
+      Instruction *CxtI = nullptr);
   bool
   ComputeValueKnownInPredecessors(Value *V, BasicBlock *BB,
                                   jumpthreading::PredValueInfo &Result,
                                   jumpthreading::ConstantPreference Preference,
                                   Instruction *CxtI = nullptr) {
-    DenseSet<Value *> RecursionSet;
+    DenseSet<std::pair<Value *, BasicBlock *>> RecursionSet;
     return ComputeValueKnownInPredecessorsImpl(V, BB, Result, Preference,
                                                RecursionSet, CxtI);
   }
 
-  Constant *EvaluateOnPredecessorEdge(BasicBlock *BB, BasicBlock *PredPredBB,
-                                      Value *cond);
-  bool MaybeThreadThroughTwoBasicBlocks(BasicBlock *BB, Value *Cond);
-  void ThreadThroughTwoBasicBlocks(BasicBlock *PredPredBB, BasicBlock *PredBB,
-                                   BasicBlock *BB, BasicBlock *SuccBB);
   bool ProcessThreadableEdges(Value *Cond, BasicBlock *BB,
                               jumpthreading::ConstantPreference Preference,
                               Instruction *CxtI = nullptr);

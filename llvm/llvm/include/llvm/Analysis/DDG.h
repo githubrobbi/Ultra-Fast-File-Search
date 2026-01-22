@@ -104,8 +104,6 @@ public:
 
 /// Subclass of DDGNode representing single or multi-instruction nodes.
 class SimpleDDGNode : public DDGNode {
-  friend class DDGBuilder;
-
 public:
   SimpleDDGNode() = delete;
   SimpleDDGNode(Instruction &I);
@@ -390,12 +388,6 @@ public:
     return PiNode->getNodes();
   }
 
-  /// Return true if the two nodes \pSrc and \pTgt are both simple nodes and
-  /// the consecutive instructions after merging belong to the same basic block.
-  bool areNodesMergeable(const DDGNode &Src,
-                         const DDGNode &Tgt) const final override;
-  void mergeNodes(DDGNode &Src, DDGNode &Tgt) final override;
-  bool shouldSimplify() const final override;
   bool shouldCreatePiBlocks() const final override;
 };
 

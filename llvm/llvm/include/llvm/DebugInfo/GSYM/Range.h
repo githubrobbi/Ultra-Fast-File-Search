@@ -9,7 +9,6 @@
 #ifndef LLVM_DEBUGINFO_GSYM_RANGE_H
 #define LLVM_DEBUGINFO_GSYM_RANGE_H
 
-#include "llvm/ADT/Optional.h"
 #include "llvm/Support/Format.h"
 #include "llvm/Support/raw_ostream.h"
 #include <stdint.h>
@@ -90,7 +89,6 @@ public:
   bool empty() const { return Ranges.empty(); }
   bool contains(uint64_t Addr) const;
   bool contains(AddressRange Range) const;
-  Optional<AddressRange> getRangeThatContains(uint64_t Addr) const;
   void insert(AddressRange Range);
   size_t size() const { return Ranges.size(); }
   bool operator==(const AddressRanges &RHS) const {

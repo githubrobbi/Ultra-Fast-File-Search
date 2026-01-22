@@ -26,6 +26,7 @@
 #include "llvm/ADT/PointerIntPair.h"
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/IR/CallSite.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/InstVisitor.h"
@@ -294,9 +295,9 @@ protected:
 
   // Generically, arguments to calls and invokes escape the pointer to some
   // other function. Mark that.
-  void visitCallBase(CallBase &CB) {
-    PI.setEscaped(&CB);
-    Base::visitCallBase(CB);
+  void visitCallSite(CallSite CS) {
+    PI.setEscaped(CS.getInstruction());
+    Base::visitCallSite(CS);
   }
 };
 

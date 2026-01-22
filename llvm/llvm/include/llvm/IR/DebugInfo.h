@@ -16,7 +16,6 @@
 #ifndef LLVM_IR_DEBUGINFO_H
 #define LLVM_IR_DEBUGINFO_H
 
-#include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/iterator_range.h"
@@ -24,8 +23,8 @@
 
 namespace llvm {
 
-class DbgVariableIntrinsic;
-class Instruction;
+class DbgDeclareInst;
+class DbgValueInst;
 class Module;
 
 /// Find subprogram that is enclosing this scope.
@@ -51,13 +50,6 @@ bool stripDebugInfo(Function &F);
 ///   All debug type metadata nodes are unreachable and garbage collected.
 bool stripNonLineTableDebugInfo(Module &M);
 
-/// Update the debug locations contained within the MD_loop metadata attached
-/// to the instruction \p I, if one exists. \p Updater is applied to each debug
-/// location in the MD_loop metadata: the returned value is included in the
-/// updated loop metadata node if it is non-null.
-void updateLoopMetadataDebugLocations(
-    Instruction &I, function_ref<DILocation *(const DILocation &)> Updater);
-
 /// Return Debug Info Metadata Version by checking module flags.
 unsigned getDebugMetadataVersionFromModule(const Module &M);
 
@@ -76,8 +68,10 @@ public:
   /// Process a single instruction and collect debug info anchors.
   void processInstruction(const Module &M, const Instruction &I);
 
-  /// Process DbgVariableIntrinsic.
-  void processVariable(const Module &M, const DbgVariableIntrinsic &DVI);
+  /// Process DbgDeclareInst.
+  void processDeclare(const Module &M, const DbgDeclareInst *DDI);
+  /// Process DbgValueInst.
+  void processValue(const Module &M, const DbgValueInst *DVI);
   /// Process debug info location.
   void processLocation(const Module &M, const DILocation *Loc);
 

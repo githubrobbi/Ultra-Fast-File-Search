@@ -21,7 +21,6 @@ namespace llvm {
 
 class LLVMContext;
 class Metadata;
-class raw_ostream;
 
 // The profile summary is one or more (Cutoff, MinCount, NumCounts) triplets.
 // The semantics of counts depend on the type of profile. For instrumentation
@@ -50,12 +49,6 @@ private:
   SummaryEntryVector DetailedSummary;
   uint64_t TotalCount, MaxCount, MaxInternalCount, MaxFunctionCount;
   uint32_t NumCounts, NumFunctions;
-  /// If 'Partial' is false, it means the profile being used to optimize
-  /// a target is collected from the same target.
-  /// If 'Partial' is true, it means the profile is for common/shared
-  /// code. The common profile is usually merged from profiles collected
-  /// from running other targets.
-  bool Partial = false;
   /// Return detailed summary as metadata.
   Metadata *getDetailedSummaryMD(LLVMContext &Context);
 
@@ -65,16 +58,15 @@ public:
   ProfileSummary(Kind K, SummaryEntryVector DetailedSummary,
                  uint64_t TotalCount, uint64_t MaxCount,
                  uint64_t MaxInternalCount, uint64_t MaxFunctionCount,
-                 uint32_t NumCounts, uint32_t NumFunctions,
-                 bool Partial = false)
+                 uint32_t NumCounts, uint32_t NumFunctions)
       : PSK(K), DetailedSummary(std::move(DetailedSummary)),
         TotalCount(TotalCount), MaxCount(MaxCount),
         MaxInternalCount(MaxInternalCount), MaxFunctionCount(MaxFunctionCount),
-        NumCounts(NumCounts), NumFunctions(NumFunctions), Partial(Partial) {}
+        NumCounts(NumCounts), NumFunctions(NumFunctions) {}
 
   Kind getKind() const { return PSK; }
   /// Return summary information as metadata.
-  Metadata *getMD(LLVMContext &Context, bool AddPartialField = true);
+  Metadata *getMD(LLVMContext &Context);
   /// Construct profile summary from metdata.
   static ProfileSummary *getFromMD(Metadata *MD);
   SummaryEntryVector &getDetailedSummary() { return DetailedSummary; }
@@ -84,10 +76,6 @@ public:
   uint64_t getTotalCount() { return TotalCount; }
   uint64_t getMaxCount() { return MaxCount; }
   uint64_t getMaxInternalCount() { return MaxInternalCount; }
-  void setPartialProfile(bool PP) { Partial = PP; }
-  bool isPartialProfile() { return Partial; }
-  void printSummary(raw_ostream &OS);
-  void printDetailedSummary(raw_ostream &OS);
 };
 
 } // end namespace llvm

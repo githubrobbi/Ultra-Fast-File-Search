@@ -214,7 +214,7 @@ public:
   }
 
   /// Return string stripped of flag.
-  static StringRef StripFlag(StringRef Feature) {
+  static std::string StripFlag(StringRef Feature) {
     return hasFlag(Feature) ? Feature.substr(1) : Feature;
   }
 

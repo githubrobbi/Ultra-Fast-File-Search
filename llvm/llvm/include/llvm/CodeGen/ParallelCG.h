@@ -14,14 +14,15 @@
 #define LLVM_CODEGEN_PARALLELCG_H
 
 #include "llvm/Support/CodeGen.h"
+#include "llvm/Target/TargetMachine.h"
+
 #include <functional>
-#include <memory>
 
 namespace llvm {
 
 template <typename T> class ArrayRef;
 class Module;
-class TargetMachine;
+class TargetOptions;
 class raw_pwrite_stream;
 
 /// Split M into OSs.size() partitions, and generate code for each. Takes a

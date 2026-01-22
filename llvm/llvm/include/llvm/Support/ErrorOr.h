@@ -56,25 +56,25 @@ template<class T>
 class ErrorOr {
   template <class OtherT> friend class ErrorOr;
 
-  static constexpr bool isRef = std::is_reference<T>::value;
+  static const bool isRef = std::is_reference<T>::value;
 
-  using wrap = std::reference_wrapper<std::remove_reference_t<T>>;
+  using wrap = std::reference_wrapper<typename std::remove_reference<T>::type>;
 
 public:
-  using storage_type = std::conditional_t<isRef, wrap, T>;
+  using storage_type = typename std::conditional<isRef, wrap, T>::type;
 
 private:
-  using reference = std::remove_reference_t<T> &;
-  using const_reference = const std::remove_reference_t<T> &;
-  using pointer = std::remove_reference_t<T> *;
-  using const_pointer = const std::remove_reference_t<T> *;
+  using reference = typename std::remove_reference<T>::type &;
+  using const_reference = const typename std::remove_reference<T>::type &;
+  using pointer = typename std::remove_reference<T>::type *;
+  using const_pointer = const typename std::remove_reference<T>::type *;
 
 public:
   template <class E>
   ErrorOr(E ErrorCode,
-          std::enable_if_t<std::is_error_code_enum<E>::value ||
-                               std::is_error_condition_enum<E>::value,
-                           void *> = nullptr)
+          typename std::enable_if<std::is_error_code_enum<E>::value ||
+                                      std::is_error_condition_enum<E>::value,
+                                  void *>::type = nullptr)
       : HasError(true) {
     new (getErrorStorage()) std::error_code(make_error_code(ErrorCode));
   }
@@ -85,7 +85,8 @@ public:
 
   template <class OtherT>
   ErrorOr(OtherT &&Val,
-          std::enable_if_t<std::is_convertible<OtherT, T>::value> * = nullptr)
+          typename std::enable_if<std::is_convertible<OtherT, T>::value>::type
+              * = nullptr)
       : HasError(false) {
     new (getStorage()) storage_type(std::forward<OtherT>(Val));
   }
@@ -95,16 +96,18 @@ public:
   }
 
   template <class OtherT>
-  ErrorOr(const ErrorOr<OtherT> &Other,
-          std::enable_if_t<std::is_convertible<OtherT, T>::value> * = nullptr) {
+  ErrorOr(
+      const ErrorOr<OtherT> &Other,
+      typename std::enable_if<std::is_convertible<OtherT, T>::value>::type * =
+          nullptr) {
     copyConstruct(Other);
   }
 
   template <class OtherT>
   explicit ErrorOr(
       const ErrorOr<OtherT> &Other,
-      std::enable_if_t<!std::is_convertible<OtherT, const T &>::value> * =
-          nullptr) {
+      typename std::enable_if<
+          !std::is_convertible<OtherT, const T &>::value>::type * = nullptr) {
     copyConstruct(Other);
   }
 
@@ -113,8 +116,10 @@ public:
   }
 
   template <class OtherT>
-  ErrorOr(ErrorOr<OtherT> &&Other,
-          std::enable_if_t<std::is_convertible<OtherT, T>::value> * = nullptr) {
+  ErrorOr(
+      ErrorOr<OtherT> &&Other,
+      typename std::enable_if<std::is_convertible<OtherT, T>::value>::type * =
+          nullptr) {
     moveConstruct(std::move(Other));
   }
 
@@ -123,7 +128,8 @@ public:
   template <class OtherT>
   explicit ErrorOr(
       ErrorOr<OtherT> &&Other,
-      std::enable_if_t<!std::is_convertible<OtherT, T>::value> * = nullptr) {
+      typename std::enable_if<!std::is_convertible<OtherT, T>::value>::type * =
+          nullptr) {
     moveConstruct(std::move(Other));
   }
 
@@ -260,9 +266,9 @@ private:
 };
 
 template <class T, class E>
-std::enable_if_t<std::is_error_code_enum<E>::value ||
-                     std::is_error_condition_enum<E>::value,
-                 bool>
+typename std::enable_if<std::is_error_code_enum<E>::value ||
+                            std::is_error_condition_enum<E>::value,
+                        bool>::type
 operator==(const ErrorOr<T> &Err, E Code) {
   return Err.getError() == Code;
 }

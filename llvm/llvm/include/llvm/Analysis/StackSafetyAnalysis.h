@@ -33,8 +33,6 @@ public:
   StackSafetyInfo &operator=(StackSafetyInfo &&);
   ~StackSafetyInfo();
 
-  FunctionInfo *getInfo() const { return Info.get(); }
-
   // TODO: Add useful for client methods.
   void print(raw_ostream &O) const;
 };
@@ -98,34 +96,23 @@ public:
   PreservedAnalyses run(Module &M, ModuleAnalysisManager &AM);
 };
 
-class StackSafetyGlobalAnnotatorPass
-    : public PassInfoMixin<StackSafetyGlobalAnnotatorPass> {
-
-public:
-  explicit StackSafetyGlobalAnnotatorPass() {}
-  PreservedAnalyses run(Module &M, ModuleAnalysisManager &AM);
-};
-
 /// This pass performs the global (interprocedural) stack safety analysis
 /// (legacy pass manager).
 class StackSafetyGlobalInfoWrapperPass : public ModulePass {
-  StackSafetyGlobalInfo SSGI;
-  bool SetMetadata;
+  StackSafetyGlobalInfo SSI;
 
 public:
   static char ID;
 
-  StackSafetyGlobalInfoWrapperPass(bool SetMetadata = false);
+  StackSafetyGlobalInfoWrapperPass();
 
-  const StackSafetyGlobalInfo &getResult() const { return SSGI; }
+  const StackSafetyGlobalInfo &getResult() const { return SSI; }
 
   void print(raw_ostream &O, const Module *M) const override;
   void getAnalysisUsage(AnalysisUsage &AU) const override;
 
   bool runOnModule(Module &M) override;
 };
-
-ModulePass *createStackSafetyGlobalInfoWrapperPass(bool SetMetadata);
 
 } // end namespace llvm
 

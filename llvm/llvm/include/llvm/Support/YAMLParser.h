@@ -139,7 +139,7 @@ public:
 
   void operator delete(void *Ptr, BumpPtrAllocator &Alloc,
                        size_t Size) noexcept {
-    Alloc.Deallocate(Ptr, Size, 0);
+    Alloc.Deallocate(Ptr, Size);
   }
 
   void operator delete(void *) noexcept = delete;

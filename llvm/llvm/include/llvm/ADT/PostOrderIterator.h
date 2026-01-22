@@ -18,7 +18,6 @@
 #include "llvm/ADT/GraphTraits.h"
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/SmallPtrSet.h"
-#include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/iterator_range.h"
 #include <iterator>
 #include <set>
@@ -102,7 +101,7 @@ class po_iterator
 
   // VisitStack - Used to maintain the ordering.  Top = current block
   // First element is basic block pointer, second is the 'next child' to visit
-  SmallVector<std::pair<NodeRef, ChildItTy>, 8> VisitStack;
+  std::vector<std::pair<NodeRef, ChildItTy>> VisitStack;
 
   po_iterator(NodeRef BB) {
     this->insertEdge(Optional<NodeRef>(), BB);

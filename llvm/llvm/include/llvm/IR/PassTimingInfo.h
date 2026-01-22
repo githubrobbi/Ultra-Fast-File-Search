@@ -55,9 +55,11 @@ class TimePassesHandler {
   /// A group of all pass-timing timers.
   TimerGroup TG;
 
-  using TimerVector = llvm::SmallVector<std::unique_ptr<Timer>, 4>;
   /// Map of timers for pass invocations
-  StringMap<TimerVector> TimingData;
+  DenseMap<PassInvocationID, std::unique_ptr<Timer>> TimingData;
+
+  /// Map that counts invocations of passes, for use in UniqPassID construction.
+  StringMap<unsigned> PassIDCountMap;
 
   /// Stack of currently active timers.
   SmallVector<Timer *, 8> TimerStack;
@@ -93,6 +95,9 @@ private:
 
   /// Returns the new timer for each new run of the pass.
   Timer &getPassTimer(StringRef PassID);
+
+  /// Returns the incremented counter for the next invocation of \p PassID.
+  unsigned nextPassID(StringRef PassID) { return ++PassIDCountMap[PassID]; }
 
   void startTimer(StringRef PassID);
   void stopTimer(StringRef PassID);

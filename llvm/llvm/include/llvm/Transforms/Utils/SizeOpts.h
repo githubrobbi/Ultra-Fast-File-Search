@@ -21,9 +21,6 @@ extern llvm::cl::opt<bool> EnablePGSO;
 extern llvm::cl::opt<bool> PGSOLargeWorkingSetSizeOnly;
 extern llvm::cl::opt<bool> PGSOIRPassOrTestOnly;
 extern llvm::cl::opt<bool> PGSOColdCodeOnly;
-extern llvm::cl::opt<bool> PGSOColdCodeOnlyForInstrPGO;
-extern llvm::cl::opt<bool> PGSOColdCodeOnlyForSamplePGO;
-extern llvm::cl::opt<bool> PGSOColdCodeOnlyForPartialSamplePGO;
 extern llvm::cl::opt<bool> ForcePGSO;
 extern llvm::cl::opt<int> PgsoCutoffInstrProf;
 extern llvm::cl::opt<int> PgsoCutoffSampleProf;
@@ -33,22 +30,13 @@ namespace llvm {
 class BasicBlock;
 class BlockFrequencyInfo;
 class Function;
+class ProfileSummaryInfo;
 
 enum class PGSOQueryType {
   IRPass, // A query call from an IR-level transform pass.
   Test,   // A query call from a unit test.
   Other,  // Others.
 };
-
-static inline bool isPGSOColdCodeOnly(ProfileSummaryInfo *PSI) {
-  return PGSOColdCodeOnly ||
-         (PSI->hasInstrumentationProfile() && PGSOColdCodeOnlyForInstrPGO) ||
-         (PSI->hasSampleProfile() &&
-          ((!PSI->hasPartialSampleProfile() && PGSOColdCodeOnlyForSamplePGO) ||
-           (PSI->hasPartialSampleProfile() &&
-            PGSOColdCodeOnlyForPartialSamplePGO))) ||
-         (PGSOLargeWorkingSetSizeOnly && !PSI->hasLargeWorkingSetSize());
-}
 
 template<typename AdapterT, typename FuncT, typename BFIT>
 bool shouldFuncOptimizeForSizeImpl(const FuncT *F, ProfileSummaryInfo *PSI,
@@ -65,20 +53,20 @@ bool shouldFuncOptimizeForSizeImpl(const FuncT *F, ProfileSummaryInfo *PSI,
   if (PGSOIRPassOrTestOnly && !(QueryType == PGSOQueryType::IRPass ||
                                 QueryType == PGSOQueryType::Test))
     return false;
-  if (isPGSOColdCodeOnly(PSI))
+  if (PGSOColdCodeOnly ||
+      (PGSOLargeWorkingSetSizeOnly && !PSI->hasLargeWorkingSetSize())) {
+    // Even if the working set size isn't large, size-optimize cold code.
     return AdapterT::isFunctionColdInCallGraph(F, PSI, *BFI);
-  if (PSI->hasSampleProfile())
-    // The "isCold" check seems to work better for Sample PGO as it could have
-    // many profile-unannotated functions.
-    return AdapterT::isFunctionColdInCallGraphNthPercentile(
-        PgsoCutoffSampleProf, F, PSI, *BFI);
-  return !AdapterT::isFunctionHotInCallGraphNthPercentile(PgsoCutoffInstrProf,
-                                                          F, PSI, *BFI);
+  }
+  return !AdapterT::isFunctionHotInCallGraphNthPercentile(
+      PSI->hasSampleProfile() ? PgsoCutoffSampleProf : PgsoCutoffInstrProf,
+      F, PSI, *BFI);
 }
 
-template<typename AdapterT, typename BlockTOrBlockFreq, typename BFIT>
-bool shouldOptimizeForSizeImpl(BlockTOrBlockFreq BBOrBlockFreq, ProfileSummaryInfo *PSI,
+template<typename AdapterT, typename BlockT, typename BFIT>
+bool shouldOptimizeForSizeImpl(const BlockT *BB, ProfileSummaryInfo *PSI,
                                BFIT *BFI, PGSOQueryType QueryType) {
+  assert(BB);
   if (!PSI || !BFI || !PSI->hasProfileSummary())
     return false;
   if (ForcePGSO)
@@ -90,15 +78,14 @@ bool shouldOptimizeForSizeImpl(BlockTOrBlockFreq BBOrBlockFreq, ProfileSummaryIn
   if (PGSOIRPassOrTestOnly && !(QueryType == PGSOQueryType::IRPass ||
                                 QueryType == PGSOQueryType::Test))
     return false;
-  if (isPGSOColdCodeOnly(PSI))
-    return AdapterT::isColdBlock(BBOrBlockFreq, PSI, BFI);
-  if (PSI->hasSampleProfile())
-    // The "isCold" check seems to work better for Sample PGO as it could have
-    // many profile-unannotated functions.
-    return AdapterT::isColdBlockNthPercentile(PgsoCutoffSampleProf,
-                                              BBOrBlockFreq, PSI, BFI);
-  return !AdapterT::isHotBlockNthPercentile(PgsoCutoffInstrProf, BBOrBlockFreq,
-                                            PSI, BFI);
+  if (PGSOColdCodeOnly ||
+      (PGSOLargeWorkingSetSizeOnly && !PSI->hasLargeWorkingSetSize())) {
+    // Even if the working set size isn't large, size-optimize cold code.
+    return AdapterT::isColdBlock(BB, PSI, BFI);
+  }
+  return !AdapterT::isHotBlockNthPercentile(
+      PSI->hasSampleProfile() ? PgsoCutoffSampleProf : PgsoCutoffInstrProf,
+      BB, PSI, BFI);
 }
 
 /// Returns true if function \p F is suggested to be size-optimized based on the

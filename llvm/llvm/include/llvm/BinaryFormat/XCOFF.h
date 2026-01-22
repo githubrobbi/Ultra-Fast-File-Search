@@ -13,22 +13,16 @@
 #ifndef LLVM_BINARYFORMAT_XCOFF_H
 #define LLVM_BINARYFORMAT_XCOFF_H
 
-#include <stddef.h>
-#include <stdint.h>
+#include "llvm/ADT/StringRef.h"
+#include <cstdint>
 
 namespace llvm {
-class StringRef;
-
 namespace XCOFF {
 
 // Constants used in the XCOFF definition.
+enum { FileNamePadSize = 6, NameSize = 8, SymbolTableEntrySize = 18 };
 
-constexpr size_t FileNamePadSize = 6;
-constexpr size_t NameSize = 8;
-constexpr size_t SymbolTableEntrySize = 18;
-constexpr size_t RelocationSerializationSize32 = 10;
-
-enum ReservedSectionNum : int16_t { N_DEBUG = -2, N_ABS = -1, N_UNDEF = 0 };
+enum ReservedSectionNum { N_DEBUG = -2, N_ABS = -1, N_UNDEF = 0 };
 
 // x_smclas field of x_csect from system header: /usr/include/syms.h
 /// Storage Mapping Class definitions.
@@ -60,10 +54,9 @@ enum StorageMappingClass : uint8_t {
   XMC_TE = 22  ///< Symbol mapped at the end of TOC
 };
 
-// Flags for defining the section type. Masks for use with the (signed, 32-bit)
-// s_flags field of the section header structure, selecting for values in the
-// lower 16 bits. Defined in the system header `scnhdr.h`.
-enum SectionTypeFlags : int32_t {
+// Flags for defining the section type. Used for the s_flags field of
+// the section header structure. Defined in the system header `scnhdr.h`.
+enum SectionTypeFlags {
   STYP_PAD = 0x0008,
   STYP_DWARF = 0x0010,
   STYP_TEXT = 0x0020,
@@ -148,10 +141,7 @@ enum StorageClass : uint8_t {
   C_TCSYM = 134 // Reserved
 };
 
-// Flags for defining the symbol type. Values to be encoded into the lower 3
-// bits of the (unsigned, 8-bit) x_smtyp field of csect auxiliary symbol table
-// entries. Defined in the system header `syms.h`.
-enum SymbolType : uint8_t {
+enum SymbolType {
   XTY_ER = 0, ///< External reference.
   XTY_SD = 1, ///< Csect definition for initialized storage.
   XTY_LD = 2, ///< Label definition.
@@ -263,7 +253,6 @@ enum CFileCpuId : uint8_t {
 };
 
 StringRef getMappingClassString(XCOFF::StorageMappingClass SMC);
-StringRef getRelocationTypeString(XCOFF::RelocationType Type);
 
 } // end namespace XCOFF
 } // end namespace llvm

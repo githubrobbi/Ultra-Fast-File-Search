@@ -123,9 +123,6 @@ public:
   /// contains data (e.g. PROGBITS), but is not text.
   bool isBerkeleyData() const;
 
-  /// Whether this section is a debug section.
-  bool isDebugSection(StringRef SectionName) const;
-
   bool containsSymbol(SymbolRef S) const;
 
   relocation_iterator relocation_begin() const;
@@ -188,7 +185,7 @@ public:
 
   /// Return the value of the symbol depending on the object this can be an
   /// offset or a virtual address.
-  Expected<uint64_t> getValue() const;
+  uint64_t getValue() const;
 
   /// Get the alignment of this symbol as the actual value (not log 2).
   uint32_t getAlignment() const;
@@ -275,7 +272,6 @@ protected:
   virtual bool isSectionStripped(DataRefImpl Sec) const;
   virtual bool isBerkeleyText(DataRefImpl Sec) const;
   virtual bool isBerkeleyData(DataRefImpl Sec) const;
-  virtual bool isDebugSection(StringRef SectionName) const;
   virtual relocation_iterator section_rel_begin(DataRefImpl Sec) const = 0;
   virtual relocation_iterator section_rel_end(DataRefImpl Sec) const = 0;
   virtual Expected<section_iterator> getRelocatedSection(DataRefImpl Sec) const;
@@ -289,18 +285,14 @@ protected:
   virtual void getRelocationTypeName(DataRefImpl Rel,
                                      SmallVectorImpl<char> &Result) const = 0;
 
-  Expected<uint64_t> getSymbolValue(DataRefImpl Symb) const;
+  uint64_t getSymbolValue(DataRefImpl Symb) const;
 
 public:
   ObjectFile() = delete;
   ObjectFile(const ObjectFile &other) = delete;
 
   uint64_t getCommonSymbolSize(DataRefImpl Symb) const {
-    Expected<uint32_t> SymbolFlagsOrErr = getSymbolFlags(Symb);
-    if (!SymbolFlagsOrErr)
-      // TODO: Actually report errors helpfully.
-      report_fatal_error(SymbolFlagsOrErr.takeError());
-    assert(*SymbolFlagsOrErr & SymbolRef::SF_Common);
+    assert(getSymbolFlags(Symb) & SymbolRef::SF_Common);
     return getCommonSymbolSizeImpl(Symb);
   }
 
@@ -390,7 +382,7 @@ inline Expected<uint64_t> SymbolRef::getAddress() const {
   return getObject()->getSymbolAddress(getRawDataRefImpl());
 }
 
-inline Expected<uint64_t> SymbolRef::getValue() const {
+inline uint64_t SymbolRef::getValue() const {
   return getObject()->getSymbolValue(getRawDataRefImpl());
 }
 
@@ -501,10 +493,6 @@ inline bool SectionRef::isBerkeleyText() const {
 
 inline bool SectionRef::isBerkeleyData() const {
   return OwningObject->isBerkeleyData(SectionPimpl);
-}
-
-inline bool SectionRef::isDebugSection(StringRef SectionName) const {
-  return OwningObject->isDebugSection(SectionName);
 }
 
 inline relocation_iterator SectionRef::relocation_begin() const {

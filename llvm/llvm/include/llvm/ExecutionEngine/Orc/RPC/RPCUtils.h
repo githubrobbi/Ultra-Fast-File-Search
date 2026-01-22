@@ -184,7 +184,8 @@ template <typename T, typename = void> class RPCFunctionIdAllocator;
 /// This specialization of RPCFunctionIdAllocator provides a default
 /// implementation for integral types.
 template <typename T>
-class RPCFunctionIdAllocator<T, std::enable_if_t<std::is_integral<T>::value>> {
+class RPCFunctionIdAllocator<
+    T, typename std::enable_if<std::is_integral<T>::value>::type> {
 public:
   static T getInvalidId() { return T(0); }
   static T getResponseId() { return T(1); }
@@ -204,7 +205,8 @@ template <typename T> class FunctionArgsTuple;
 template <typename RetT, typename... ArgTs>
 class FunctionArgsTuple<RetT(ArgTs...)> {
 public:
-  using Type = std::tuple<std::decay_t<std::remove_reference_t<ArgTs>>...>;
+  using Type = std::tuple<typename std::decay<
+      typename std::remove_reference<ArgTs>::type>::type...>;
 };
 
 // ResultTraits provides typedefs and utilities specific to the return type
@@ -481,9 +483,9 @@ public:
 };
 
 template <typename ResponseHandlerT, typename... ArgTs>
-class AsyncHandlerTraits<Error(ResponseHandlerT, ArgTs...)>
-    : public AsyncHandlerTraits<Error(std::decay_t<ResponseHandlerT>,
-                                      ArgTs...)> {};
+class AsyncHandlerTraits<Error(ResponseHandlerT, ArgTs...)> :
+    public AsyncHandlerTraits<Error(typename std::decay<ResponseHandlerT>::type,
+                                    ArgTs...)> {};
 
 // This template class provides utilities related to RPC function handlers.
 // The base case applies to non-function types (the template class is
@@ -522,17 +524,18 @@ public:
 
   // Call the given handler with the given arguments.
   template <typename HandlerT>
-  static std::enable_if_t<
-      std::is_void<typename HandlerTraits<HandlerT>::ReturnType>::value, Error>
+  static typename std::enable_if<
+      std::is_void<typename HandlerTraits<HandlerT>::ReturnType>::value,
+      Error>::type
   run(HandlerT &Handler, ArgTs &&... Args) {
     Handler(std::move(Args)...);
     return Error::success();
   }
 
   template <typename HandlerT, typename... TArgTs>
-  static std::enable_if_t<
+  static typename std::enable_if<
       !std::is_void<typename HandlerTraits<HandlerT>::ReturnType>::value,
-      typename HandlerTraits<HandlerT>::ReturnType>
+      typename HandlerTraits<HandlerT>::ReturnType>::type
   run(HandlerT &Handler, TArgTs... Args) {
     return Handler(std::move(Args)...);
   }
@@ -891,12 +894,12 @@ private:
   using S = SerializationTraits<ChannelT, WireT, ConcreteT>;
 
   template <typename T>
-  static std::true_type check(
-      std::enable_if_t<std::is_same<decltype(T::serialize(
-                                        std::declval<ChannelT &>(),
-                                        std::declval<const ConcreteT &>())),
-                                    Error>::value,
-                       void *>);
+  static std::true_type
+  check(typename std::enable_if<
+        std::is_same<decltype(T::serialize(std::declval<ChannelT &>(),
+                                           std::declval<const ConcreteT &>())),
+                     Error>::value,
+        void *>::type);
 
   template <typename> static std::false_type check(...);
 
@@ -911,11 +914,11 @@ private:
 
   template <typename T>
   static std::true_type
-      check(std::enable_if_t<
-            std::is_same<decltype(T::deserialize(std::declval<ChannelT &>(),
-                                                 std::declval<ConcreteT &>())),
-                         Error>::value,
-            void *>);
+  check(typename std::enable_if<
+        std::is_same<decltype(T::deserialize(std::declval<ChannelT &>(),
+                                             std::declval<ConcreteT &>())),
+                     Error>::value,
+        void *>::type);
 
   template <typename> static std::false_type check(...);
 

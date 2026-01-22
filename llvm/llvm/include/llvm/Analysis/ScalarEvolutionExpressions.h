@@ -64,7 +64,7 @@ class Type;
     }
   };
 
-  inline unsigned short computeExpressionSize(ArrayRef<const SCEV *> Args) {
+  static unsigned short computeExpressionSize(ArrayRef<const SCEV *> Args) {
     APInt Size(16, 1);
     for (auto *Arg : Args)
       Size = Size.uadd_sat(APInt(16, Arg->getExpressionSize()));

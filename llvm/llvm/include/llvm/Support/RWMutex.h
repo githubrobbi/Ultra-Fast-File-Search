@@ -95,7 +95,7 @@ template <bool mt_only> class SmartRWMutex {
   // shared_mutex (C++17) is more efficient than shared_timed_mutex (C++14)
   // on Windows and always available on MSVC.
 #if defined(_MSC_VER) || __cplusplus > 201402L
-//  std::shared_mutex impl;
+  std::shared_mutex impl;
 #else
 #if !defined(LLVM_USE_RW_MUTEX_IMPL)
   std::shared_timed_mutex impl;

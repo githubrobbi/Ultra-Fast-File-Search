@@ -45,9 +45,6 @@ Error thinBackend(const Config &C, unsigned Task, AddStreamFn AddStream,
                   const FunctionImporter::ImportMapTy &ImportList,
                   const GVSummaryMapTy &DefinedGlobals,
                   MapVector<StringRef, BitcodeModule> &ModuleMap);
-
-Error finalizeOptimizationRemarks(
-    std::unique_ptr<ToolOutputFile> DiagOutputFile);
 }
 }
 

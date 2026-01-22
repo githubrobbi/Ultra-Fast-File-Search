@@ -51,9 +51,9 @@ public:
 
   Error commit(const msf::MSFLayout &Layout, WritableBinaryStreamRef Buffer);
 
-  uint32_t getPublicsStreamIndex() const { return PublicsStreamIndex; }
-  uint32_t getGlobalsStreamIndex() const { return GlobalsStreamIndex; }
-  uint32_t getRecordStreamIndex() const { return RecordStreamIndex; }
+  uint32_t getPublicsStreamIndex() const;
+  uint32_t getGlobalsStreamIndex() const;
+  uint32_t getRecordStreamIdx() const { return RecordStreamIdx; }
 
   void addPublicSymbol(const codeview::PublicSym32 &Pub);
 
@@ -69,9 +69,7 @@ private:
   Error commitPublicsHashStream(WritableBinaryStreamRef Stream);
   Error commitGlobalsHashStream(WritableBinaryStreamRef Stream);
 
-  uint32_t PublicsStreamIndex = kInvalidStreamIndex;
-  uint32_t GlobalsStreamIndex = kInvalidStreamIndex;
-  uint32_t RecordStreamIndex = kInvalidStreamIndex;
+  uint32_t RecordStreamIdx = kInvalidStreamIndex;
   msf::MSFBuilder &Msf;
   std::unique_ptr<GSIHashStreamBuilder> PSH;
   std::unique_ptr<GSIHashStreamBuilder> GSH;

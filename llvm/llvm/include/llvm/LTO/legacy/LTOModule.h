@@ -165,10 +165,6 @@ public:
 
   static const char *getDependentLibrary(lto::InputFile *input, size_t index, size_t *size);
 
-  Expected<uint32_t> getMachOCPUType() const;
-
-  Expected<uint32_t> getMachOCPUSubType() const;
-
 private:
   /// Parse metadata from the module
   // FIXME: it only parses "llvm.linker.options" metadata at the moment

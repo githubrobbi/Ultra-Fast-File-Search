@@ -26,7 +26,6 @@ class LoopInfo;
 class PHINode;
 class ScalarEvolution;
 class SCEVExpander;
-class TargetTransformInfo;
 
 /// Interface for visiting interesting IV users that are recognized but not
 /// simplified by this utility.
@@ -47,15 +46,13 @@ public:
 /// simplifyUsersOfIV - Simplify instructions that use this induction variable
 /// by using ScalarEvolution to analyze the IV's recurrence.
 bool simplifyUsersOfIV(PHINode *CurrIV, ScalarEvolution *SE, DominatorTree *DT,
-                       LoopInfo *LI, const TargetTransformInfo *TTI,
-                       SmallVectorImpl<WeakTrackingVH> &Dead,
+                       LoopInfo *LI, SmallVectorImpl<WeakTrackingVH> &Dead,
                        SCEVExpander &Rewriter, IVVisitor *V = nullptr);
 
 /// SimplifyLoopIVs - Simplify users of induction variables within this
 /// loop. This does not actually change or add IVs.
 bool simplifyLoopIVs(Loop *L, ScalarEvolution *SE, DominatorTree *DT,
-                     LoopInfo *LI, const TargetTransformInfo *TTI,
-                     SmallVectorImpl<WeakTrackingVH> &Dead);
+                     LoopInfo *LI, SmallVectorImpl<WeakTrackingVH> &Dead);
 
 } // end namespace llvm
 

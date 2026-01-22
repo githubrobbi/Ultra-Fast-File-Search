@@ -269,7 +269,7 @@ public:
 
   /// Apply a function to the value if present; otherwise return None.
   template <class Function>
-  auto map(const Function &F) const LLVM_LVALUE_FUNCTION
+  auto map(const Function &F) const
       -> Optional<decltype(F(getValue()))> {
     if (*this) return F(getValue());
     return None;

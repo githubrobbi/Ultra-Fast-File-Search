@@ -126,14 +126,14 @@ private:
   /// set.
   template <bool IsConst, bool IsOut,
             typename BaseIt = typename NeighborSetT::const_iterator,
-            typename T =
-                std::conditional_t<IsConst, const EdgeValueType, EdgeValueType>>
+            typename T = typename std::conditional<IsConst, const EdgeValueType,
+                                                   EdgeValueType>::type>
   class NeighborEdgeIteratorT
       : public iterator_adaptor_base<
             NeighborEdgeIteratorT<IsConst, IsOut>, BaseIt,
             typename std::iterator_traits<BaseIt>::iterator_category, T> {
     using InternalEdgeMapT =
-        std::conditional_t<IsConst, const EdgeMapT, EdgeMapT>;
+        typename std::conditional<IsConst, const EdgeMapT, EdgeMapT>::type;
 
     friend class NeighborEdgeIteratorT<false, IsOut, BaseIt, EdgeValueType>;
     friend class NeighborEdgeIteratorT<true, IsOut, BaseIt,
@@ -144,7 +144,7 @@ private:
 
   public:
     template <bool IsConstDest,
-              typename = std::enable_if<IsConstDest && !IsConst>>
+              typename = typename std::enable_if<IsConstDest && !IsConst>::type>
     operator NeighborEdgeIteratorT<IsConstDest, IsOut, BaseIt,
                                    const EdgeValueType>() const {
       return NeighborEdgeIteratorT<IsConstDest, IsOut, BaseIt,
@@ -199,9 +199,9 @@ public:
   public:
     using iterator = NeighborEdgeIteratorT<isConst, isOut>;
     using const_iterator = NeighborEdgeIteratorT<true, isOut>;
-    using GraphT = std::conditional_t<isConst, const Graph, Graph>;
+    using GraphT = typename std::conditional<isConst, const Graph, Graph>::type;
     using InternalEdgeMapT =
-        std::conditional_t<isConst, const EdgeMapT, EdgeMapT>;
+        typename std::conditional<isConst, const EdgeMapT, EdgeMapT>::type;
 
   private:
     InternalEdgeMapT &M;
@@ -272,10 +272,10 @@ public:
   /// the number of elements in the range and whether the range is empty.
   template <bool isConst> class VertexView {
   public:
-    using iterator =
-        std::conditional_t<isConst, ConstVertexIterator, VertexIterator>;
+    using iterator = typename std::conditional<isConst, ConstVertexIterator,
+                                               VertexIterator>::type;
     using const_iterator = ConstVertexIterator;
-    using GraphT = std::conditional_t<isConst, const Graph, Graph>;
+    using GraphT = typename std::conditional<isConst, const Graph, Graph>::type;
 
   private:
     GraphT &G;
@@ -309,10 +309,10 @@ public:
   /// the number of elements in the range and whether the range is empty.
   template <bool isConst> class EdgeView {
   public:
-    using iterator =
-        std::conditional_t<isConst, ConstEdgeIterator, EdgeIterator>;
+    using iterator = typename std::conditional<isConst, ConstEdgeIterator,
+                                               EdgeIterator>::type;
     using const_iterator = ConstEdgeIterator;
-    using GraphT = std::conditional_t<isConst, const Graph, Graph>;
+    using GraphT = typename std::conditional<isConst, const Graph, Graph>::type;
 
   private:
     GraphT &G;

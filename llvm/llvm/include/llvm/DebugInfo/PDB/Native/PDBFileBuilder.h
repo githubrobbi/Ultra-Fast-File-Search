@@ -80,6 +80,7 @@ private:
   Error finalizeMsfLayout();
   Expected<uint32_t> allocateNamedStream(StringRef Name, uint32_t Size);
 
+  void commitFpm(WritableBinaryStream &MsfBuffer, const msf::MSFLayout &Layout);
   void commitInjectedSources(WritableBinaryStream &MsfBuffer,
                              const msf::MSFLayout &Layout);
   void commitSrcHeaderBlock(WritableBinaryStream &MsfBuffer,

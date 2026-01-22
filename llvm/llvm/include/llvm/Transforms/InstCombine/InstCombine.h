@@ -24,13 +24,14 @@ namespace llvm {
 
 class InstCombinePass : public PassInfoMixin<InstCombinePass> {
   InstCombineWorklist Worklist;
+  const bool ExpensiveCombines;
   const unsigned MaxIterations;
 
 public:
   static StringRef name() { return "InstCombinePass"; }
 
-  explicit InstCombinePass();
-  explicit InstCombinePass(unsigned MaxIterations);
+  explicit InstCombinePass(bool ExpensiveCombines = true);
+  explicit InstCombinePass(bool ExpensiveCombines, unsigned MaxIterations);
 
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
 };
@@ -41,13 +42,15 @@ public:
 /// will try to combine all instructions in the function.
 class InstructionCombiningPass : public FunctionPass {
   InstCombineWorklist Worklist;
+  const bool ExpensiveCombines;
   const unsigned MaxIterations;
 
 public:
   static char ID; // Pass identification, replacement for typeid
 
-  explicit InstructionCombiningPass();
-  explicit InstructionCombiningPass(unsigned MaxIterations);
+  explicit InstructionCombiningPass(bool ExpensiveCombines = true);
+  explicit InstructionCombiningPass(bool ExpensiveCombines,
+                                    unsigned MaxIterations);
 
   void getAnalysisUsage(AnalysisUsage &AU) const override;
   bool runOnFunction(Function &F) override;
@@ -65,8 +68,9 @@ public:
 // into:
 //    %Z = add int 2, %X
 //
-FunctionPass *createInstructionCombiningPass();
-FunctionPass *createInstructionCombiningPass(unsigned MaxIterations);
+FunctionPass *createInstructionCombiningPass(bool ExpensiveCombines = true);
+FunctionPass *createInstructionCombiningPass(bool ExpensiveCombines,
+                                             unsigned MaxIterations);
 }
 
 #endif

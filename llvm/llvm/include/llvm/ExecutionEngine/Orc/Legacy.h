@@ -73,13 +73,17 @@ private:
 ///        function objects.
 template <typename GetResponsibilitySetFn, typename LookupFn>
 std::unique_ptr<LambdaSymbolResolver<
-    std::remove_cv_t<std::remove_reference_t<GetResponsibilitySetFn>>,
-    std::remove_cv_t<std::remove_reference_t<LookupFn>>>>
+    typename std::remove_cv<
+        typename std::remove_reference<GetResponsibilitySetFn>::type>::type,
+    typename std::remove_cv<
+        typename std::remove_reference<LookupFn>::type>::type>>
 createSymbolResolver(GetResponsibilitySetFn &&GetResponsibilitySet,
                      LookupFn &&Lookup) {
   using LambdaSymbolResolverImpl = LambdaSymbolResolver<
-      std::remove_cv_t<std::remove_reference_t<GetResponsibilitySetFn>>,
-      std::remove_cv_t<std::remove_reference_t<LookupFn>>>;
+      typename std::remove_cv<
+          typename std::remove_reference<GetResponsibilitySetFn>::type>::type,
+      typename std::remove_cv<
+          typename std::remove_reference<LookupFn>::type>::type>;
   return std::make_unique<LambdaSymbolResolverImpl>(
       std::forward<GetResponsibilitySetFn>(GetResponsibilitySet),
       std::forward<LookupFn>(Lookup));

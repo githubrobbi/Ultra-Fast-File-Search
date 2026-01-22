@@ -55,9 +55,8 @@ public:
   BranchProbabilityInfo() = default;
 
   BranchProbabilityInfo(const Function &F, const LoopInfo &LI,
-                        const TargetLibraryInfo *TLI = nullptr,
-                        PostDominatorTree *PDT = nullptr) {
-    calculate(F, LI, TLI, PDT);
+                        const TargetLibraryInfo *TLI = nullptr) {
+    calculate(F, LI, TLI);
   }
 
   BranchProbabilityInfo(BranchProbabilityInfo &&Arg)
@@ -75,9 +74,6 @@ public:
     PostDominatedByUnreachable = std::move(RHS.PostDominatedByUnreachable);
     return *this;
   }
-
-  bool invalidate(Function &, const PreservedAnalyses &PA,
-                  FunctionAnalysisManager::Invalidator &);
 
   void releaseMemory();
 
@@ -99,7 +95,7 @@ public:
                                        const BasicBlock *Dst) const;
 
   BranchProbability getEdgeProbability(const BasicBlock *Src,
-                                       const_succ_iterator Dst) const;
+                                       succ_const_iterator Dst) const;
 
   /// Test if an edge is hot relative to other out-edges of the Src.
   ///
@@ -136,7 +132,7 @@ public:
   }
 
   void calculate(const Function &F, const LoopInfo &LI,
-                 const TargetLibraryInfo *TLI, PostDominatorTree *PDT);
+                 const TargetLibraryInfo *TLI = nullptr);
 
   /// Forget analysis results for the given basic block.
   void eraseBlock(const BasicBlock *BB);

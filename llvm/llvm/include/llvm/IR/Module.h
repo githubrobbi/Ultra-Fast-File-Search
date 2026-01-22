@@ -79,8 +79,6 @@ public:
   using NamedMDListType = ilist<NamedMDNode>;
   /// The type of the comdat "symbol" table.
   using ComdatSymTabType = StringMap<Comdat>;
-  /// The type for mapping names to named metadata.
-  using NamedMDSymTabType = StringMap<NamedMDNode *>;
 
   /// The Global Variable iterator.
   using global_iterator = GlobalListType::iterator;
@@ -177,7 +175,7 @@ private:
   IFuncListType IFuncList;        ///< The IFuncs in the module
   NamedMDListType NamedMDList;    ///< The named metadata in the module
   std::string GlobalScopeAsm;     ///< Inline Asm at global scope.
-  std::unique_ptr<ValueSymbolTable> ValSymTab; ///< Symbol table for values
+  ValueSymbolTable *ValSymTab;    ///< Symbol table for values
   ComdatSymTabType ComdatSymTab;  ///< Symbol table for COMDATs
   std::unique_ptr<MemoryBuffer>
   OwnedMemoryBuffer;              ///< Memory buffer directly owned by this
@@ -189,7 +187,7 @@ private:
                                   ///< recorded in bitcode.
   std::string TargetTriple;       ///< Platform target triple Module compiled on
                                   ///< Format: (arch)(sub)-(vendor)-(sys0-(abi)
-  NamedMDSymTabType NamedMDSymTab;  ///< NamedMDNode names.
+  void *NamedMDSymTab;            ///< NamedMDNode names.
   DataLayout DL;                  ///< DataLayout associated with the module
 
   friend class Constant;
@@ -259,7 +257,7 @@ public:
   /// when other randomness consuming passes are added or removed. In
   /// addition, the random stream will be reproducible across LLVM
   /// versions when the pass does not change.
-  std::unique_ptr<RandomNumberGenerator> createRNG(const StringRef Name) const;
+  std::unique_ptr<RandomNumberGenerator> createRNG(const Pass* P) const;
 
   /// Return true if size-info optimization remark is enabled, false
   /// otherwise.
@@ -273,22 +271,22 @@ public:
   /// @{
 
   /// Set the module identifier.
-  void setModuleIdentifier(StringRef ID) { ModuleID = std::string(ID); }
+  void setModuleIdentifier(StringRef ID) { ModuleID = ID; }
 
   /// Set the module's original source file name.
-  void setSourceFileName(StringRef Name) { SourceFileName = std::string(Name); }
+  void setSourceFileName(StringRef Name) { SourceFileName = Name; }
 
   /// Set the data layout
   void setDataLayout(StringRef Desc);
   void setDataLayout(const DataLayout &Other);
 
   /// Set the target triple.
-  void setTargetTriple(StringRef T) { TargetTriple = std::string(T); }
+  void setTargetTriple(StringRef T) { TargetTriple = T; }
 
   /// Set the module-scope inline assembly blocks.
   /// A trailing newline is added if the input doesn't have one.
   void setModuleInlineAsm(StringRef Asm) {
-    GlobalScopeAsm = std::string(Asm);
+    GlobalScopeAsm = Asm;
     if (!GlobalScopeAsm.empty() && GlobalScopeAsm.back() != '\n')
       GlobalScopeAsm += '\n';
   }
@@ -847,12 +845,6 @@ public:
   /// sensitive profile summary.
   Metadata *getProfileSummary(bool IsCS);
   /// @}
-
-  /// Returns whether semantic interposition is to be respected.
-  bool getSemanticInterposition() const;
-
-  /// Set whether semantic interposition is to be respected.
-  void setSemanticInterposition(bool);
 
   /// Returns true if PLT should be avoided for RTLib calls.
   bool getRtLibUseGOT() const;

@@ -15,14 +15,13 @@
 #define LLVM_OPENMP_CONSTANTS_H
 
 #include "llvm/ADT/BitmaskEnum.h"
+#include "llvm/ADT/StringRef.h"
 
 namespace llvm {
 class Type;
 class Module;
-class ArrayType;
 class StructType;
 class PointerType;
-class StringRef;
 class FunctionType;
 
 namespace omp {
@@ -34,18 +33,11 @@ enum class Directive {
 #include "llvm/Frontend/OpenMP/OMPKinds.def"
 };
 
-/// IDs for all OpenMP clauses.
-enum class Clause {
-#define OMP_CLAUSE(Enum, ...) Enum,
-#include "llvm/Frontend/OpenMP/OMPKinds.def"
-};
-
 /// Make the enum values available in the llvm::omp namespace. This allows us to
 /// write something like OMPD_parallel if we have a `using namespace omp`. At
 /// the same time we do not loose the strong type guarantees of the enum class,
 /// that is we cannot pass an unsigned as Directive without an explicit cast.
 #define OMP_DIRECTIVE(Enum, ...) constexpr auto Enum = omp::Directive::Enum;
-#define OMP_CLAUSE(Enum, ...) constexpr auto Enum = omp::Clause::Enum;
 #include "llvm/Frontend/OpenMP/OMPKinds.def"
 
 /// IDs for all omp runtime library (RTL) functions.
@@ -55,16 +47,6 @@ enum class RuntimeFunction {
 };
 
 #define OMP_RTL(Enum, ...) constexpr auto Enum = omp::RuntimeFunction::Enum;
-#include "llvm/Frontend/OpenMP/OMPKinds.def"
-
-/// IDs for the different default kinds.
-enum class DefaultKind {
-#define OMP_DEFAULT_KIND(Enum, Str) Enum,
-#include "llvm/Frontend/OpenMP/OMPKinds.def"
-};
-
-#define OMP_DEFAULT_KIND(Enum, ...)                                            \
-  constexpr auto Enum = omp::DefaultKind::Enum;
 #include "llvm/Frontend/OpenMP/OMPKinds.def"
 
 /// IDs for the different proc bind kinds.
@@ -94,15 +76,6 @@ Directive getOpenMPDirectiveKind(StringRef Str);
 /// Return a textual representation of the directive \p D.
 StringRef getOpenMPDirectiveName(Directive D);
 
-/// Parse \p Str and return the clause it matches or OMPC_unknown if none.
-Clause getOpenMPClauseKind(StringRef Str);
-
-/// Return a textual representation of the clause \p C.
-StringRef getOpenMPClauseName(Clause C);
-
-/// Return true if \p C is a valid clause for \p D in version \p Version.
-bool isAllowedClauseForDirective(Directive D, Clause C, unsigned Version);
-
 /// Forward declarations for LLVM-IR types (simple, function and structure) are
 /// generated below. Their names are defined and used in OpenMP/OMPKinds.def.
 /// Here we provide the forward declarations, the initializeTypes function will
@@ -112,9 +85,6 @@ bool isAllowedClauseForDirective(Directive D, Clause C, unsigned Version);
 namespace types {
 
 #define OMP_TYPE(VarName, InitValue) extern Type *VarName;
-#define OMP_ARRAY_TYPE(VarName, ElemTy, ArraySize)                             \
-  extern ArrayType *VarName##Ty;                                               \
-  extern PointerType *VarName##PtrTy;
 #define OMP_FUNCTION_TYPE(VarName, IsVarArg, ReturnType, ...)                  \
   extern FunctionType *VarName;                                                \
   extern PointerType *VarName##Ptr;

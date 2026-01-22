@@ -55,7 +55,6 @@ enum DiagnosticKind {
   DK_ResourceLimit,
   DK_StackSize,
   DK_Linker,
-  DK_Lowering,
   DK_DebugMetadataVersion,
   DK_DebugMetadataInvalid,
   DK_ISelFallback,
@@ -532,10 +531,9 @@ protected:
 template <class RemarkT>
 RemarkT &
 operator<<(RemarkT &R,
-           std::enable_if_t<
+           typename std::enable_if<
                std::is_base_of<DiagnosticInfoOptimizationBase, RemarkT>::value,
-               StringRef>
-               S) {
+               StringRef>::type S) {
   R.insert(S);
   return R;
 }
@@ -545,10 +543,9 @@ operator<<(RemarkT &R,
 template <class RemarkT>
 RemarkT &
 operator<<(RemarkT &&R,
-           std::enable_if_t<
+           typename std::enable_if<
                std::is_base_of<DiagnosticInfoOptimizationBase, RemarkT>::value,
-               StringRef>
-               S) {
+               StringRef>::type S) {
   R.insert(S);
   return R;
 }
@@ -556,10 +553,9 @@ operator<<(RemarkT &&R,
 template <class RemarkT>
 RemarkT &
 operator<<(RemarkT &R,
-           std::enable_if_t<
+           typename std::enable_if<
                std::is_base_of<DiagnosticInfoOptimizationBase, RemarkT>::value,
-               DiagnosticInfoOptimizationBase::Argument>
-               A) {
+               DiagnosticInfoOptimizationBase::Argument>::type A) {
   R.insert(A);
   return R;
 }
@@ -567,10 +563,9 @@ operator<<(RemarkT &R,
 template <class RemarkT>
 RemarkT &
 operator<<(RemarkT &&R,
-           std::enable_if_t<
+           typename std::enable_if<
                std::is_base_of<DiagnosticInfoOptimizationBase, RemarkT>::value,
-               DiagnosticInfoOptimizationBase::Argument>
-               A) {
+               DiagnosticInfoOptimizationBase::Argument>::type A) {
   R.insert(A);
   return R;
 }
@@ -578,10 +573,9 @@ operator<<(RemarkT &&R,
 template <class RemarkT>
 RemarkT &
 operator<<(RemarkT &R,
-           std::enable_if_t<
+           typename std::enable_if<
                std::is_base_of<DiagnosticInfoOptimizationBase, RemarkT>::value,
-               DiagnosticInfoOptimizationBase::setIsVerbose>
-               V) {
+               DiagnosticInfoOptimizationBase::setIsVerbose>::type V) {
   R.insert(V);
   return R;
 }
@@ -589,10 +583,9 @@ operator<<(RemarkT &R,
 template <class RemarkT>
 RemarkT &
 operator<<(RemarkT &&R,
-           std::enable_if_t<
+           typename std::enable_if<
                std::is_base_of<DiagnosticInfoOptimizationBase, RemarkT>::value,
-               DiagnosticInfoOptimizationBase::setIsVerbose>
-               V) {
+               DiagnosticInfoOptimizationBase::setIsVerbose>::type V) {
   R.insert(V);
   return R;
 }
@@ -600,10 +593,9 @@ operator<<(RemarkT &&R,
 template <class RemarkT>
 RemarkT &
 operator<<(RemarkT &R,
-           std::enable_if_t<
+           typename std::enable_if<
                std::is_base_of<DiagnosticInfoOptimizationBase, RemarkT>::value,
-               DiagnosticInfoOptimizationBase::setExtraArgs>
-               EA) {
+               DiagnosticInfoOptimizationBase::setExtraArgs>::type EA) {
   R.insert(EA);
   return R;
 }

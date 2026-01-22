@@ -19,6 +19,7 @@
 
 namespace llvm {
 
+class StringRef;
 class MemoryBuffer;
 class MemoryBufferRef;
 class Module;

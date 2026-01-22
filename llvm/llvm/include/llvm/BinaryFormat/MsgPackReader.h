@@ -33,7 +33,6 @@
 #ifndef LLVM_SUPPORT_MSGPACKREADER_H
 #define LLVM_SUPPORT_MSGPACKREADER_H
 
-#include "llvm/Support/Error.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/raw_ostream.h"
 #include <cstdint>

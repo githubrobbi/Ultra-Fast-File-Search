@@ -25,7 +25,6 @@
 #ifndef LLVM_SUPPORT_FORMATVARIADIC_H
 #define LLVM_SUPPORT_FORMATVARIADIC_H
 
-#include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallString.h"
@@ -64,8 +63,23 @@ struct ReplacementItem {
 
 class formatv_object_base {
 protected:
+  // The parameters are stored in a std::tuple, which does not provide runtime
+  // indexing capabilities.  In order to enable runtime indexing, we use this
+  // structure to put the parameters into a std::vector.  Since the parameters
+  // are not all the same type, we use some type-erasure by wrapping the
+  // parameters in a template class that derives from a non-template superclass.
+  // Essentially, we are converting a std::tuple<Derived<Ts...>> to a
+  // std::vector<Base*>.
+  struct create_adapters {
+    template <typename... Ts>
+    std::vector<detail::format_adapter *> operator()(Ts &... Items) {
+      return std::vector<detail::format_adapter *>{&Items...};
+    }
+  };
+
   StringRef Fmt;
-  ArrayRef<detail::format_adapter *> Adapters;
+  std::vector<detail::format_adapter *> Adapters;
+  std::vector<ReplacementItem> Replacements;
 
   static bool consumeFieldLayout(StringRef &Spec, AlignStyle &Where,
                                  size_t &Align, char &Pad);
@@ -73,16 +87,23 @@ protected:
   static std::pair<ReplacementItem, StringRef>
   splitLiteralAndReplacement(StringRef Fmt);
 
-  formatv_object_base(StringRef Fmt,
-                      ArrayRef<detail::format_adapter *> Adapters)
-      : Fmt(Fmt), Adapters(Adapters) {}
+public:
+  formatv_object_base(StringRef Fmt, std::size_t ParamCount)
+      : Fmt(Fmt), Replacements(parseFormatString(Fmt)) {
+    Adapters.reserve(ParamCount);
+  }
 
   formatv_object_base(formatv_object_base const &rhs) = delete;
-  formatv_object_base(formatv_object_base &&rhs) = default;
 
-public:
+  formatv_object_base(formatv_object_base &&rhs)
+      : Fmt(std::move(rhs.Fmt)),
+        Adapters(), // Adapters are initialized by formatv_object
+        Replacements(std::move(rhs.Replacements)) {
+    Adapters.reserve(rhs.Adapters.size());
+  };
+
   void format(raw_ostream &S) const {
-    for (auto &R : parseFormatString(Fmt)) {
+    for (auto &R : Replacements) {
       if (R.Type == ReplacementType::Empty)
         continue;
       if (R.Type == ReplacementType::Literal) {
@@ -100,7 +121,7 @@ public:
       Align.format(S, R.Options);
     }
   }
-  static SmallVector<ReplacementItem, 2> parseFormatString(StringRef Fmt);
+  static std::vector<ReplacementItem> parseFormatString(StringRef Fmt);
 
   static Optional<ReplacementItem> parseReplacementItem(StringRef Spec);
 
@@ -129,29 +150,12 @@ template <typename Tuple> class formatv_object : public formatv_object_base {
   // of the parameters, we have to own the storage for the parameters here, and
   // have the base class store type-erased pointers into this tuple.
   Tuple Parameters;
-  std::array<detail::format_adapter *, std::tuple_size<Tuple>::value>
-      ParameterPointers;
-
-  // The parameters are stored in a std::tuple, which does not provide runtime
-  // indexing capabilities.  In order to enable runtime indexing, we use this
-  // structure to put the parameters into a std::array.  Since the parameters
-  // are not all the same type, we use some type-erasure by wrapping the
-  // parameters in a template class that derives from a non-template superclass.
-  // Essentially, we are converting a std::tuple<Derived<Ts...>> to a
-  // std::array<Base*>.
-  struct create_adapters {
-    template <typename... Ts>
-    std::array<detail::format_adapter *, std::tuple_size<Tuple>::value>
-    operator()(Ts &... Items) {
-      return {{&Items...}};
-    }
-  };
 
 public:
   formatv_object(StringRef Fmt, Tuple &&Params)
-      : formatv_object_base(Fmt, ParameterPointers),
+      : formatv_object_base(Fmt, std::tuple_size<Tuple>::value),
         Parameters(std::move(Params)) {
-    ParameterPointers = apply_tuple(create_adapters(), Parameters);
+    Adapters = apply_tuple(create_adapters(), Parameters);
   }
 
   formatv_object(formatv_object const &rhs) = delete;
@@ -159,8 +163,7 @@ public:
   formatv_object(formatv_object &&rhs)
       : formatv_object_base(std::move(rhs)),
         Parameters(std::move(rhs.Parameters)) {
-    ParameterPointers = apply_tuple(create_adapters(), Parameters);
-    Adapters = ParameterPointers;
+    Adapters = apply_tuple(create_adapters(), Parameters);
   }
 };
 

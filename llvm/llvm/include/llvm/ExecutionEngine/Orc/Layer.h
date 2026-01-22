@@ -14,7 +14,6 @@
 #define LLVM_EXECUTIONENGINE_ORC_LAYER_H
 
 #include "llvm/ExecutionEngine/Orc/Core.h"
-#include "llvm/ExecutionEngine/Orc/Mangling.h"
 #include "llvm/ExecutionEngine/Orc/ThreadSafeModule.h"
 #include "llvm/IR/Module.h"
 #include "llvm/Support/MemoryBuffer.h"
@@ -28,12 +27,15 @@ namespace orc {
 /// their linkage is changed to available-externally.
 class IRMaterializationUnit : public MaterializationUnit {
 public:
+  struct ManglingOptions {
+    bool EmulatedTLS = false;
+  };
+
   using SymbolNameToDefinitionMap = std::map<SymbolStringPtr, GlobalValue *>;
 
   /// Create an IRMaterializationLayer. Scans the module to build the
   /// SymbolFlags and SymbolToDefinition maps.
-  IRMaterializationUnit(ExecutionSession &ES,
-                        const IRSymbolMapper::ManglingOptions &MO,
+  IRMaterializationUnit(ExecutionSession &ES, const ManglingOptions &MO,
                         ThreadSafeModule TSM, VModuleKey K);
 
   /// Create an IRMaterializationLayer from a module, and pre-existing
@@ -42,13 +44,12 @@ public:
   /// This constructor is useful for delegating work from one
   /// IRMaterializationUnit to another.
   IRMaterializationUnit(ThreadSafeModule TSM, VModuleKey K,
-                        SymbolFlagsMap SymbolFlags, SymbolStringPtr InitSymbol,
+                        SymbolFlagsMap SymbolFlags,
                         SymbolNameToDefinitionMap SymbolToDefinition);
 
   /// Return the ModuleIdentifier as the name for this MaterializationUnit.
   StringRef getName() const override;
 
-  /// Return a reference to the contained ThreadSafeModule.
   const ThreadSafeModule &getModule() const { return TSM; }
 
 protected:
@@ -56,16 +57,14 @@ protected:
   SymbolNameToDefinitionMap SymbolToDefinition;
 
 private:
-  static SymbolStringPtr getInitSymbol(ExecutionSession &ES,
-                                       const ThreadSafeModule &TSM);
-
   void discard(const JITDylib &JD, const SymbolStringPtr &Name) override;
 };
 
 /// Interface for layers that accept LLVM IR.
 class IRLayer {
 public:
-  IRLayer(ExecutionSession &ES, const IRSymbolMapper::ManglingOptions *&MO)
+  IRLayer(ExecutionSession &ES,
+          const IRMaterializationUnit::ManglingOptions *&MO)
       : ES(ES), MO(MO) {}
 
   virtual ~IRLayer();
@@ -74,7 +73,7 @@ public:
   ExecutionSession &getExecutionSession() { return ES; }
 
   /// Get the mangling options for this layer.
-  const IRSymbolMapper::ManglingOptions *&getManglingOptions() const {
+  const IRMaterializationUnit::ManglingOptions *&getManglingOptions() const {
     return MO;
   }
 
@@ -105,15 +104,14 @@ public:
 private:
   bool CloneToNewContextOnEmit = false;
   ExecutionSession &ES;
-  const IRSymbolMapper::ManglingOptions *&MO;
+  const IRMaterializationUnit::ManglingOptions *&MO;
 };
 
 /// MaterializationUnit that materializes modules by calling the 'emit' method
 /// on the given IRLayer.
 class BasicIRLayerMaterializationUnit : public IRMaterializationUnit {
 public:
-  BasicIRLayerMaterializationUnit(IRLayer &L,
-                                  const IRSymbolMapper::ManglingOptions &MO,
+  BasicIRLayerMaterializationUnit(IRLayer &L, const ManglingOptions &MO,
                                   ThreadSafeModule TSM, VModuleKey K);
 
 private:
@@ -155,8 +153,7 @@ public:
 
   BasicObjectLayerMaterializationUnit(ObjectLayer &L, VModuleKey K,
                                       std::unique_ptr<MemoryBuffer> O,
-                                      SymbolFlagsMap SymbolFlags,
-                                      SymbolStringPtr InitSymbol);
+                                      SymbolFlagsMap SymbolFlags);
 
   /// Return the buffer's identifier as the name for this MaterializationUnit.
   StringRef getName() const override;
@@ -169,6 +166,12 @@ private:
   ObjectLayer &L;
   std::unique_ptr<MemoryBuffer> O;
 };
+
+/// Returns a SymbolFlagsMap for the object file represented by the given
+/// buffer, or an error if the buffer does not contain a valid object file.
+// FIXME: Maybe move to Core.h?
+Expected<SymbolFlagsMap> getObjectSymbolFlags(ExecutionSession &ES,
+                                              MemoryBufferRef ObjBuffer);
 
 } // End namespace orc
 } // End namespace llvm

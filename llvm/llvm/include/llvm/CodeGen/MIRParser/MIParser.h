@@ -16,7 +16,6 @@
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/CodeGen/MachineMemOperand.h"
-#include "llvm/CodeGen/Register.h"
 #include "llvm/Support/Allocator.h"
 
 namespace llvm {
@@ -41,8 +40,8 @@ struct VRegInfo {
     const TargetRegisterClass *RC;
     const RegisterBank *RegBank;
   } D;
-  Register VReg;
-  Register PreferredReg;
+  unsigned VReg;
+  unsigned PreferredReg = 0;
 };
 
 using Name2RegClassMap = StringMap<const TargetRegisterClass *>;
@@ -56,7 +55,7 @@ private:
   StringMap<unsigned> Names2InstrOpCodes;
 
   /// Maps from register names to registers.
-  StringMap<Register> Names2Regs;
+  StringMap<unsigned> Names2Regs;
 
   /// Maps from register mask names to register masks.
   StringMap<const uint32_t *> Names2RegMasks;
@@ -101,7 +100,7 @@ public:
 
   /// Try to convert a register name to a register number. Return true if the
   /// register name is invalid.
-  bool getRegisterByName(StringRef RegName, Register &Reg);
+  bool getRegisterByName(StringRef RegName, unsigned &Reg);
 
   /// Check if the given identifier is a name of a register mask.
   ///
@@ -165,7 +164,7 @@ struct PerFunctionMIParsingState {
   PerTargetMIParsingState &Target;
 
   DenseMap<unsigned, MachineBasicBlock *> MBBSlots;
-  DenseMap<Register, VRegInfo *> VRegInfos;
+  DenseMap<unsigned, VRegInfo *> VRegInfos;
   StringMap<VRegInfo *> VRegInfosNamed;
   DenseMap<unsigned, int> FixedStackObjectSlots;
   DenseMap<unsigned, int> StackObjectSlots;
@@ -179,7 +178,7 @@ struct PerFunctionMIParsingState {
                             const SlotMapping &IRSlots,
                             PerTargetMIParsingState &Target);
 
-  VRegInfo &getVRegInfo(Register Num);
+  VRegInfo &getVRegInfo(unsigned Num);
   VRegInfo &getVRegInfoNamed(StringRef RegName);
   const Value *getIRValue(unsigned Slot);
 };
@@ -217,10 +216,10 @@ bool parseMBBReference(PerFunctionMIParsingState &PFS,
                        SMDiagnostic &Error);
 
 bool parseRegisterReference(PerFunctionMIParsingState &PFS,
-                            Register &Reg, StringRef Src,
+                            unsigned &Reg, StringRef Src,
                             SMDiagnostic &Error);
 
-bool parseNamedRegisterReference(PerFunctionMIParsingState &PFS, Register &Reg,
+bool parseNamedRegisterReference(PerFunctionMIParsingState &PFS, unsigned &Reg,
                                  StringRef Src, SMDiagnostic &Error);
 
 bool parseVirtualRegisterReference(PerFunctionMIParsingState &PFS,

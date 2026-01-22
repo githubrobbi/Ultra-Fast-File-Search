@@ -25,6 +25,7 @@ class StringRef;
 class ModuleSummaryIndex;
 class ModulePass;
 class Pass;
+class Function;
 class BasicBlock;
 class GlobalValue;
 class raw_ostream;
@@ -83,12 +84,10 @@ ModulePass *createEliminateAvailableExternallyPass();
 //===----------------------------------------------------------------------===//
 /// createGVExtractionPass - If deleteFn is true, this pass deletes
 /// the specified global values. Otherwise, it deletes as much of the module as
-/// possible, except for the global values specified. If keepConstInit is true,
-/// the initializers of global constants are not deleted even if they are
-/// unused.
+/// possible, except for the global values specified.
 ///
 ModulePass *createGVExtractionPass(std::vector<GlobalValue*>& GVs, bool
-                                  deleteFn = false, bool keepConstInit = false);
+                                   deleteFn = false);
 
 //===----------------------------------------------------------------------===//
 /// This pass performs iterative function importing from other modules.
@@ -150,10 +149,6 @@ ModulePass *createDeadArgHackingPass();
 /// equal to maxElements (maxElements == 0 means always promote).
 ///
 Pass *createArgumentPromotionPass(unsigned maxElements = 3);
-
-//===----------------------------------------------------------------------===//
-/// createOpenMPOptLegacyPass - OpenMP specific optimizations.
-Pass *createOpenMPOptLegacyPass();
 
 //===----------------------------------------------------------------------===//
 /// createIPConstantPropagationPass - This pass propagates constants from call
@@ -241,15 +236,12 @@ enum class PassSummaryAction {
 /// The behavior depends on the summary arguments:
 /// - If ExportSummary is non-null, this pass will export type identifiers to
 ///   the given summary.
-/// - If ImportSummary is non-null, this pass will import type identifiers from
-///   the given summary.
-/// - Otherwise, if both are null and DropTypeTests is true, all type test
-///   assume sequences will be removed from the IR.
-/// It is invalid for both ExportSummary and ImportSummary to be non-null
-/// unless DropTypeTests is true.
+/// - Otherwise, if ImportSummary is non-null, this pass will import type
+///   identifiers from the given summary.
+/// - Otherwise it does neither.
+/// It is invalid for both ExportSummary and ImportSummary to be non-null.
 ModulePass *createLowerTypeTestsPass(ModuleSummaryIndex *ExportSummary,
-                                     const ModuleSummaryIndex *ImportSummary,
-                                     bool DropTypeTests = false);
+                                     const ModuleSummaryIndex *ImportSummary);
 
 /// This pass export CFI checks for use by external modules.
 ModulePass *createCrossDSOCFIPass();

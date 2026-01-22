@@ -13,7 +13,6 @@
 #ifndef LLVM_CODEGEN_GLOBALISEL_KNOWNBITSINFO_H
 #define LLVM_CODEGEN_GLOBALISEL_KNOWNBITSINFO_H
 
-#include "llvm/ADT/DenseSet.h"
 #include "llvm/CodeGen/GlobalISel/GISelChangeObserver.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
 #include "llvm/CodeGen/Register.h"
@@ -32,12 +31,9 @@ class GISelKnownBits : public GISelChangeObserver {
   MachineRegisterInfo &MRI;
   const TargetLowering &TL;
   const DataLayout &DL;
-  unsigned MaxDepth;
-  /// Cache maintained during a computeKnownBits request.
-  SmallDenseMap<Register, KnownBits, 16> ComputeKnownBitsCache;
 
 public:
-  GISelKnownBits(MachineFunction &MF, unsigned MaxDepth = 6);
+  GISelKnownBits(MachineFunction &MF);
   virtual ~GISelKnownBits() = default;
   void setMF(MachineFunction &MF);
   virtual void computeKnownBitsImpl(Register R, KnownBits &Known,
@@ -50,9 +46,6 @@ public:
 
   // KnownBitsAPI
   KnownBits getKnownBits(Register R);
-  KnownBits getKnownBits(Register R, const APInt &DemandedElts,
-                         unsigned Depth = 0);
-
   // Calls getKnownBits for first operand def of MI.
   KnownBits getKnownBits(MachineInstr &MI);
   APInt getKnownZeroes(Register R);
@@ -89,7 +82,7 @@ public:
   void changedInstr(MachineInstr &MI) override{};
 
 protected:
-  unsigned getMaxDepth() const { return MaxDepth; }
+  unsigned getMaxDepth() const { return 6; }
 };
 
 /// To use KnownBitsInfo analysis in a pass,

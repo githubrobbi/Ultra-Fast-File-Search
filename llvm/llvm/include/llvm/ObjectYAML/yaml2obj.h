@@ -11,14 +11,14 @@
 #ifndef LLVM_TOOLS_YAML2OBJ_YAML2OBJ_H
 #define LLVM_TOOLS_YAML2OBJ_YAML2OBJ_H
 
-#include "llvm/ADT/STLExtras.h"
+#include "llvm/ADT/StringRef.h"
+#include "llvm/Support/Error.h"
 #include <memory>
 
 namespace llvm {
 class raw_ostream;
 template <typename T> class SmallVectorImpl;
-class StringRef;
-class Twine;
+template <typename T> class Expected;
 
 namespace object {
 class ObjectFile;

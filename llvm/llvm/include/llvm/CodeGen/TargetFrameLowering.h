@@ -52,21 +52,6 @@ public:
     unsigned Reg;
     int Offset; // Offset relative to stack pointer on function entry.
   };
-
-  struct DwarfFrameBase {
-    // The frame base may be either a register (the default), the CFA,
-    // or a WebAssembly-specific location description.
-    enum FrameBaseKind { Register, CFA, WasmFrameBase } Kind;
-    struct WasmFrameBase {
-      unsigned Kind; // Wasm local, global, or value stack
-      unsigned Index;
-    };
-    union {
-      unsigned Reg;
-      struct WasmFrameBase WasmLoc;
-    } Location;
-  };
-
 private:
   StackDirection StackDir;
   Align StackAlignment;
@@ -75,7 +60,7 @@ private:
   bool StackRealignable;
 public:
   TargetFrameLowering(StackDirection D, Align StackAl, int LAO,
-                      Align TransAl = Align(1), bool StackReal = true)
+                      Align TransAl = Align::None(), bool StackReal = true)
       : StackDir(D), StackAlignment(StackAl), TransientStackAlignment(TransAl),
         LocalAreaOffset(LAO), StackRealignable(StackReal) {}
 
@@ -93,11 +78,6 @@ public:
   /// is the largest alignment for any data object in the target.
   ///
   unsigned getStackAlignment() const { return StackAlignment.value(); }
-  /// getStackAlignment - This method returns the number of bytes to which the
-  /// stack pointer must be aligned on entry to a function.  Typically, this
-  /// is the largest alignment for any data object in the target.
-  ///
-  Align getStackAlign() const { return StackAlignment; }
 
   /// alignSPAdjust - This method aligns the stack adjustment to the correct
   /// alignment.
@@ -115,15 +95,9 @@ public:
   /// which the stack pointer must be aligned at all times, even between
   /// calls.
   ///
-  LLVM_ATTRIBUTE_DEPRECATED(unsigned getTransientStackAlignment() const,
-                            "Use getTransientStackAlign instead") {
+  unsigned getTransientStackAlignment() const {
     return TransientStackAlignment.value();
   }
-  /// getTransientStackAlignment - This method returns the number of bytes to
-  /// which the stack pointer must be aligned at all times, even between
-  /// calls.
-  ///
-  Align getTransientStackAlign() const { return TransientStackAlignment; }
 
   /// isStackRealignable - This method returns whether the stack can be
   /// realigned.
@@ -224,7 +198,7 @@ public:
   /// storeRegToStackSlot(). Returns false otherwise.
   virtual bool spillCalleeSavedRegisters(MachineBasicBlock &MBB,
                                          MachineBasicBlock::iterator MI,
-                                         ArrayRef<CalleeSavedInfo> CSI,
+                                        const std::vector<CalleeSavedInfo> &CSI,
                                          const TargetRegisterInfo *TRI) const {
     return false;
   }
@@ -235,11 +209,10 @@ public:
   /// If it returns true, and any of the registers in CSI is not restored,
   /// it sets the corresponding Restored flag in CSI to false.
   /// Returns false otherwise.
-  virtual bool
-  restoreCalleeSavedRegisters(MachineBasicBlock &MBB,
-                              MachineBasicBlock::iterator MI,
-                              MutableArrayRef<CalleeSavedInfo> CSI,
-                              const TargetRegisterInfo *TRI) const {
+  virtual bool restoreCalleeSavedRegisters(MachineBasicBlock &MBB,
+                                           MachineBasicBlock::iterator MI,
+                                           std::vector<CalleeSavedInfo> &CSI,
+                                        const TargetRegisterInfo *TRI) const {
     return false;
   }
 
@@ -283,7 +256,7 @@ public:
   /// and offset used to reference a frame index location. The offset is
   /// returned directly, and the base register is returned via FrameReg.
   virtual int getFrameIndexReference(const MachineFunction &MF, int FI,
-                                     Register &FrameReg) const;
+                                     unsigned &FrameReg) const;
 
   /// Same as \c getFrameIndexReference, except that the stack pointer (as
   /// opposed to the frame pointer) will be the preferred value for \p
@@ -292,7 +265,7 @@ public:
   /// offset is only guaranteed to be valid with respect to the value of SP at
   /// the end of the prologue.
   virtual int getFrameIndexReferencePreferSP(const MachineFunction &MF, int FI,
-                                             Register &FrameReg,
+                                             unsigned &FrameReg,
                                              bool IgnoreSPUpdates) const {
     // Always safe to dispatch to getFrameIndexReference.
     return getFrameIndexReference(MF, FI, FrameReg);
@@ -305,7 +278,7 @@ public:
                                        int FI) const {
     // By default, dispatch to getFrameIndexReference. Interested targets can
     // override this.
-    Register FrameReg;
+    unsigned FrameReg;
     return getFrameIndexReference(MF, FI, FrameReg);
   }
 
@@ -335,13 +308,6 @@ public:
   virtual void processFunctionBeforeFrameFinalized(MachineFunction &MF,
                                              RegScavenger *RS = nullptr) const {
   }
-
-  /// processFunctionBeforeFrameIndicesReplaced - This method is called
-  /// immediately before MO_FrameIndex operands are eliminated, but after the
-  /// frame is finalized. This method is optional.
-  virtual void
-  processFunctionBeforeFrameIndicesReplaced(MachineFunction &MF,
-                                            RegScavenger *RS = nullptr) const {}
 
   virtual unsigned getWinEHParentFrameOffset(const MachineFunction &MF) const {
     report_fatal_error("WinEH not implemented for this target");
@@ -427,11 +393,7 @@ public:
 
   /// Return initial CFA register value i.e. the one valid at the beginning of
   /// the function (before any stack operations).
-  virtual Register getInitialCFARegister(const MachineFunction &MF) const;
-
-  /// Return the frame base information to be encoded in the DWARF subprogram
-  /// debug info.
-  virtual DwarfFrameBase getDwarfFrameBase(const MachineFunction &MF) const;
+  virtual unsigned getInitialCFARegister(const MachineFunction &MF) const;
 };
 
 } // End llvm namespace

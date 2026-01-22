@@ -13,6 +13,7 @@
 #ifndef LLVM_CODEGEN_SCHEDULEDFS_H
 #define LLVM_CODEGEN_SCHEDULEDFS_H
 
+#include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/CodeGen/ScheduleDAG.h"
 #include <cassert>
@@ -21,7 +22,6 @@
 
 namespace llvm {
 
-template <typename T> class ArrayRef;
 class raw_ostream;
 
 /// Represent the ILP of the subDAG rooted at a DAG node.

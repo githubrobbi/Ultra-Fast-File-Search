@@ -9,13 +9,12 @@
 #ifndef LLVM_SUPPORT_TIME_PROFILER_H
 #define LLVM_SUPPORT_TIME_PROFILER_H
 
-#include "llvm/Support/Error.h"
 #include "llvm/Support/raw_ostream.h"
 
 namespace llvm {
 
 struct TimeTraceProfiler;
-TimeTraceProfiler *getTimeTraceProfilerInstance();
+extern TimeTraceProfiler *TimeTraceProfilerInstance;
 
 /// Initialize the time trace profiler.
 /// This sets up the global \p TimeTraceProfilerInstance
@@ -26,26 +25,15 @@ void timeTraceProfilerInitialize(unsigned TimeTraceGranularity,
 /// Cleanup the time trace profiler, if it was initialized.
 void timeTraceProfilerCleanup();
 
-/// Finish a time trace profiler running on a worker thread.
-void timeTraceProfilerFinishThread();
-
 /// Is the time trace profiler enabled, i.e. initialized?
 inline bool timeTraceProfilerEnabled() {
-  return getTimeTraceProfilerInstance() != nullptr;
+  return TimeTraceProfilerInstance != nullptr;
 }
 
-/// Write profiling data to output stream.
+/// Write profiling data to output file.
 /// Data produced is JSON, in Chrome "Trace Event" format, see
 /// https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/preview
 void timeTraceProfilerWrite(raw_pwrite_stream &OS);
-
-/// Write profiling data to a file.
-/// The function will write to \p PreferredFileName if provided, if not
-/// then will write to \p FallbackFileName appending .time-trace.
-/// Returns a StringError indicating a failure if the function is
-/// unable to open the file for writing.
-Error timeTraceProfilerWrite(StringRef PreferredFileName,
-                             StringRef FallbackFileName);
 
 /// Manually begin a time section, with the given \p Name and \p Detail.
 /// Profiler copies the string data, so the pointers can be given into
@@ -71,19 +59,19 @@ struct TimeTraceScope {
   TimeTraceScope &operator=(TimeTraceScope &&) = delete;
 
   TimeTraceScope(StringRef Name) {
-    if (getTimeTraceProfilerInstance() != nullptr)
+    if (TimeTraceProfilerInstance != nullptr)
       timeTraceProfilerBegin(Name, StringRef(""));
   }
   TimeTraceScope(StringRef Name, StringRef Detail) {
-    if (getTimeTraceProfilerInstance() != nullptr)
+    if (TimeTraceProfilerInstance != nullptr)
       timeTraceProfilerBegin(Name, Detail);
   }
   TimeTraceScope(StringRef Name, llvm::function_ref<std::string()> Detail) {
-    if (getTimeTraceProfilerInstance() != nullptr)
+    if (TimeTraceProfilerInstance != nullptr)
       timeTraceProfilerBegin(Name, Detail);
   }
   ~TimeTraceScope() {
-    if (getTimeTraceProfilerInstance() != nullptr)
+    if (TimeTraceProfilerInstance != nullptr)
       timeTraceProfilerEnd();
   }
 };

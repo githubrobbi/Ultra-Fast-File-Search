@@ -26,7 +26,6 @@
 namespace llvm {
 
 class MachineRegisterInfo;
-class LostDebugLocObserver;
 
 class Legalizer : public MachineFunctionPass {
 public:
@@ -72,7 +71,6 @@ public:
   static MFResult
   legalizeMachineFunction(MachineFunction &MF, const LegalizerInfo &LI,
                           ArrayRef<GISelChangeObserver *> AuxObservers,
-                          LostDebugLocObserver &LocObserver,
                           MachineIRBuilder &MIRBuilder);
 };
 } // End namespace llvm.

@@ -357,8 +357,7 @@ enum Constants {
 };
 
 /// Constants for the DW_APPLE_PROPERTY_attributes attribute.
-/// Keep this list in sync with clang's DeclObjCCommon.h
-/// ObjCPropertyAttribute::Kind!
+/// Keep this list in sync with clang's DeclSpec.h ObjCPropertyAttributeKind!
 enum ApplePropertyAttributes {
 #define HANDLE_DW_APPLE_PROPERTY(ID, NAME) DW_APPLE_PROPERTY_##NAME = ID,
 #include "llvm/BinaryFormat/Dwarf.def"
@@ -471,7 +470,6 @@ StringRef ArrayOrderString(unsigned Order);
 StringRef LNStandardString(unsigned Standard);
 StringRef LNExtendedString(unsigned Encoding);
 StringRef MacinfoString(unsigned Encoding);
-StringRef MacroString(unsigned Encoding);
 StringRef RangeListEncodingString(unsigned Encoding);
 StringRef LocListEncodingString(unsigned Encoding);
 StringRef CallFrameString(unsigned Encoding, Triple::ArchType Arch);
@@ -500,7 +498,6 @@ unsigned getLanguage(StringRef LanguageString);
 unsigned getCallingConvention(StringRef LanguageString);
 unsigned getAttributeEncoding(StringRef EncodingString);
 unsigned getMacinfo(StringRef MacinfoString);
-unsigned getMacro(StringRef MacroString);
 /// @}
 
 /// \defgroup DwarfConstantsVersioning Dwarf version for constants
@@ -535,17 +532,6 @@ unsigned LanguageVendor(SourceLanguage L);
 
 Optional<unsigned> LanguageLowerBound(SourceLanguage L);
 
-/// The size of a reference determined by the DWARF 32/64-bit format.
-inline uint8_t getDwarfOffsetByteSize(DwarfFormat Format) {
-  switch (Format) {
-  case DwarfFormat::DWARF32:
-    return 4;
-  case DwarfFormat::DWARF64:
-    return 8;
-  }
-  llvm_unreachable("Invalid Format value");
-}
-
 /// A helper struct providing information about the byte size of DW_FORM
 /// values that vary in size depending on the DWARF version, address byte
 /// size, or DWARF32/DWARF64.
@@ -565,7 +551,13 @@ struct FormParams {
 
   /// The size of a reference is determined by the DWARF 32/64-bit format.
   uint8_t getDwarfOffsetByteSize() const {
-    return dwarf::getDwarfOffsetByteSize(Format);
+    switch (Format) {
+    case DwarfFormat::DWARF32:
+      return 4;
+    case DwarfFormat::DWARF64:
+      return 8;
+    }
+    llvm_unreachable("Invalid Format value");
   }
 
   explicit operator bool() const { return Version && AddrSize; }
@@ -662,11 +654,6 @@ template <> struct EnumTraits<Tag> : public std::true_type {
   static constexpr char Type[4] = "TAG";
   static constexpr StringRef (*StringFn)(unsigned) = &TagString;
 };
-
-template <> struct EnumTraits<LineNumberOps> : public std::true_type {
-  static constexpr char Type[4] = "LNS";
-  static constexpr StringRef (*StringFn)(unsigned) = &LNStandardString;
-};
 } // End of namespace dwarf
 
 /// Dwarf constants format_provider
@@ -675,7 +662,8 @@ template <> struct EnumTraits<LineNumberOps> : public std::true_type {
 /// dumping functions above, these format unknown enumerator values as
 /// DW_TYPE_unknown_1234 (e.g. DW_TAG_unknown_ffff).
 template <typename Enum>
-struct format_provider<Enum, std::enable_if_t<dwarf::EnumTraits<Enum>::value>> {
+struct format_provider<
+    Enum, typename std::enable_if<dwarf::EnumTraits<Enum>::value>::type> {
   static void format(const Enum &E, raw_ostream &OS, StringRef Style) {
     StringRef Str = dwarf::EnumTraits<Enum>::StringFn(E);
     if (Str.empty()) {

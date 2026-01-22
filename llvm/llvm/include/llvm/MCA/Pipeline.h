@@ -15,6 +15,8 @@
 #ifndef LLVM_MCA_PIPELINE_H
 #define LLVM_MCA_PIPELINE_H
 
+#include "llvm/ADT/SmallVector.h"
+#include "llvm/MCA/HardwareUnits/Scheduler.h"
 #include "llvm/MCA/Stages/Stage.h"
 #include "llvm/Support/Error.h"
 

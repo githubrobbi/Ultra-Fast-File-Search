@@ -43,7 +43,7 @@ public:
     return Error::success();
   }
 
-  Expected<uint32_t> getSymbolFlags(DataRefImpl Symb) const override {
+  uint32_t getSymbolFlags(DataRefImpl Symb) const override {
     return SymbolRef::SF_Global;
   }
 

@@ -255,8 +255,6 @@ class Module;
     return false;
   }
 
-  APInt readWideAPInt(ArrayRef<uint64_t> Vals, unsigned TypeBits);
-
   const std::error_category &BitcodeErrorCategory();
   enum class BitcodeError { CorruptedBitcode = 1 };
   inline std::error_code make_error_code(BitcodeError E) {

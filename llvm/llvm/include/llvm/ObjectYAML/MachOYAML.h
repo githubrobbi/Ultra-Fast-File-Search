@@ -27,20 +27,6 @@
 namespace llvm {
 namespace MachOYAML {
 
-struct Relocation {
-  // Offset in the section to what is being relocated.
-  llvm::yaml::Hex32 address;
-  // Symbol index if r_extern == 1 else section index.
-  uint32_t symbolnum;
-  bool is_pcrel;
-  // Real length = 2 ^ length.
-  uint8_t length;
-  bool is_extern;
-  uint8_t type;
-  bool is_scattered;
-  int32_t value;
-};
-
 struct Section {
   char sectname[16];
   char segname[16];
@@ -55,7 +41,6 @@ struct Section {
   llvm::yaml::Hex32 reserved2;
   llvm::yaml::Hex32 reserved3;
   Optional<llvm::yaml::BinaryRef> content;
-  std::vector<Relocation> relocations;
 };
 
 struct FileHeader {
@@ -158,7 +143,6 @@ struct UniversalBinary {
 } // end namespace llvm
 
 LLVM_YAML_IS_SEQUENCE_VECTOR(llvm::MachOYAML::LoadCommand)
-LLVM_YAML_IS_SEQUENCE_VECTOR(llvm::MachOYAML::Relocation)
 LLVM_YAML_IS_SEQUENCE_VECTOR(llvm::MachOYAML::Section)
 LLVM_YAML_IS_SEQUENCE_VECTOR(llvm::MachOYAML::RebaseOpcode)
 LLVM_YAML_IS_SEQUENCE_VECTOR(llvm::MachOYAML::BindOpcode)
@@ -212,10 +196,6 @@ template <> struct MappingTraits<MachOYAML::BindOpcode> {
 
 template <> struct MappingTraits<MachOYAML::ExportEntry> {
   static void mapping(IO &IO, MachOYAML::ExportEntry &ExportEntry);
-};
-
-template <> struct MappingTraits<MachOYAML::Relocation> {
-  static void mapping(IO &IO, MachOYAML::Relocation &R);
 };
 
 template <> struct MappingTraits<MachOYAML::Section> {

@@ -329,8 +329,8 @@ protected: // Can only create subclasses.
   /// AvailableFeatures - The current set of available features.
   FeatureBitset AvailableFeatures;
 
-  /// ParsingMSInlineAsm - Are we parsing ms-style inline assembly?
-  bool ParsingMSInlineAsm = false;
+  /// ParsingInlineAsm - Are we parsing ms-style inline assembly?
+  bool ParsingInlineAsm = false;
 
   /// SemaCallback - The Sema callback implementation.  Must be set when parsing
   /// ms-style inline assembly.
@@ -359,8 +359,8 @@ public:
     AvailableFeatures = Value;
   }
 
-  bool isParsingMSInlineAsm () { return ParsingMSInlineAsm; }
-  void setParsingMSInlineAsm (bool Value) { ParsingMSInlineAsm = Value; }
+  bool isParsingInlineAsm () { return ParsingInlineAsm; }
+  void setParsingInlineAsm (bool Value) { ParsingInlineAsm = Value; }
 
   MCTargetOptions getTargetOptions() const { return MCOptions; }
 
@@ -375,14 +375,6 @@ public:
 
   virtual bool ParseRegister(unsigned &RegNo, SMLoc &StartLoc,
                              SMLoc &EndLoc) = 0;
-
-  /// tryParseRegister - parse one register if possible
-  ///
-  /// Check whether a register specification can be parsed at the current
-  /// location, without failing the entire parse if it can't. Must not consume
-  /// tokens if the parse fails.
-  virtual OperandMatchResultTy
-  tryParseRegister(unsigned &RegNo, SMLoc &StartLoc, SMLoc &EndLoc) = 0;
 
   /// ParseInstruction - Parse one assembly instruction.
   ///

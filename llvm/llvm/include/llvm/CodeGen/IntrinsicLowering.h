@@ -19,6 +19,7 @@
 
 namespace llvm {
 class CallInst;
+class Module;
 class DataLayout;
 
 class IntrinsicLowering {

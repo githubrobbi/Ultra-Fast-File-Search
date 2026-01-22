@@ -28,8 +28,8 @@
 #include "llvm/Object/ObjectFile.h"
 #include "llvm/Object/SymbolicFile.h"
 #include "llvm/Support/ARMAttributeParser.h"
+#include "llvm/Support/ARMBuildAttributes.h"
 #include "llvm/Support/Casting.h"
-#include "llvm/Support/ELFAttributes.h"
 #include "llvm/Support/Endian.h"
 #include "llvm/Support/Error.h"
 #include "llvm/Support/ErrorHandling.h"
@@ -64,7 +64,7 @@ protected:
   virtual uint64_t getSectionOffset(DataRefImpl Sec) const = 0;
 
   virtual Expected<int64_t> getRelocationAddend(DataRefImpl Rel) const = 0;
-  virtual Error getBuildAttributes(ELFAttributeParser &Attributes) const = 0;
+  virtual Error getBuildAttributes(ARMAttributeParser &Attributes) const = 0;
 
 public:
   using elf_symbol_iterator_range = iterator_range<elf_symbol_iterator>;
@@ -261,7 +261,7 @@ protected:
   uint64_t getSymbolValueImpl(DataRefImpl Symb) const override;
   uint32_t getSymbolAlignment(DataRefImpl Symb) const override;
   uint64_t getCommonSymbolSizeImpl(DataRefImpl Symb) const override;
-  Expected<uint32_t> getSymbolFlags(DataRefImpl Symb) const override;
+  uint32_t getSymbolFlags(DataRefImpl Symb) const override;
   uint8_t getSymbolBinding(DataRefImpl Symb) const override;
   uint8_t getSymbolOther(DataRefImpl Symb) const override;
   uint8_t getSymbolELFType(DataRefImpl Symb) const override;
@@ -285,7 +285,6 @@ protected:
   bool isSectionVirtual(DataRefImpl Sec) const override;
   bool isBerkeleyText(DataRefImpl Sec) const override;
   bool isBerkeleyData(DataRefImpl Sec) const override;
-  bool isDebugSection(StringRef SectionName) const override;
   relocation_iterator section_rel_begin(DataRefImpl Sec) const override;
   relocation_iterator section_rel_end(DataRefImpl Sec) const override;
   std::vector<SectionRef> dynamic_relocation_sections() const override;
@@ -366,24 +365,22 @@ protected:
         (Visibility == ELF::STV_DEFAULT || Visibility == ELF::STV_PROTECTED));
   }
 
-  Error getBuildAttributes(ELFAttributeParser &Attributes) const override {
+  Error getBuildAttributes(ARMAttributeParser &Attributes) const override {
     auto SectionsOrErr = EF.sections();
     if (!SectionsOrErr)
       return SectionsOrErr.takeError();
 
     for (const Elf_Shdr &Sec : *SectionsOrErr) {
-      if (Sec.sh_type == ELF::SHT_ARM_ATTRIBUTES ||
-          Sec.sh_type == ELF::SHT_RISCV_ATTRIBUTES) {
+      if (Sec.sh_type == ELF::SHT_ARM_ATTRIBUTES) {
         auto ErrorOrContents = EF.getSectionContents(&Sec);
         if (!ErrorOrContents)
           return ErrorOrContents.takeError();
 
         auto Contents = ErrorOrContents.get();
-        if (Contents[0] != ELFAttrs::Format_Version || Contents.size() == 1)
+        if (Contents[0] != ARMBuildAttrs::Format_Version || Contents.size() == 1)
           return Error::success();
 
-        if (Error E = Attributes.parse(Contents, ELFT::TargetEndianness))
-          return E;
+        Attributes.Parse(Contents, ELFT::TargetEndianness == support::little);
         break;
       }
     }
@@ -516,12 +513,7 @@ uint64_t ELFObjectFile<ELFT>::getSymbolValueImpl(DataRefImpl Symb) const {
 template <class ELFT>
 Expected<uint64_t>
 ELFObjectFile<ELFT>::getSymbolAddress(DataRefImpl Symb) const {
-  Expected<uint64_t> SymbolValueOrErr = getSymbolValue(Symb);
-  if (!SymbolValueOrErr)
-    // TODO: Test this error.
-    return SymbolValueOrErr.takeError();
-
-  uint64_t Result = *SymbolValueOrErr;
+  uint64_t Result = getSymbolValue(Symb);
   const Elf_Sym *ESym = getSymbol(Symb);
   switch (ESym->st_shndx) {
   case ELF::SHN_COMMON:
@@ -614,7 +606,7 @@ ELFObjectFile<ELFT>::getSymbolType(DataRefImpl Symb) const {
 }
 
 template <class ELFT>
-Expected<uint32_t> ELFObjectFile<ELFT>::getSymbolFlags(DataRefImpl Sym) const {
+uint32_t ELFObjectFile<ELFT>::getSymbolFlags(DataRefImpl Sym) const {
   const Elf_Sym *ESym = getSymbol(Sym);
 
   uint32_t Result = SymbolRef::SF_None;
@@ -631,23 +623,12 @@ Expected<uint32_t> ELFObjectFile<ELFT>::getSymbolFlags(DataRefImpl Sym) const {
   if (ESym->getType() == ELF::STT_FILE || ESym->getType() == ELF::STT_SECTION)
     Result |= SymbolRef::SF_FormatSpecific;
 
-  if (Expected<typename ELFT::SymRange> SymbolsOrErr =
-          EF.symbols(DotSymtabSec)) {
-    // Set the SF_FormatSpecific flag for the 0-index null symbol.
-    if (ESym == SymbolsOrErr->begin())
-      Result |= SymbolRef::SF_FormatSpecific;
-  } else
-    // TODO: Test this error.
-    return SymbolsOrErr.takeError();
-
-  if (Expected<typename ELFT::SymRange> SymbolsOrErr =
-          EF.symbols(DotDynSymSec)) {
-    // Set the SF_FormatSpecific flag for the 0-index null symbol.
-    if (ESym == SymbolsOrErr->begin())
-      Result |= SymbolRef::SF_FormatSpecific;
-  } else
-    // TODO: Test this error.
-    return SymbolsOrErr.takeError();
+  auto DotSymtabSecSyms = EF.symbols(DotSymtabSec);
+  if (DotSymtabSecSyms && ESym == (*DotSymtabSecSyms).begin())
+    Result |= SymbolRef::SF_FormatSpecific;
+  auto DotDynSymSecSyms = EF.symbols(DotDynSymSec);
+  if (DotDynSymSecSyms && ESym == (*DotDynSymSecSyms).begin())
+    Result |= SymbolRef::SF_FormatSpecific;
 
   if (EF.getHeader()->e_machine == ELF::EM_ARM) {
     if (Expected<StringRef> NameOrErr = getSymbolName(Sym)) {
@@ -828,12 +809,6 @@ bool ELFObjectFile<ELFT>::isBerkeleyData(DataRefImpl Sec) const {
   const Elf_Shdr *EShdr = getSection(Sec);
   return !isBerkeleyText(Sec) && EShdr->sh_type != ELF::SHT_NOBITS &&
          EShdr->sh_flags & ELF::SHF_ALLOC;
-}
-
-template <class ELFT>
-bool ELFObjectFile<ELFT>::isDebugSection(StringRef SectionName) const {
-  return SectionName.startswith(".debug") ||
-         SectionName.startswith(".zdebug") || SectionName == ".gdb_index";
 }
 
 template <class ELFT>
@@ -1043,12 +1018,8 @@ basic_symbol_iterator ELFObjectFile<ELFT>::symbol_end() const {
 
 template <class ELFT>
 elf_symbol_iterator ELFObjectFile<ELFT>::dynamic_symbol_begin() const {
-  if (!DotDynSymSec || DotDynSymSec->sh_size < sizeof(Elf_Sym))
-    // Ignore errors here where the dynsym is empty or sh_size less than the
-    // size of one symbol. These should be handled elsewhere.
-    return symbol_iterator(SymbolRef(toDRI(DotDynSymSec, 0), this));
-  // Skip 0-index NULL symbol.
-  return symbol_iterator(SymbolRef(toDRI(DotDynSymSec, 1), this));
+  DataRefImpl Sym = toDRI(DotDynSymSec, 0);
+  return symbol_iterator(SymbolRef(Sym, this));
 }
 
 template <class ELFT>
@@ -1088,59 +1059,59 @@ StringRef ELFObjectFile<ELFT>::getFileFormatName() const {
   case ELF::ELFCLASS32:
     switch (EF.getHeader()->e_machine) {
     case ELF::EM_386:
-      return "elf32-i386";
+      return "ELF32-i386";
     case ELF::EM_IAMCU:
-      return "elf32-iamcu";
+      return "ELF32-iamcu";
     case ELF::EM_X86_64:
-      return "elf32-x86-64";
+      return "ELF32-x86-64";
     case ELF::EM_ARM:
-      return (IsLittleEndian ? "elf32-littlearm" : "elf32-bigarm");
+      return (IsLittleEndian ? "ELF32-arm-little" : "ELF32-arm-big");
     case ELF::EM_AVR:
-      return "elf32-avr";
+      return "ELF32-avr";
     case ELF::EM_HEXAGON:
-      return "elf32-hexagon";
+      return "ELF32-hexagon";
     case ELF::EM_LANAI:
-      return "elf32-lanai";
+      return "ELF32-lanai";
     case ELF::EM_MIPS:
-      return "elf32-mips";
+      return "ELF32-mips";
     case ELF::EM_MSP430:
-      return "elf32-msp430";
+      return "ELF32-msp430";
     case ELF::EM_PPC:
-      return "elf32-powerpc";
+      return "ELF32-ppc";
     case ELF::EM_RISCV:
-      return "elf32-littleriscv";
+      return "ELF32-riscv";
     case ELF::EM_SPARC:
     case ELF::EM_SPARC32PLUS:
-      return "elf32-sparc";
+      return "ELF32-sparc";
     case ELF::EM_AMDGPU:
-      return "elf32-amdgpu";
+      return "ELF32-amdgpu";
     default:
-      return "elf32-unknown";
+      return "ELF32-unknown";
     }
   case ELF::ELFCLASS64:
     switch (EF.getHeader()->e_machine) {
     case ELF::EM_386:
-      return "elf64-i386";
+      return "ELF64-i386";
     case ELF::EM_X86_64:
-      return "elf64-x86-64";
+      return "ELF64-x86-64";
     case ELF::EM_AARCH64:
-      return (IsLittleEndian ? "elf64-littleaarch64" : "elf64-bigaarch64");
+      return (IsLittleEndian ? "ELF64-aarch64-little" : "ELF64-aarch64-big");
     case ELF::EM_PPC64:
-      return (IsLittleEndian ? "elf64-powerpcle" : "elf64-powerpc");
+      return "ELF64-ppc64";
     case ELF::EM_RISCV:
-      return "elf64-littleriscv";
+      return "ELF64-riscv";
     case ELF::EM_S390:
-      return "elf64-s390";
+      return "ELF64-s390";
     case ELF::EM_SPARCV9:
-      return "elf64-sparc";
+      return "ELF64-sparc";
     case ELF::EM_MIPS:
-      return "elf64-mips";
+      return "ELF64-mips";
     case ELF::EM_AMDGPU:
-      return "elf64-amdgpu";
+      return "ELF64-amdgpu";
     case ELF::EM_BPF:
-      return "elf64-bpf";
+      return "ELF64-BPF";
     default:
-      return "elf64-unknown";
+      return "ELF64-unknown";
     }
   default:
     // FIXME: Proper error handling.

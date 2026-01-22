@@ -384,7 +384,8 @@ public:
   ///
   /// See the class comment for more details. It is illegal to call this on
   /// non-memory instructions.
-  MemDepResult getDependency(Instruction *QueryInst);
+  MemDepResult getDependency(Instruction *QueryInst,
+                             OrderedBasicBlock *OBB = nullptr);
 
   /// Perform a full dependency query for the specified call, returning the set
   /// of blocks that the value is potentially live across.
@@ -450,12 +451,14 @@ public:
                                         BasicBlock::iterator ScanIt,
                                         BasicBlock *BB,
                                         Instruction *QueryInst = nullptr,
-                                        unsigned *Limit = nullptr);
+                                        unsigned *Limit = nullptr,
+                                        OrderedBasicBlock *OBB = nullptr);
 
   MemDepResult
   getSimplePointerDependencyFrom(const MemoryLocation &MemLoc, bool isLoad,
                                  BasicBlock::iterator ScanIt, BasicBlock *BB,
-                                 Instruction *QueryInst, unsigned *Limit);
+                                 Instruction *QueryInst, unsigned *Limit,
+                                 OrderedBasicBlock *OBB);
 
   /// This analysis looks for other loads and stores with invariant.group
   /// metadata and the same pointer operand. Returns Unknown if it does not
@@ -464,6 +467,18 @@ public:
   /// found, which can be retrieved by calling getNonLocalPointerDependency
   /// with the same queried instruction.
   MemDepResult getInvariantGroupPointerDependency(LoadInst *LI, BasicBlock *BB);
+
+  /// Looks at a memory location for a load (specified by MemLocBase, Offs, and
+  /// Size) and compares it against a load.
+  ///
+  /// If the specified load could be safely widened to a larger integer load
+  /// that is 1) still efficient, 2) safe for the target, and 3) would provide
+  /// the specified memory location value, then this function returns the size
+  /// in bytes of the load width to use.  If not, this returns zero.
+  static unsigned getLoadLoadClobberFullWidthSize(const Value *MemLocBase,
+                                                  int64_t MemLocOffs,
+                                                  unsigned MemLocSize,
+                                                  const LoadInst *LI);
 
   /// Release memory in caches.
   void releaseMemory();
@@ -478,8 +493,7 @@ private:
                                    BasicBlock *BB,
                                    SmallVectorImpl<NonLocalDepResult> &Result,
                                    DenseMap<BasicBlock *, Value *> &Visited,
-                                   bool SkipFirstBlock = false,
-                                   bool IsIncomplete = false);
+                                   bool SkipFirstBlock = false);
   MemDepResult GetNonLocalInfoForBlock(Instruction *QueryInst,
                                        const MemoryLocation &Loc, bool isLoad,
                                        BasicBlock *BB, NonLocalDepInfo *Cache,

@@ -235,7 +235,7 @@ private:
   bool translateKnownIntrinsic(const CallInst &CI, Intrinsic::ID ID,
                                MachineIRBuilder &MIRBuilder);
 
-  bool translateInlineAsm(const CallBase &CB, MachineIRBuilder &MIRBuilder);
+  bool translateInlineAsm(const CallInst &CI, MachineIRBuilder &MIRBuilder);
 
   /// Returns true if the value should be split into multiple LLTs.
   /// If \p Offsets is given then the split type's offsets will be stored in it.
@@ -244,7 +244,8 @@ private:
                     SmallVectorImpl<uint64_t> *Offsets = nullptr);
 
   /// Common code for translating normal calls or invokes.
-  bool translateCallBase(const CallBase &CB, MachineIRBuilder &MIRBuilder);
+  bool translateCallSite(const ImmutableCallSite &CS,
+                         MachineIRBuilder &MIRBuilder);
 
   /// Translate call instruction.
   /// \pre \p U is a call instruction.
@@ -452,7 +453,6 @@ private:
   bool translateAtomicCmpXchg(const User &U, MachineIRBuilder &MIRBuilder);
   bool translateAtomicRMW(const User &U, MachineIRBuilder &MIRBuilder);
   bool translateFence(const User &U, MachineIRBuilder &MIRBuilder);
-  bool translateFreeze(const User &U, MachineIRBuilder &MIRBuilder);
 
   // Stubs to keep the compiler happy while we implement the rest of the
   // translation.
@@ -481,6 +481,9 @@ private:
     return false;
   }
   bool translateUserOp2(const User &U, MachineIRBuilder &MIRBuilder) {
+    return false;
+  }
+  bool translateFreeze(const User &U, MachineIRBuilder &MIRBuilder) {
     return false;
   }
 
@@ -579,16 +582,7 @@ private:
   /// Get the alignment of the given memory operation instruction. This will
   /// either be the explicitly specified value or the ABI-required alignment for
   /// the type being accessed (according to the Module's DataLayout).
-  LLVM_ATTRIBUTE_DEPRECATED(
-      inline unsigned getMemOpAlignment(const Instruction &I),
-      "Use getMemOpAlign instead") {
-    return getMemOpAlign(I).value();
-  }
-
-  /// Get the alignment of the given memory operation instruction. This will
-  /// either be the explicitly specified value or the ABI-required alignment for
-  /// the type being accessed (according to the Module's DataLayout).
-  Align getMemOpAlign(const Instruction &I);
+  unsigned getMemOpAlignment(const Instruction &I);
 
   /// Get the MachineBasicBlock that represents \p BB. Specifically, the block
   /// returned will be the head of the translated block (suitable for branch

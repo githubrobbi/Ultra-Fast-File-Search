@@ -143,7 +143,7 @@ private:
   TargetOptions Options;
   Optional<Reloc::Model> RM;
   Optional<CodeModel::Model> CM;
-  CodeGenOpt::Level OptLevel = CodeGenOpt::Default;
+  CodeGenOpt::Level OptLevel = CodeGenOpt::None;
 };
 
 } // end namespace orc

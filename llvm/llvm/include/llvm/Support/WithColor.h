@@ -11,7 +11,6 @@
 
 #include "llvm/ADT/StringRef.h"
 #include "llvm/Support/CommandLine.h"
-#include "llvm/Support/Error.h"
 
 namespace llvm {
 
@@ -109,14 +108,6 @@ public:
   /// Reset the colors to terminal defaults. Call this when you are done
   /// outputting colored text, or before program exit.
   WithColor &resetColor();
-
-  /// Implement default handling for Error.
-  /// Print "error: " to stderr.
-  static void defaultErrorHandler(Error Err);
-
-  /// Implement default handling for Warning.
-  /// Print "warning: " to stderr.
-  static void defaultWarningHandler(Error Warning);
 };
 
 } // end namespace llvm

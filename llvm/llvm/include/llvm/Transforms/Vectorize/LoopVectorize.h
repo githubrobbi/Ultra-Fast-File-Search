@@ -116,18 +116,8 @@ struct LoopVectorizeOptions {
   }
 };
 
-/// Storage for information about made changes.
-struct LoopVectorizeResult {
-  bool MadeAnyChange;
-  bool MadeCFGChange;
-
-  LoopVectorizeResult(bool MadeAnyChange, bool MadeCFGChange)
-      : MadeAnyChange(MadeAnyChange), MadeCFGChange(MadeCFGChange) {}
-};
-
 /// The LoopVectorize Pass.
 struct LoopVectorizePass : public PassInfoMixin<LoopVectorizePass> {
-private:
   /// If false, consider all loops for interleaving.
   /// If true, only loops that explicitly request interleaving are considered.
   bool InterleaveOnlyWhenForced;
@@ -136,8 +126,9 @@ private:
   /// If true, only loops that explicitly request vectorization are considered.
   bool VectorizeOnlyWhenForced;
 
-public:
-  LoopVectorizePass(LoopVectorizeOptions Opts = {});
+  LoopVectorizePass(LoopVectorizeOptions Opts = {})
+      : InterleaveOnlyWhenForced(Opts.InterleaveOnlyWhenForced),
+        VectorizeOnlyWhenForced(Opts.VectorizeOnlyWhenForced) {}
 
   ScalarEvolution *SE;
   LoopInfo *LI;
@@ -155,13 +146,12 @@ public:
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
 
   // Shim for old PM.
-  LoopVectorizeResult
-  runImpl(Function &F, ScalarEvolution &SE_, LoopInfo &LI_,
-          TargetTransformInfo &TTI_, DominatorTree &DT_,
-          BlockFrequencyInfo &BFI_, TargetLibraryInfo *TLI_, DemandedBits &DB_,
-          AliasAnalysis &AA_, AssumptionCache &AC_,
-          std::function<const LoopAccessInfo &(Loop &)> &GetLAA_,
-          OptimizationRemarkEmitter &ORE_, ProfileSummaryInfo *PSI_);
+  bool runImpl(Function &F, ScalarEvolution &SE_, LoopInfo &LI_,
+               TargetTransformInfo &TTI_, DominatorTree &DT_,
+               BlockFrequencyInfo &BFI_, TargetLibraryInfo *TLI_,
+               DemandedBits &DB_, AliasAnalysis &AA_, AssumptionCache &AC_,
+               std::function<const LoopAccessInfo &(Loop &)> &GetLAA_,
+               OptimizationRemarkEmitter &ORE_, ProfileSummaryInfo *PSI_);
 
   bool processLoop(Loop *L);
 };

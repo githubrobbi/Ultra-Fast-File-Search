@@ -19,6 +19,7 @@ namespace llvm {
 template <typename T> class ArrayRef;
 class AllocaInst;
 class DominatorTree;
+class AliasSetTracker;
 class AssumptionCache;
 
 /// Return true if this alloca is legal for promotion.

@@ -19,14 +19,14 @@ public:
                   std::unique_ptr<MCObjectWriter> OW,
                   std::unique_ptr<MCCodeEmitter> Emitter);
 
-  bool emitSymbolAttribute(MCSymbol *Symbol, MCSymbolAttr Attribute) override;
-  void emitCommonSymbol(MCSymbol *Symbol, uint64_t Size,
+  bool EmitSymbolAttribute(MCSymbol *Symbol, MCSymbolAttr Attribute) override;
+  void EmitCommonSymbol(MCSymbol *Symbol, uint64_t Size,
                         unsigned ByteAlignment) override;
-  void emitZerofill(MCSection *Section, MCSymbol *Symbol = nullptr,
+  void EmitZerofill(MCSection *Section, MCSymbol *Symbol = nullptr,
                     uint64_t Size = 0, unsigned ByteAlignment = 0,
                     SMLoc Loc = SMLoc()) override;
-  void emitInstToData(const MCInst &Inst, const MCSubtargetInfo &) override;
-  void emitXCOFFLocalCommonSymbol(MCSymbol *LabelSym, uint64_t Size,
+  void EmitInstToData(const MCInst &Inst, const MCSubtargetInfo &) override;
+  void EmitXCOFFLocalCommonSymbol(MCSymbol *LabelSym, uint64_t Size,
                                   MCSymbol *CsectSym,
                                   unsigned ByteAlign) override;
 };

@@ -93,7 +93,8 @@ private:
   std::vector<std::string> SourceFiles;
   std::vector<ArrayRef<uint8_t>> Symbols;
 
-  std::vector<codeview::DebugSubsectionRecordBuilder> C13Builders;
+  std::vector<std::unique_ptr<codeview::DebugSubsectionRecordBuilder>>
+      C13Builders;
 
   ModuleInfoHeader Layout;
 };

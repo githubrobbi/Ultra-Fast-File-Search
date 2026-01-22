@@ -18,10 +18,9 @@
 #define LLVM_TRANSFORMS_UTILS_UNIFYFUNCTIONEXITNODES_H
 
 #include "llvm/Pass.h"
+#include "llvm/PassRegistry.h"
 
 namespace llvm {
-
-class BasicBlock;
 
 struct UnifyFunctionExitNodes : public FunctionPass {
   BasicBlock *ReturnBlock = nullptr;

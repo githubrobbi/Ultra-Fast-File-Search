@@ -20,8 +20,8 @@ class Register {
   unsigned Reg;
 
 public:
-  constexpr Register(unsigned Val = 0): Reg(Val) {}
-  constexpr Register(MCRegister Val): Reg(Val) {}
+  Register(unsigned Val = 0): Reg(Val) {}
+  Register(MCRegister Val): Reg(Val) {}
 
   // Register numbers can represent physical registers, virtual registers, and
   // sometimes stack slots. The unsigned values are divided into these ranges:
@@ -102,7 +102,7 @@ public:
     return virtReg2Index(Reg);
   }
 
-  constexpr operator unsigned() const {
+  operator unsigned() const {
     return Reg;
   }
 

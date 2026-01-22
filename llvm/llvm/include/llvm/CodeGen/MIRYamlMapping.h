@@ -142,23 +142,6 @@ template <> struct ScalarEnumerationTraits<MachineJumpTableInfo::JTEntryKind> {
   }
 };
 
-template <> struct ScalarTraits<MaybeAlign> {
-  static void output(const MaybeAlign &Alignment, void *,
-                     llvm::raw_ostream &out) {
-    out << uint64_t(Alignment ? Alignment->value() : 0U);
-  }
-  static StringRef input(StringRef Scalar, void *, MaybeAlign &Alignment) {
-    unsigned long long n;
-    if (getAsUnsignedInteger(Scalar, 10, n))
-      return "invalid number";
-    if (n > 0 && !isPowerOf2_64(n))
-      return "must be 0 or a power of two";
-    Alignment = MaybeAlign(n);
-    return StringRef();
-  }
-  static QuotingType mustQuote(StringRef) { return QuotingType::None; }
-};
-
 } // end namespace yaml
 } // end namespace llvm
 
@@ -229,7 +212,7 @@ struct MachineStackObject {
   ObjectType Type = DefaultType;
   int64_t Offset = 0;
   uint64_t Size = 0;
-  MaybeAlign Alignment = None;
+  unsigned Alignment = 0;
   TargetStackID::Value StackID;
   StringValue CalleeSavedRegister;
   bool CalleeSavedRestored = true;
@@ -269,7 +252,7 @@ template <> struct MappingTraits<MachineStackObject> {
     YamlIO.mapOptional("offset", Object.Offset, (int64_t)0);
     if (Object.Type != MachineStackObject::VariableSized)
       YamlIO.mapRequired("size", Object.Size);
-    YamlIO.mapOptional("alignment", Object.Alignment, None);
+    YamlIO.mapOptional("alignment", Object.Alignment, (unsigned)0);
     YamlIO.mapOptional("stack-id", Object.StackID, TargetStackID::Default);
     YamlIO.mapOptional("callee-saved-register", Object.CalleeSavedRegister,
                        StringValue()); // Don't print it out when it's empty.
@@ -295,7 +278,7 @@ struct FixedMachineStackObject {
   ObjectType Type = DefaultType;
   int64_t Offset = 0;
   uint64_t Size = 0;
-  MaybeAlign Alignment = None;
+  unsigned Alignment = 0;
   TargetStackID::Value StackID;
   bool IsImmutable = false;
   bool IsAliased = false;
@@ -344,7 +327,7 @@ template <> struct MappingTraits<FixedMachineStackObject> {
         FixedMachineStackObject::DefaultType); // Don't print the default type.
     YamlIO.mapOptional("offset", Object.Offset, (int64_t)0);
     YamlIO.mapOptional("size", Object.Size, (uint64_t)0);
-    YamlIO.mapOptional("alignment", Object.Alignment, None);
+    YamlIO.mapOptional("alignment", Object.Alignment, (unsigned)0);
     YamlIO.mapOptional("stack-id", Object.StackID, TargetStackID::Default);
     if (Object.Type != FixedMachineStackObject::SpillSlot) {
       YamlIO.mapOptional("isImmutable", Object.IsImmutable, false);
@@ -428,7 +411,7 @@ template <> struct MappingTraits<CallSiteInfo> {
 struct MachineConstantPoolValue {
   UnsignedValue ID;
   StringValue Value;
-  MaybeAlign Alignment = None;
+  unsigned Alignment = 0;
   bool IsTargetSpecific = false;
 
   bool operator==(const MachineConstantPoolValue &Other) const {
@@ -442,7 +425,7 @@ template <> struct MappingTraits<MachineConstantPoolValue> {
   static void mapping(IO &YamlIO, MachineConstantPoolValue &Constant) {
     YamlIO.mapRequired("id", Constant.ID);
     YamlIO.mapOptional("value", Constant.Value, StringValue());
-    YamlIO.mapOptional("alignment", Constant.Alignment, None);
+    YamlIO.mapOptional("alignment", Constant.Alignment, (unsigned)0);
     YamlIO.mapOptional("isTargetSpecific", Constant.IsTargetSpecific, false);
   }
 };
@@ -588,7 +571,7 @@ template <> struct MappingTraits<std::unique_ptr<MachineFunctionInfo>> {
 
 struct MachineFunction {
   StringRef Name;
-  MaybeAlign Alignment = None;
+  unsigned Alignment = 0;
   bool ExposesReturnsTwice = false;
   // GISel MachineFunctionProperties.
   bool Legalized = false;
@@ -616,7 +599,7 @@ struct MachineFunction {
 template <> struct MappingTraits<MachineFunction> {
   static void mapping(IO &YamlIO, MachineFunction &MF) {
     YamlIO.mapRequired("name", MF.Name);
-    YamlIO.mapOptional("alignment", MF.Alignment, None);
+    YamlIO.mapOptional("alignment", MF.Alignment, (unsigned)0);
     YamlIO.mapOptional("exposesReturnsTwice", MF.ExposesReturnsTwice, false);
     YamlIO.mapOptional("legalized", MF.Legalized, false);
     YamlIO.mapOptional("regBankSelected", MF.RegBankSelected, false);

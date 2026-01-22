@@ -60,7 +60,7 @@ public:
         SymbolLookup(std::move(SymbolLookup)),
         EHFramesRegister(std::move(EHFramesRegister)),
         EHFramesDeregister(std::move(EHFramesDeregister)) {
-    using ThisT = std::remove_reference_t<decltype(*this)>;
+    using ThisT = typename std::remove_reference<decltype(*this)>::type;
     addHandler<exec::CallIntVoid>(*this, &ThisT::handleCallIntVoid);
     addHandler<exec::CallMain>(*this, &ThisT::handleCallMain);
     addHandler<exec::CallVoidVoid>(*this, &ThisT::handleCallVoidVoid);

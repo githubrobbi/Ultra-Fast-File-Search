@@ -32,13 +32,11 @@ namespace symbolize {
 using namespace object;
 
 using FunctionNameKind = DILineInfoSpecifier::FunctionNameKind;
-using FileLineInfoKind = DILineInfoSpecifier::FileLineInfoKind;
 
 class LLVMSymbolizer {
 public:
   struct Options {
     FunctionNameKind PrintFunctions = FunctionNameKind::LinkageName;
-    FileLineInfoKind PathStyle = FileLineInfoKind::AbsoluteFilePath;
     bool UseSymbolTable = true;
     bool Demangle = true;
     bool RelativeAddresses = false;
@@ -116,8 +114,7 @@ private:
   Expected<ObjectFile *> getOrCreateObject(const std::string &Path,
                                           const std::string &ArchName);
 
-  std::map<std::string, std::unique_ptr<SymbolizableModule>, std::less<>>
-      Modules;
+  std::map<std::string, std::unique_ptr<SymbolizableModule>> Modules;
 
   /// Contains cached results of getOrCreateObjectPair().
   std::map<std::pair<std::string, std::string>, ObjectPair>

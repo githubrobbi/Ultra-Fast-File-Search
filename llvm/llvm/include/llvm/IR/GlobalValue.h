@@ -146,6 +146,12 @@ private:
     llvm_unreachable("Fully covered switch above!");
   }
 
+  void maybeSetDsoLocal() {
+    if (hasLocalLinkage() ||
+        (!hasDefaultVisibility() && !hasExternalWeakLinkage()))
+      setDSOLocal(true);
+  }
+
 protected:
   /// The intrinsic ID for this subclass (which must be a Function).
   ///
@@ -237,8 +243,7 @@ public:
     assert((!hasLocalLinkage() || V == DefaultVisibility) &&
            "local linkage requires default visibility");
     Visibility = V;
-    if (isImplicitDSOLocal())
-      setDSOLocal(true);
+    maybeSetDsoLocal();
   }
 
   /// If the value is "Thread Local", its value isn't shared by the threads.
@@ -272,11 +277,6 @@ public:
   PointerType *getType() const { return cast<PointerType>(User::getType()); }
 
   Type *getValueType() const { return ValueType; }
-
-  bool isImplicitDSOLocal() const {
-    return hasLocalLinkage() ||
-           (!hasDefaultVisibility() && !hasExternalWeakLinkage());
-  }
 
   void setDSOLocal(bool Local) { IsDSOLocal = Local; }
 
@@ -423,10 +423,10 @@ public:
   }
 
   /// Return true if this global's definition can be substituted with an
-  /// *arbitrary* definition at link time or load time. We cannot do any IPO or
-  /// inlining across interposable call edges, since the callee can be
-  /// replaced with something arbitrary.
-  bool isInterposable() const;
+  /// *arbitrary* definition at link time.  We cannot do any IPO or inlinining
+  /// across interposable call edges, since the callee can be replaced with
+  /// something arbitrary at link time.
+  bool isInterposable() const { return isInterposableLinkage(getLinkage()); }
 
   bool hasExternalLinkage() const { return isExternalLinkage(getLinkage()); }
   bool hasAvailableExternallyLinkage() const {
@@ -455,8 +455,7 @@ public:
     if (isLocalLinkage(LT))
       Visibility = DefaultVisibility;
     Linkage = LT;
-    if (isImplicitDSOLocal())
-      setDSOLocal(true);
+    maybeSetDsoLocal();
   }
   LinkageTypes getLinkage() const { return LinkageTypes(Linkage); }
 

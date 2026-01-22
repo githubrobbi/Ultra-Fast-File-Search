@@ -57,6 +57,7 @@ public:
   void setFlags(uint16_t F);
   void setMachineType(PDB_Machine M);
   void setMachineType(COFF::MachineTypes M);
+  void setSectionMap(ArrayRef<SecMapEntry> SecMap);
 
   // Add given bytes as a new stream.
   Error addDbgStream(pdb::DbgHeaderType Type, ArrayRef<uint8_t> Data);
@@ -83,8 +84,9 @@ public:
     SectionContribs.emplace_back(SC);
   }
 
-  // Populate the Section Map from COFF section headers.
-  void createSectionMap(ArrayRef<llvm::object::coff_section> SecHdrs);
+  // A helper function to create a Section Map from a COFF section header.
+  static std::vector<SecMapEntry>
+  createSectionMap(ArrayRef<llvm::object::coff_section> SecHdrs);
 
 private:
   struct DebugStream {
@@ -131,7 +133,7 @@ private:
   WritableBinaryStreamRef NamesBuffer;
   MutableBinaryByteStream FileInfoBuffer;
   std::vector<SectionContrib> SectionContribs;
-  std::vector<SecMapEntry> SectionMap;
+  ArrayRef<SecMapEntry> SectionMap;
   std::array<Optional<DebugStream>, (int)DbgHeaderType::Max> DbgStreams;
 };
 }

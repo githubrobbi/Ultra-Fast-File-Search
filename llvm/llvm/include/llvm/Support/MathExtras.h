@@ -14,11 +14,10 @@
 #define LLVM_SUPPORT_MATHEXTRAS_H
 
 #include "llvm/Support/Compiler.h"
+#include "llvm/Support/SwapByteOrder.h"
 #include <algorithm>
 #include <cassert>
 #include <climits>
-#include <cmath>
-#include <cstdint>
 #include <cstring>
 #include <limits>
 #include <type_traits>
@@ -313,34 +312,6 @@ T reverseBits(T Val) {
   return Val;
 }
 
-#if __has_builtin(__builtin_bitreverse8)
-template<>
-inline uint8_t reverseBits<uint8_t>(uint8_t Val) {
-  return __builtin_bitreverse8(Val);
-}
-#endif
-
-#if __has_builtin(__builtin_bitreverse16)
-template<>
-inline uint16_t reverseBits<uint16_t>(uint16_t Val) {
-  return __builtin_bitreverse16(Val);
-}
-#endif
-
-#if __has_builtin(__builtin_bitreverse32)
-template<>
-inline uint32_t reverseBits<uint32_t>(uint32_t Val) {
-  return __builtin_bitreverse32(Val);
-}
-#endif
-
-#if __has_builtin(__builtin_bitreverse64)
-template<>
-inline uint64_t reverseBits<uint64_t>(uint64_t Val) {
-  return __builtin_bitreverse64(Val);
-}
-#endif
-
 // NOTE: The following support functions use the _32/_64 extensions instead of
 // type overloading so that signed and unsigned integers can be used without
 // ambiguity.
@@ -393,12 +364,14 @@ constexpr inline bool isShiftedInt(int64_t x) {
 /// to keep MSVC from (incorrectly) warning on isUInt<64> that we're shifting
 /// left too many places.
 template <unsigned N>
-constexpr inline std::enable_if_t<(N < 64), bool> isUInt(uint64_t X) {
+constexpr inline typename std::enable_if<(N < 64), bool>::type
+isUInt(uint64_t X) {
   static_assert(N > 0, "isUInt<0> doesn't make sense");
   return X < (UINT64_C(1) << (N));
 }
 template <unsigned N>
-constexpr inline std::enable_if_t<N >= 64, bool> isUInt(uint64_t X) {
+constexpr inline typename std::enable_if<N >= 64, bool>::type
+isUInt(uint64_t X) {
   return true;
 }
 
@@ -496,6 +469,21 @@ constexpr inline bool isPowerOf2_32(uint32_t Value) {
 /// Return true if the argument is a power of two > 0 (64 bit edition.)
 constexpr inline bool isPowerOf2_64(uint64_t Value) {
   return Value && !(Value & (Value - 1));
+}
+
+/// Return a byte-swapped representation of the 16-bit argument.
+inline uint16_t ByteSwap_16(uint16_t Value) {
+  return sys::SwapByteOrder_16(Value);
+}
+
+/// Return a byte-swapped representation of the 32-bit argument.
+inline uint32_t ByteSwap_32(uint32_t Value) {
+  return sys::SwapByteOrder_32(Value);
+}
+
+/// Return a byte-swapped representation of the 64-bit argument.
+inline uint64_t ByteSwap_64(uint64_t Value) {
+  return sys::SwapByteOrder_64(Value);
 }
 
 /// Count the number of ones from the most significant bit to the first
@@ -792,7 +780,8 @@ inline int64_t SignExtend64(uint64_t X, unsigned B) {
 /// Subtract two unsigned integers, X and Y, of type T and return the absolute
 /// value of the result.
 template <typename T>
-std::enable_if_t<std::is_unsigned<T>::value, T> AbsoluteDifference(T X, T Y) {
+typename std::enable_if<std::is_unsigned<T>::value, T>::type
+AbsoluteDifference(T X, T Y) {
   return std::max(X, Y) - std::min(X, Y);
 }
 
@@ -800,7 +789,7 @@ std::enable_if_t<std::is_unsigned<T>::value, T> AbsoluteDifference(T X, T Y) {
 /// maximum representable value of T on overflow.  ResultOverflowed indicates if
 /// the result is larger than the maximum representable value of type T.
 template <typename T>
-std::enable_if_t<std::is_unsigned<T>::value, T>
+typename std::enable_if<std::is_unsigned<T>::value, T>::type
 SaturatingAdd(T X, T Y, bool *ResultOverflowed = nullptr) {
   bool Dummy;
   bool &Overflowed = ResultOverflowed ? *ResultOverflowed : Dummy;
@@ -817,7 +806,7 @@ SaturatingAdd(T X, T Y, bool *ResultOverflowed = nullptr) {
 /// maximum representable value of T on overflow.  ResultOverflowed indicates if
 /// the result is larger than the maximum representable value of type T.
 template <typename T>
-std::enable_if_t<std::is_unsigned<T>::value, T>
+typename std::enable_if<std::is_unsigned<T>::value, T>::type
 SaturatingMultiply(T X, T Y, bool *ResultOverflowed = nullptr) {
   bool Dummy;
   bool &Overflowed = ResultOverflowed ? *ResultOverflowed : Dummy;
@@ -863,7 +852,7 @@ SaturatingMultiply(T X, T Y, bool *ResultOverflowed = nullptr) {
 /// overflow. ResultOverflowed indicates if the result is larger than the
 /// maximum representable value of type T.
 template <typename T>
-std::enable_if_t<std::is_unsigned<T>::value, T>
+typename std::enable_if<std::is_unsigned<T>::value, T>::type
 SaturatingMultiplyAdd(T X, T Y, T A, bool *ResultOverflowed = nullptr) {
   bool Dummy;
   bool &Overflowed = ResultOverflowed ? *ResultOverflowed : Dummy;
@@ -882,12 +871,13 @@ extern const float huge_valf;
 /// Add two signed integers, computing the two's complement truncated result,
 /// returning true if overflow occured.
 template <typename T>
-std::enable_if_t<std::is_signed<T>::value, T> AddOverflow(T X, T Y, T &Result) {
+typename std::enable_if<std::is_signed<T>::value, T>::type
+AddOverflow(T X, T Y, T &Result) {
 #if __has_builtin(__builtin_add_overflow)
   return __builtin_add_overflow(X, Y, &Result);
 #else
   // Perform the unsigned addition.
-  using U = std::make_unsigned_t<T>;
+  using U = typename std::make_unsigned<T>::type;
   const U UX = static_cast<U>(X);
   const U UY = static_cast<U>(Y);
   const U UResult = UX + UY;
@@ -908,12 +898,13 @@ std::enable_if_t<std::is_signed<T>::value, T> AddOverflow(T X, T Y, T &Result) {
 /// Subtract two signed integers, computing the two's complement truncated
 /// result, returning true if an overflow ocurred.
 template <typename T>
-std::enable_if_t<std::is_signed<T>::value, T> SubOverflow(T X, T Y, T &Result) {
+typename std::enable_if<std::is_signed<T>::value, T>::type
+SubOverflow(T X, T Y, T &Result) {
 #if __has_builtin(__builtin_sub_overflow)
   return __builtin_sub_overflow(X, Y, &Result);
 #else
   // Perform the unsigned addition.
-  using U = std::make_unsigned_t<T>;
+  using U = typename std::make_unsigned<T>::type;
   const U UX = static_cast<U>(X);
   const U UY = static_cast<U>(Y);
   const U UResult = UX - UY;
@@ -931,12 +922,14 @@ std::enable_if_t<std::is_signed<T>::value, T> SubOverflow(T X, T Y, T &Result) {
 #endif
 }
 
+
 /// Multiply two signed integers, computing the two's complement truncated
 /// result, returning true if an overflow ocurred.
 template <typename T>
-std::enable_if_t<std::is_signed<T>::value, T> MulOverflow(T X, T Y, T &Result) {
+typename std::enable_if<std::is_signed<T>::value, T>::type
+MulOverflow(T X, T Y, T &Result) {
   // Perform the unsigned multiplication on absolute values.
-  using U = std::make_unsigned_t<T>;
+  using U = typename std::make_unsigned<T>::type;
   const U UX = X < 0 ? (0 - static_cast<U>(X)) : static_cast<U>(X);
   const U UY = Y < 0 ? (0 - static_cast<U>(Y)) : static_cast<U>(Y);
   const U UResult = UX * UY;

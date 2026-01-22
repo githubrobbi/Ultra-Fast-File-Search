@@ -132,9 +132,9 @@ class FrameEntry {
 public:
   enum FrameKind { FK_CIE, FK_FDE };
 
-  FrameEntry(FrameKind K, bool IsDWARF64, uint64_t Offset, uint64_t Length,
-             uint64_t CodeAlign, int64_t DataAlign, Triple::ArchType Arch)
-      : Kind(K), IsDWARF64(IsDWARF64), Offset(Offset), Length(Length),
+  FrameEntry(FrameKind K, uint64_t Offset, uint64_t Length, uint64_t CodeAlign,
+             int64_t DataAlign, Triple::ArchType Arch)
+      : Kind(K), Offset(Offset), Length(Length),
         CFIs(CodeAlign, DataAlign, Arch) {}
 
   virtual ~FrameEntry() {}
@@ -152,8 +152,6 @@ public:
 protected:
   const FrameKind Kind;
 
-  const bool IsDWARF64;
-
   /// Offset of this entry in the section.
   const uint64_t Offset;
 
@@ -168,14 +166,14 @@ class CIE : public FrameEntry {
 public:
   // CIEs (and FDEs) are simply container classes, so the only sensible way to
   // create them is by providing the full parsed contents in the constructor.
-  CIE(bool IsDWARF64, uint64_t Offset, uint64_t Length, uint8_t Version,
+  CIE(uint64_t Offset, uint64_t Length, uint8_t Version,
       SmallString<8> Augmentation, uint8_t AddressSize,
       uint8_t SegmentDescriptorSize, uint64_t CodeAlignmentFactor,
       int64_t DataAlignmentFactor, uint64_t ReturnAddressRegister,
       SmallString<8> AugmentationData, uint32_t FDEPointerEncoding,
       uint32_t LSDAPointerEncoding, Optional<uint64_t> Personality,
       Optional<uint32_t> PersonalityEnc, Triple::ArchType Arch)
-      : FrameEntry(FK_CIE, IsDWARF64, Offset, Length, CodeAlignmentFactor,
+      : FrameEntry(FK_CIE, Offset, Length, CodeAlignmentFactor,
                    DataAlignmentFactor, Arch),
         Version(Version), Augmentation(std::move(Augmentation)),
         AddressSize(AddressSize), SegmentDescriptorSize(SegmentDescriptorSize),
@@ -225,14 +223,17 @@ private:
 /// DWARF Frame Description Entry (FDE)
 class FDE : public FrameEntry {
 public:
-  FDE(bool IsDWARF64, uint64_t Offset, uint64_t Length, uint64_t CIEPointer,
+  // Each FDE has a CIE it's "linked to". Our FDE contains is constructed with
+  // an offset to the CIE (provided by parsing the FDE header). The CIE itself
+  // is obtained lazily once it's actually required.
+  FDE(uint64_t Offset, uint64_t Length, int64_t LinkedCIEOffset,
       uint64_t InitialLocation, uint64_t AddressRange, CIE *Cie,
       Optional<uint64_t> LSDAAddress, Triple::ArchType Arch)
-      : FrameEntry(FK_FDE, IsDWARF64, Offset, Length,
+      : FrameEntry(FK_FDE, Offset, Length,
                    Cie ? Cie->getCodeAlignmentFactor() : 0,
                    Cie ? Cie->getDataAlignmentFactor() : 0,
                    Arch),
-        CIEPointer(CIEPointer), InitialLocation(InitialLocation),
+        LinkedCIEOffset(LinkedCIEOffset), InitialLocation(InitialLocation),
         AddressRange(AddressRange), LinkedCIE(Cie), LSDAAddress(LSDAAddress) {}
 
   ~FDE() override = default;
@@ -248,11 +249,8 @@ public:
   static bool classof(const FrameEntry *FE) { return FE->getKind() == FK_FDE; }
 
 private:
-  /// The following fields are defined in section 6.4.1 of the DWARFv3 standard.
-  /// Note that CIE pointers in EH FDEs, unlike DWARF FDEs, contain relative
-  /// offsets to the linked CIEs. See the following link for more info:
-  /// https://refspecs.linuxfoundation.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/ehframechpt.html
-  const uint64_t CIEPointer;
+  /// The following fields are defined in section 6.4.1 of the DWARF standard v3
+  const uint64_t LinkedCIEOffset;
   const uint64_t InitialLocation;
   const uint64_t AddressRange;
   const CIE *LinkedCIE;

@@ -26,6 +26,7 @@ namespace llvm {
 
 class CCState;
 class MVT;
+class TargetMachine;
 class TargetRegisterInfo;
 
 /// CCValAssign - Represent assignment of one arg/retval to a location.
@@ -164,9 +165,9 @@ public:
 /// Describes a register that needs to be forwarded from the prologue to a
 /// musttail call.
 struct ForwardedRegister {
-  ForwardedRegister(Register VReg, MCPhysReg PReg, MVT VT)
+  ForwardedRegister(unsigned VReg, MCPhysReg PReg, MVT VT)
       : VReg(VReg), PReg(PReg), VT(VT) {}
-  Register VReg;
+  unsigned VReg;
   MCPhysReg PReg;
   MVT VT;
 };
@@ -281,8 +282,8 @@ public:
 
   /// isAllocated - Return true if the specified register (or an alias) is
   /// allocated.
-  bool isAllocated(MCRegister Reg) const {
-    return UsedRegs[Reg / 32] & (1 << (Reg & 31));
+  bool isAllocated(unsigned Reg) const {
+    return UsedRegs[Reg/32] & (1 << (Reg&31));
   }
 
   /// AnalyzeFormalArguments - Analyze an array of argument values,
@@ -332,7 +333,7 @@ public:
   /// A shadow allocated register is a register that was allocated
   /// but wasn't added to the location list (Locs).
   /// \returns true if the register was allocated as shadow or false otherwise.
-  bool IsShadowAllocatedReg(MCRegister Reg) const;
+  bool IsShadowAllocatedReg(unsigned Reg) const;
 
   /// AnalyzeCallResult - Same as above except it's specialized for calls which
   /// produce a single value.
@@ -350,17 +351,15 @@ public:
   /// AllocateReg - Attempt to allocate one register.  If it is not available,
   /// return zero.  Otherwise, return the register, marking it and any aliases
   /// as allocated.
-  MCRegister AllocateReg(MCPhysReg Reg) {
-    if (isAllocated(Reg))
-      return MCRegister();
+  unsigned AllocateReg(unsigned Reg) {
+    if (isAllocated(Reg)) return 0;
     MarkAllocated(Reg);
     return Reg;
   }
 
   /// Version of AllocateReg with extra register to be shadowed.
-  MCRegister AllocateReg(MCPhysReg Reg, MCPhysReg ShadowReg) {
-    if (isAllocated(Reg))
-      return MCRegister();
+  unsigned AllocateReg(unsigned Reg, unsigned ShadowReg) {
+    if (isAllocated(Reg)) return 0;
     MarkAllocated(Reg);
     MarkAllocated(ShadowReg);
     return Reg;
@@ -369,13 +368,13 @@ public:
   /// AllocateReg - Attempt to allocate one of the specified registers.  If none
   /// are available, return zero.  Otherwise, return the first one available,
   /// marking it and any aliases as allocated.
-  MCPhysReg AllocateReg(ArrayRef<MCPhysReg> Regs) {
+  unsigned AllocateReg(ArrayRef<MCPhysReg> Regs) {
     unsigned FirstUnalloc = getFirstUnallocated(Regs);
     if (FirstUnalloc == Regs.size())
-      return MCRegister();    // Didn't find the reg.
+      return 0;    // Didn't find the reg.
 
     // Mark the register and any aliases as allocated.
-    MCPhysReg Reg = Regs[FirstUnalloc];
+    unsigned Reg = Regs[FirstUnalloc];
     MarkAllocated(Reg);
     return Reg;
   }
@@ -383,7 +382,7 @@ public:
   /// AllocateRegBlock - Attempt to allocate a block of RegsRequired consecutive
   /// registers. If this is not possible, return zero. Otherwise, return the first
   /// register of the block that were allocated, marking the entire block as allocated.
-  MCPhysReg AllocateRegBlock(ArrayRef<MCPhysReg> Regs, unsigned RegsRequired) {
+  unsigned AllocateRegBlock(ArrayRef<MCPhysReg> Regs, unsigned RegsRequired) {
     if (RegsRequired > Regs.size())
       return 0;
 
@@ -410,13 +409,13 @@ public:
   }
 
   /// Version of AllocateReg with list of registers to be shadowed.
-  MCRegister AllocateReg(ArrayRef<MCPhysReg> Regs, const MCPhysReg *ShadowRegs) {
+  unsigned AllocateReg(ArrayRef<MCPhysReg> Regs, const MCPhysReg *ShadowRegs) {
     unsigned FirstUnalloc = getFirstUnallocated(Regs);
     if (FirstUnalloc == Regs.size())
-      return MCRegister();    // Didn't find the reg.
+      return 0;    // Didn't find the reg.
 
     // Mark the register and any aliases as allocated.
-    MCRegister Reg = Regs[FirstUnalloc], ShadowReg = ShadowRegs[FirstUnalloc];
+    unsigned Reg = Regs[FirstUnalloc], ShadowReg = ShadowRegs[FirstUnalloc];
     MarkAllocated(Reg);
     MarkAllocated(ShadowReg);
     return Reg;
@@ -436,7 +435,7 @@ public:
 
   void ensureMaxAlignment(Align Alignment) {
     if (!AnalyzingMustTailForwardedRegs)
-      MF.getFrameInfo().ensureMaxAlignment(Alignment);
+      MF.getFrameInfo().ensureMaxAlignment(Alignment.value());
   }
 
   /// Version of AllocateStack with extra register to be shadowed.
@@ -570,7 +569,7 @@ public:
 
 private:
   /// MarkAllocated - Mark a register and all of its aliases as allocated.
-  void MarkAllocated(MCPhysReg Reg);
+  void MarkAllocated(unsigned Reg);
 };
 
 } // end namespace llvm

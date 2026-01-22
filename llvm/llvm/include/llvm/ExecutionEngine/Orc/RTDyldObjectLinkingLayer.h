@@ -16,7 +16,6 @@
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/ADT/StringRef.h"
-#include "llvm/ExecutionEngine/JITEventListener.h"
 #include "llvm/ExecutionEngine/JITSymbol.h"
 #include "llvm/ExecutionEngine/Orc/Core.h"
 #include "llvm/ExecutionEngine/Orc/Layer.h"
@@ -116,23 +115,15 @@ public:
     return *this;
   }
 
-  /// Register a JITEventListener.
-  void registerJITEventListener(JITEventListener &L);
-
-  /// Unregister a JITEventListener.
-  void unregisterJITEventListener(JITEventListener &L);
-
 private:
   Error onObjLoad(VModuleKey K, MaterializationResponsibility &R,
-                  const object::ObjectFile &Obj,
-                  RuntimeDyld::MemoryManager *MemMgr,
+                  object::ObjectFile &Obj,
                   std::unique_ptr<RuntimeDyld::LoadedObjectInfo> LoadedObjInfo,
                   std::map<StringRef, JITEvaluatedSymbol> Resolved,
                   std::set<StringRef> &InternalSymbols);
 
-  void onObjEmit(VModuleKey K, MaterializationResponsibility &R,
-                 object::OwningBinary<object::ObjectFile> O,
-                 RuntimeDyld::MemoryManager *MemMgr, Error Err);
+  void onObjEmit(VModuleKey K, std::unique_ptr<MemoryBuffer> ObjBuffer,
+                 MaterializationResponsibility &R, Error Err);
 
   mutable std::mutex RTDyldLayerMutex;
   GetMemoryManagerFunction GetMemoryManager;
@@ -142,10 +133,6 @@ private:
   bool OverrideObjectFlags = false;
   bool AutoClaimObjectSymbols = false;
   std::vector<std::unique_ptr<RuntimeDyld::MemoryManager>> MemMgrs;
-  std::vector<JITEventListener *> EventListeners;
-  DenseMap<RuntimeDyld::MemoryManager *,
-           std::unique_ptr<RuntimeDyld::LoadedObjectInfo>>
-      LoadedObjInfos;
 };
 
 class LegacyRTDyldObjectLinkingLayerBase {
@@ -183,7 +170,7 @@ protected:
       if (!SymEntry->second.getFlags().isExported() && ExportedSymbolsOnly)
         return nullptr;
       if (!Finalized)
-        return JITSymbol(getSymbolMaterializer(std::string(Name)),
+        return JITSymbol(getSymbolMaterializer(Name),
                          SymEntry->second.getFlags());
       return JITSymbol(SymEntry->second);
     }
@@ -304,15 +291,8 @@ private:
   private:
     void buildInitialSymbolTable(const OwnedObject &Obj) {
       for (auto &Symbol : Obj.getBinary()->symbols()) {
-        if (Expected<uint32_t> SymbolFlagsOrErr = Symbol.getFlags()) {
-          if (*SymbolFlagsOrErr & object::SymbolRef::SF_Undefined)
-            continue;
-        } else {
-          // FIXME: Raise an error for bad symbols.
-          consumeError(SymbolFlagsOrErr.takeError());
+        if (Symbol.getFlags() & object::SymbolRef::SF_Undefined)
           continue;
-        }
-
         Expected<StringRef> SymbolName = Symbol.getName();
         // FIXME: Raise an error for bad symbols.
         if (!SymbolName) {

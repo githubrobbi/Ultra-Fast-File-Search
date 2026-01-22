@@ -329,28 +329,32 @@ public:
   Value(std::nullptr_t) : Type(T_Null) {}
   // Boolean (disallow implicit conversions).
   // (The last template parameter is a dummy to keep templates distinct.)
-  template <typename T,
-            typename = std::enable_if_t<std::is_same<T, bool>::value>,
-            bool = false>
+  template <
+      typename T,
+      typename = typename std::enable_if<std::is_same<T, bool>::value>::type,
+      bool = false>
   Value(T B) : Type(T_Boolean) {
     create<bool>(B);
   }
   // Integers (except boolean). Must be non-narrowing convertible to int64_t.
-  template <typename T, typename = std::enable_if_t<std::is_integral<T>::value>,
-            typename = std::enable_if_t<!std::is_same<T, bool>::value>>
+  template <
+      typename T,
+      typename = typename std::enable_if<std::is_integral<T>::value>::type,
+      typename = typename std::enable_if<!std::is_same<T, bool>::value>::type>
   Value(T I) : Type(T_Integer) {
     create<int64_t>(int64_t{I});
   }
   // Floating point. Must be non-narrowing convertible to double.
   template <typename T,
-            typename = std::enable_if_t<std::is_floating_point<T>::value>,
+            typename =
+                typename std::enable_if<std::is_floating_point<T>::value>::type,
             double * = nullptr>
   Value(T D) : Type(T_Double) {
     create<double>(double{D});
   }
   // Serializable types: with a toJSON(const T&)->Value function, found by ADL.
   template <typename T,
-            typename = std::enable_if_t<std::is_same<
+            typename = typename std::enable_if<std::is_same<
                 Value, decltype(toJSON(*(const T *)nullptr))>::value>,
             Value * = nullptr>
   Value(const T &V) : Value(toJSON(V)) {}
@@ -561,7 +565,7 @@ inline bool Object::erase(StringRef K) {
 // See comments on Value.
 inline bool fromJSON(const Value &E, std::string &Out) {
   if (auto S = E.getAsString()) {
-    Out = std::string(*S);
+    Out = *S;
     return true;
   }
   return false;
@@ -594,13 +598,6 @@ inline bool fromJSON(const Value &E, bool &Out) {
   }
   return false;
 }
-inline bool fromJSON(const Value &E, std::nullptr_t &Out) {
-  if (auto S = E.getAsNull()) {
-    Out = *S;
-    return true;
-  }
-  return false;
-}
 template <typename T> bool fromJSON(const Value &E, llvm::Optional<T> &Out) {
   if (E.getAsNull()) {
     Out = llvm::None;
@@ -628,7 +625,7 @@ bool fromJSON(const Value &E, std::map<std::string, T> &Out) {
   if (auto *O = E.getAsObject()) {
     Out.clear();
     for (const auto &KV : *O)
-      if (!fromJSON(KV.second, Out[std::string(llvm::StringRef(KV.first))]))
+      if (!fromJSON(KV.second, Out[llvm::StringRef(KV.first)]))
         return false;
     return true;
   }

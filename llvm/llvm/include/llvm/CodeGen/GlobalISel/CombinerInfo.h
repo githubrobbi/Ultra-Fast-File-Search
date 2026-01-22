@@ -27,7 +27,7 @@ class MachineRegisterInfo;
 class CombinerInfo {
 public:
   CombinerInfo(bool AllowIllegalOps, bool ShouldLegalizeIllegal,
-               const LegalizerInfo *LInfo, bool OptEnabled, bool OptSize,
+               LegalizerInfo *LInfo, bool OptEnabled, bool OptSize,
                bool MinSize)
       : IllegalOpsAllowed(AllowIllegalOps),
         LegalizeIllegalOps(ShouldLegalizeIllegal), LInfo(LInfo),

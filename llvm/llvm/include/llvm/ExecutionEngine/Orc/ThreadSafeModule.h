@@ -130,7 +130,8 @@ public:
 
   /// Locks the associated ThreadSafeContext and calls the given function
   /// on the contained Module.
-  template <typename Func> decltype(auto) withModuleDo(Func &&F) {
+  template <typename Func>
+  auto withModuleDo(Func &&F) -> decltype(F(std::declval<Module &>())) {
     assert(M && "Can not call on null module");
     auto Lock = TSCtx.getLock();
     return F(*M);
@@ -138,7 +139,9 @@ public:
 
   /// Locks the associated ThreadSafeContext and calls the given function
   /// on the contained Module.
-  template <typename Func> decltype(auto) withModuleDo(Func &&F) const {
+  template <typename Func>
+  auto withModuleDo(Func &&F) const
+      -> decltype(F(std::declval<const Module &>())) {
     auto Lock = TSCtx.getLock();
     return F(*M);
   }

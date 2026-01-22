@@ -23,7 +23,7 @@ class MCRegister {
   unsigned Reg;
 
 public:
-  constexpr MCRegister(unsigned Val = 0): Reg(Val) {}
+  MCRegister(unsigned Val = 0): Reg(Val) {}
 
   // Register numbers can represent physical registers, virtual registers, and
   // sometimes stack slots. The unsigned values are divided into these ranges:
@@ -60,7 +60,7 @@ public:
     return isPhysicalRegister(Reg);
   }
 
-  constexpr operator unsigned() const {
+  operator unsigned() const {
     return Reg;
   }
 

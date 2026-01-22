@@ -201,7 +201,7 @@ protected:
                             ExecutionSession &ES,
                             JITTargetAddress ErrorHandlerAddress)
       : TP(std::move(TP)), ES(ES),
-        CallbacksJD(ES.createBareJITDylib("<Callbacks>")),
+        CallbacksJD(ES.createJITDylib("<Callbacks>")),
         ErrorHandlerAddress(ErrorHandlerAddress) {}
 
   void setTrampolinePool(std::unique_ptr<TrampolinePool> TP) {
