@@ -72,6 +72,17 @@
 #pragma warning(disable: 5027)  // move assignment operator was implicitly defined as deleted
 #pragma warning(disable: 5039)  // Pointer or reference to potentially throwing function passed to extern C function under -EHc. Undefined behavior may occur if this function throws an exception.
 #pragma warning(disable: 5045)  // Compiler will insert Spectre mitigation for memory load if /Qspectre switch specified
+#pragma warning(disable: 5204)  // class has virtual functions, but its trivial destructor is not virtual
+#pragma warning(disable: 5220)  // non-static data member with a volatile qualified type no longer implies that compiler generated copy/move constructors and copy/move assignment operators are not trivial
+#pragma warning(disable: 5246)  // the initialization of a subobject should be wrapped in braces
+#pragma warning(disable: 5262)  // implicit fall-through
+#pragma warning(disable: 5264)  // 'const' variable is not used
+#pragma warning(disable: 4868)  // compiler may not enforce left-to-right evaluation order in braced initializer list
+#pragma warning(disable: 5054)  // operator between enumerations of different types is deprecated
+#pragma warning(disable: 5055)  // operator between enumeration and floating-point types is deprecated
+#pragma warning(disable: 4471)  // forward declaration of an unscoped enumeration must have an underlying type
+#pragma warning(disable: 26495) // Variable is uninitialized
+#pragma warning(disable: 26812) // Prefer 'enum class' over 'enum'
 #endif
 
 #ifdef _DEBUG
@@ -107,7 +118,10 @@
 #ifndef _DEBUG
 #define _SECURE_SCL 0
 #define _ITERATOR_DEBUG_LEVEL 0
+// Modern MSVC (VS 2019+) requires secure CRT functions
+#if defined(_MSC_VER) && _MSC_VER < 1920
 #define __STDC_WANT_SECURE_LIB__ 0
+#endif
 #define _STRALIGN_USE_SECURE_CRT 0
 #ifndef __SIZEOF_LONG_LONG__
 #define __SIZEOF_LONG_LONG__ (ULLONG_MAX / (UCHAR_MAX + 1U) + 1)

@@ -128,6 +128,9 @@ static int __cdecl wcscpy_s(wchar_t *strDestination, size_t numberOfElements, co
 #endif
 
 #ifdef __cplusplus
+// Modern MSVC (VS 2019+) already has proper std::min/std::max
+// Only define these for older compilers
+#if defined(_MSC_VER) && _MSC_VER < 1920
 namespace std
 {
 	// I don't get why these are necessary??
@@ -137,6 +140,7 @@ namespace std
 	X(long long); X(unsigned long long);
 #undef  X
 }
+#endif
 #endif
 
 #ifdef __cplusplus
