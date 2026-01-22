@@ -5,6 +5,11 @@
 
 #include <tchar.h>
 
+// _MAX_INT_DIG may not be defined in newer MSVC versions
+#ifndef _MAX_INT_DIG
+#define _MAX_INT_DIG 32
+#endif
+
 #include <locale>
 #include <string>
 #include <sstream>
