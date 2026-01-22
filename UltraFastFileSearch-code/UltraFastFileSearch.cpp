@@ -775,6 +775,9 @@ namespace std
 
 namespace std
 {
+	// Old MSVC STL internal hacks - disabled for VS 2019+ (modern STL)
+#if defined(_MSC_VER) && _MSC_VER < 1920
+
 	////POINTER ITERATOR TAGS
 	//struct _General_ptr_iterator_tag
 	//{	// general case, no special optimizations
@@ -790,7 +793,7 @@ namespace std
 		// pointer to scalar type
 	};
 
-	template<class> struct is_scalar; 
+	template<class> struct is_scalar;
 
 #if defined(_CPPLIB_VER) && 600 <= _CPPLIB_VER
 
@@ -799,8 +802,8 @@ namespace std
 
 	template < class T1, class T2, class _Diff, class _Valty>
 
-	inline void _Uninit_def_fill_n(std::pair<T1, T2> * _First, _Diff _Count, _Wrap_alloc<allocator<std::pair<T1, T2> >>&, _Valty*, 
-#if defined(_CPPLIB_VER) && _CPPLIB_VER >= 650 
+	inline void _Uninit_def_fill_n(std::pair<T1, T2> * _First, _Diff _Count, _Wrap_alloc<allocator<std::pair<T1, T2> >>&, _Valty*,
+#if defined(_CPPLIB_VER) && _CPPLIB_VER >= 650
 		_Trivially_copyable_ptr_iterator_tag
 #else
 		_Scalar_ptr_iterator_tag
@@ -820,6 +823,8 @@ namespace std
 			const value = __is_pod(T);
 	};
 #endif
+
+#endif // _MSC_VER < 1920
 
 
 	template < class It, class T, class Traits, class Ax>
