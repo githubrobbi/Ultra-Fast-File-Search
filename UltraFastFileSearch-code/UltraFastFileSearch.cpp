@@ -12931,8 +12931,8 @@ int main(int argc, char* argv[])
 
 		const auto& opts = parser.options();
 
-		// If help was requested, exit successfully
-		if (opts.helpRequested) {
+		// If help or version was requested, exit successfully
+		if (opts.helpRequested || opts.versionRequested) {
 			return 0;
 		}
 

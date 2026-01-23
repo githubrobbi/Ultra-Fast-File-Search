@@ -114,6 +114,7 @@ int CommandLineParser::parse(int argc, const char* const* argv) {
         return 0;
     } catch (const CLI::CallForVersion& e) {
         PrintVersion();
+        opts_.versionRequested = true;
         opts_.parseResult = 0;
         return 0;
     } catch (const CLI::ParseError& e) {

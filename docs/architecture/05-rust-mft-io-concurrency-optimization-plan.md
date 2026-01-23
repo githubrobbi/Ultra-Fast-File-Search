@@ -275,32 +275,159 @@ If implemented well, this can surpass the fixed-strategy C++ implementation on m
 
 ---
 
-## 7. Milestones & Tracking
+## 7. Implementation Status & Milestones
 
-Use these milestones to manage the work.
+This section tracks the implementation status of each phase and its sub-steps.
 
-1. **M1 – Baseline & Instrumentation**
-   - [ ] Re-run `benchmark-index-lean` and C++ `--benchmark-index` on S:.
-   - [ ] Capture logs, records/sec, and throughput numbers.
-   - [ ] Document current results in a short markdown file.
+**Last Updated:** 2026-01-23
 
-2. **M2 – Implement `PipelinedParallel` mode**
-   - [ ] Add `MftReadMode::PipelinedParallel` and wire it into `MftReader`.
-   - [ ] Implement `read_all_pipelined_parallel` using Rayon workers.
-   - [ ] Add CLI flag to select the new mode.
+---
 
-3. **M3 – Functional Verification**
-   - [ ] Run unit tests and CI; fix any regressions.
-   - [ ] Add targeted tests for the new mode (e.g., small synthetic MFT source).
+### Phase A – Pipelined + Parallel Parsing ✅ COMPLETE
 
-4. **M4 – Performance Evaluation**
-   - [ ] Re-run benchmarks on S: and at least one SSD.
-   - [ ] Compare against C++ `--benchmark-index`.
-   - [ ] Decide if Phase B (IOCP-style engine) is necessary.
+| Step | Description | Status | Implementation Details |
+|------|-------------|--------|------------------------|
+| A1 | Add `MftReadMode::PipelinedParallel` enum variant | ✅ Done | `reader.rs:57-60` - New enum variant with documentation |
+| A2 | Update `as_str()` and `FromStr` for new mode | ✅ Done | `reader.rs:77,99` - Returns `"pipelined-parallel"`, parses `"pipelined-parallel"` and `"pipelinedparallel"` |
+| A3 | Update Auto mode selection for HDD | ✅ Done | `reader.rs:793-796` - HDD now defaults to `PipelinedParallel` |
+| A4 | Implement `read_all_pipelined_parallel()` method | ✅ Done | `io.rs:3600-3700` - Reader thread fills bounded channel, Rayon parses all buffers via `par_iter_mut().flat_map()` |
+| A5 | Add batch parsing helper function | ✅ Done | `io.rs:3759-3820` - `parse_buffer_to_results_zero_copy()` and `parse_buffer_zero_copy_inner()` |
+| A6 | Integrate with `MftRecordMerger` | ✅ Done | `io.rs:3687-3692` - Single-threaded merger after parallel parsing |
+| A7 | Add CLI `--mode` flag to `benchmark-index-lean` | ✅ Done | `main.rs:428-429` - Accepts `auto`, `parallel`, `streaming`, `prefetch`, `pipelined`, `pipelined-parallel`, `iocp-parallel` |
+| A8 | Wire up mode in `read_all_index()` | ✅ Done | `reader.rs:929-958` - Full integration with progress callbacks |
+| A9 | Wire up mode in `read_all_index_lean()` | ✅ Done | `reader.rs:1431-1459` - Full integration with progress callbacks |
 
-5. **M5 – (Optional) IOCP Engine**
-   - [ ] Design and spike a minimal IOCP-based reader in Rust.
-   - [ ] Integrate as `MftReadMode::IocpParallel`.
-   - [ ] Benchmark and compare with existing modes.
+**Verification:**
+- ✅ All 19 unit tests pass
+- ✅ All doc tests pass
+- ✅ No clippy warnings
+- ✅ Code compiles on macOS (cross-platform stubs work)
 
-Keep this document updated as milestones are completed so that progress is visible and the next steps are always clear.
+---
+
+### Phase B – Advanced I/O Overlap (IOCP-Style) ✅ COMPLETE
+
+| Step | Description | Status | Implementation Details |
+|------|-------------|--------|------------------------|
+| B1 | Add `MftReadMode::IocpParallel` enum variant | ✅ Done | `reader.rs:61-64` - New enum variant with documentation |
+| B2 | Update `as_str()` and `FromStr` for IOCP mode | ✅ Done | `reader.rs:78,100` - Returns `"iocp-parallel"`, parses `"iocp-parallel"`, `"iocpparallel"`, `"iocp"` |
+| B3 | Implement `IoCompletionPort` wrapper | ✅ Done | `io.rs:3877-3940` - RAII wrapper for Windows IOCP with `CreateIoCompletionPort`, `associate()`, and `Drop` |
+| B4 | Implement `OverlappedRead` struct | ✅ Done | `io.rs:3942-4015` - Pinned `OVERLAPPED` structure with aligned buffer and chunk metadata |
+| B5 | Implement `IocpMftReader` struct | ✅ Done | `io.rs:4017-4026` - Reader with extent map, bitmap, chunk size, and configurable concurrency |
+| B6 | Implement `IocpMftReader::new()` | ✅ Done | `io.rs:4033-4060` - Constructor with drive-type-aware chunk sizing |
+| B7 | Implement `with_concurrency()` builder | ✅ Done | `io.rs:4062-4070` - Configurable number of concurrent reads (default: 8) |
+| B8 | Implement `read_all_iocp()` method | ✅ Done | `io.rs:4072-4300` - Full IOCP event loop with `GetQueuedCompletionStatus`, multiple reads in flight |
+| B9 | Use zero-copy parsing in IOCP path | ✅ Done | `io.rs:4224-4230` - Uses `parse_buffer_zero_copy_inner()` for in-place fixup |
+| B10 | Wire up in `read_all_index()` | ✅ Done | `reader.rs:959-987` - Full integration with progress callbacks |
+| B11 | Wire up in `read_all_index_lean()` | ✅ Done | `reader.rs:1460-1488` - Full integration with progress callbacks |
+
+**Verification:**
+- ✅ All 19 unit tests pass
+- ✅ All doc tests pass
+- ✅ No clippy warnings
+- ✅ Code compiles on macOS (Windows-only code behind `#[cfg(windows)]`)
+
+---
+
+### Phase C – Zero-Copy & SIMD-Friendly Parsing ✅ COMPLETE
+
+| Step | Description | Status | Implementation Details |
+|------|-------------|--------|------------------------|
+| C1 | Analyze current parsing hot-path | ✅ Done | Identified `to_vec()` copies in all reader paths and UTF-16 allocations |
+| C2 | Implement in-place USA fixup | ✅ Done | All readers now apply `apply_fixup()` directly on shared buffer slices |
+| C3 | Update `StreamingMftReader` to zero-copy | ✅ Done | `io.rs:2946-2972` - Uses `buffer.as_mut_slice()` with in-place fixup |
+| C4 | Update `PrefetchMftReader` to zero-copy | ✅ Done | `io.rs:3156-3185` - Uses `buffer.as_mut_slice()` with in-place fixup |
+| C5 | Update `PipelinedMftReader` to zero-copy | ✅ Done | `io.rs:3457-3483` - Uses `buffer.as_mut_slice()` with in-place fixup |
+| C6 | Update `ParallelMftReader` to zero-copy | ✅ Done | `io.rs:2387-2440,2474-2523` - Uses `par_iter_mut()` with in-place fixup for both merge_extensions and legacy paths |
+| C7 | Update `PipelinedParallel` to zero-copy | ✅ Done | `io.rs:3676-3678` - Uses `par_iter_mut()` with `parse_buffer_to_results_zero_copy()` |
+| C8 | Update IOCP path to zero-copy | ✅ Done | `io.rs:4224-4230` - Uses `parse_buffer_zero_copy_inner()` |
+| C9 | Add `smallvec` dependency (Windows-only) | ✅ Done | `Cargo.toml:64` - Added under `[target.'cfg(windows)'.dependencies]` |
+| C10 | Optimize UTF-16 conversion in `parse_file_name_full` | ✅ Done | `io.rs:1457-1461` - Uses `SmallVec<[u16; 128]>` to avoid heap allocation for names < 128 chars |
+| C11 | Optimize UTF-16 conversion in `parse_data_attribute_full` | ✅ Done | `io.rs:1487-1490` - Uses `SmallVec<[u16; 64]>` to avoid heap allocation for stream names < 64 chars |
+
+**Verification:**
+- ✅ All 19 unit tests pass
+- ✅ All doc tests pass
+- ✅ No clippy warnings
+- ✅ `smallvec` is Windows-only dependency (no cfg-gate suppression hacks)
+
+---
+
+### Phase D – Multi-Drive & CPU Topology Awareness ❌ NOT STARTED
+
+| Step | Description | Status | Implementation Details |
+|------|-------------|--------|------------------------|
+| D1 | Design multi-drive pipeline architecture | ❌ Pending | - |
+| D2 | Implement per-drive `MftReader` spawning | ❌ Pending | - |
+| D3 | Add global executor with concurrency limits | ❌ Pending | - |
+| D4 | Implement NUMA/core topology awareness | ❌ Pending | - |
+| D5 | Add multi-drive CLI commands | ❌ Pending | - |
+| D6 | Benchmark multi-drive scaling | ❌ Pending | - |
+
+---
+
+## 8. Performance Validation Checklist
+
+### Pre-Implementation Baseline (M1)
+- [ ] Run `benchmark-index-lean` on HDD (S:) with current Rust implementation
+- [ ] Run C++ `--benchmark-index` on same HDD for comparison
+- [ ] Document baseline records/sec and throughput
+
+### Phase A Validation (M4)
+- [ ] Run `benchmark-index-lean --mode pipelined-parallel` on HDD
+- [ ] Compare against `--mode pipelined` (single-threaded parsing)
+- [ ] Target: ≤ 50 seconds on large HDD, within 10-15% of C++ throughput
+- [ ] Run on SSD and verify > 1.5× speedup over `Pipelined` mode
+
+### Phase B Validation
+- [ ] Run `benchmark-index-lean --mode iocp-parallel` on HDD
+- [ ] Compare against `--mode pipelined-parallel`
+- [ ] Experiment with different concurrency levels (2, 4, 8, 16)
+- [ ] Document optimal concurrency for HDD vs SSD
+
+### Phase C Validation
+- [ ] Measure per-core throughput improvement
+- [ ] Target: ≥ 20-30% faster than Phase A alone on SSD/NVMe
+- [ ] Verify index contents are bit-identical (no behavior changes)
+
+### Phase D Validation
+- [ ] Test multi-drive indexing on system with 2+ drives
+- [ ] Verify close to linear scaling until bottleneck
+- [ ] Confirm single-drive performance is preserved
+
+---
+
+## 9. CLI Usage Reference
+
+```bash
+# Phase A: Pipelined + Parallel Parsing
+uffs_mft benchmark-index-lean --drive C --mode pipelined-parallel
+
+# Phase B: IOCP-style I/O Overlap
+uffs_mft benchmark-index-lean --drive C --mode iocp-parallel
+
+# Compare all modes
+uffs_mft benchmark-index-lean --drive C --mode auto
+uffs_mft benchmark-index-lean --drive C --mode parallel
+uffs_mft benchmark-index-lean --drive C --mode streaming
+uffs_mft benchmark-index-lean --drive C --mode prefetch
+uffs_mft benchmark-index-lean --drive C --mode pipelined
+uffs_mft benchmark-index-lean --drive C --mode pipelined-parallel
+uffs_mft benchmark-index-lean --drive C --mode iocp-parallel
+```
+
+---
+
+## 10. Summary
+
+| Phase | Description | Status | Key Files Modified |
+|-------|-------------|--------|-------------------|
+| **A** | Pipelined + Parallel Parsing | ✅ Complete | `reader.rs`, `io.rs`, `main.rs` |
+| **B** | IOCP-style I/O Overlap | ✅ Complete | `reader.rs`, `io.rs` |
+| **C** | Zero-Copy & SIMD-Friendly Parsing | ✅ Complete | `io.rs`, `Cargo.toml` |
+| **D** | Multi-Drive & CPU Topology | ❌ Not Started | - |
+
+**Next Steps:**
+1. Run performance benchmarks on Windows with HDD and SSD
+2. Compare against C++ `--benchmark-index` baseline
+3. If Phase D is needed, design multi-drive architecture

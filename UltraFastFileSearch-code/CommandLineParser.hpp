@@ -72,6 +72,7 @@ struct CommandLineOptions {
     
     // Metadata
     bool helpRequested = false;
+    bool versionRequested = false;
     bool outputSpecified = false;  // Track if --out was used
     int parseResult = 0;
 };
