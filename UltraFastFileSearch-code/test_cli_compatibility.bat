@@ -78,36 +78,41 @@ if %ERRORLEVEL% EQU 0 (
     set /a FAILED+=1
 )
 
-REM Test 4: Basic search (console output)
+REM Test 4: Basic search (console output) - search for any .txt file on C:
 echo [TEST 4] Basic search with console output
-%EXE% "C:/*.txt" --columns=name 2>&1 | findstr /C:"." >nul
+echo   Command: %EXE% "C:/*.txt" --columns=name
+%EXE% "C:/*.txt" --columns=name 2>&1 | findstr /i "txt" >nul
 if %ERRORLEVEL% EQU 0 (
     echo   PASSED: Basic search works
     set /a PASSED+=1
 ) else (
-    echo   FAILED: Basic search returned error
+    echo   FAILED: Basic search - no .txt files found or output issue
+    echo   Trying simpler search...
+    %EXE% "C:/*" --columns=name 2>&1 | head -5
     set /a FAILED+=1
 )
 
-REM Test 5: Multiple columns
+REM Test 5: Multiple columns - check that output contains separator
 echo [TEST 5] Multiple columns
-%EXE% "C:/*.txt" --columns=name,path,size 2>&1 | findstr /C:"," >nul
+echo   Command: %EXE% "C:/*.txt" --columns=name,size
+%EXE% "C:/*.txt" --columns=name,size 2>&1 | findstr "," >nul
 if %ERRORLEVEL% EQU 0 (
     echo   PASSED: Multiple columns work
     set /a PASSED+=1
 ) else (
-    echo   FAILED: Multiple columns returned error
+    echo   FAILED: Multiple columns - comma not found in output
     set /a FAILED+=1
 )
 
 REM Test 6: Custom separator
 echo [TEST 6] Custom separator
-%EXE% "C:/*.txt" --columns=name,size --sep="|" 2>&1 | findstr /C:"|" >nul
+echo   Command: %EXE% "C:/*.txt" --columns=name,size --sep="|"
+%EXE% "C:/*.txt" --columns=name,size --sep="|" 2>&1 | findstr "|" >nul
 if %ERRORLEVEL% EQU 0 (
     echo   PASSED: Custom separator works
     set /a PASSED+=1
 ) else (
-    echo   FAILED: Custom separator returned error
+    echo   FAILED: Custom separator - pipe not found in output
     set /a FAILED+=1
 )
 
@@ -136,12 +141,13 @@ if %ERRORLEVEL% EQU 0 (
 
 REM Test 9: Drive specification
 echo [TEST 9] Drive specification
-%EXE% "/" --drives=C --columns=name 2>&1 | findstr /C:"." >nul
+echo   Command: %EXE% "/" --drives=C --columns=name
+%EXE% "/" --drives=C --columns=name 2>&1 | findstr /i "[a-z]" >nul
 if %ERRORLEVEL% EQU 0 (
     echo   PASSED: Drive specification works
     set /a PASSED+=1
 ) else (
-    echo   FAILED: Drive specification returned error
+    echo   FAILED: Drive specification - no output with letters found
     set /a FAILED+=1
 )
 
