@@ -907,3 +907,380 @@ cargo build --profile profiling --package uffs-mft
 
 *Document will be updated with benchmark results after testing.*
 
+---
+
+## 19. IOCP Implementation Update & Performance Gap Analysis
+
+**Date**: 2026-01-23
+**From**: Rust Team
+**To**: C++ Team
+
+### Current Implementation Status
+
+We've implemented true IOCP-style bulk reading that matches the C++ pattern:
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| Queue ALL reads to IOCP at once | ✅ Done | 11,531 x 1MB reads queued |
+| 1MB I/O chunk size | ✅ Done | Matches C++ approach |
+| Continuous I/O pattern | ✅ Done | No more pulsating reads |
+| `FILE_FLAG_SEQUENTIAL_SCAN` | ✅ Done | Enables OS read-ahead |
+| Removed `FILE_FLAG_NO_BUFFERING` | ✅ Done | Allows OS cache + read-ahead |
+
+### Current Benchmark Results
+
+```
+Mode: bulk-iocp
+Drive: S: (HDD, 11.5GB MFT, 62 extents)
+
+📤 Queued all reads to IOCP (C++ style: many small reads) queued=11531 io_size_mb=1
+✅ IOCP bulk read complete read_ms=60067 bytes_mb=11481
+
+Total Time: 69.4 seconds
+MFT Read Speed: 165 MB/s
+```
+
+### Comparison with C++
+
+| Metric | C++ | Rust bulk-iocp | Gap |
+|--------|-----|----------------|-----|
+| Total Time | ~41s | ~69s | 1.7x slower |
+| I/O Throughput | ~280 MB/s | ~165 MB/s | 1.7x slower |
+| I/O Pattern | Continuous ✅ | Continuous ✅ | Same |
+| Reads Queued | ~8K x 1MB | ~11.5K x 1MB | Similar |
+
+### What We're Doing
+
+1. **IOCP Setup**:
+   ```rust
+   let iocp = IoCompletionPort::new(0)?;  // concurrency = 0 (let Windows decide)
+   iocp.associate(overlapped_handle, 0)?;
+   ```
+
+2. **Handle Flags**:
+   ```rust
+   FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN
+   // Note: NO FILE_FLAG_NO_BUFFERING
+   ```
+
+3. **Read Loop** (queues all at once):
+   ```rust
+   for chunk in sorted_chunks {
+       // Break each chunk into 1MB I/O operations
+       while offset_within_chunk < effective_bytes {
+           let io_size = remaining.min(1MB);
+
+           // Create OVERLAPPED with offset
+           op.overlapped.Offset = disk_offset;
+
+           // Issue async read (non-blocking)
+           ReadFile(handle, buffer_slice, None, &mut op.overlapped);
+
+           pending_count += 1;
+       }
+   }
+   // All 11,531 reads queued before any completions processed
+   ```
+
+4. **Completion Loop**:
+   ```rust
+   while completed < pending_count {
+       GetQueuedCompletionStatus(iocp.handle, ...);
+       completed += 1;
+   }
+   ```
+
+### Questions for C++ Team
+
+The I/O pattern is now correct (continuous), but we're still 1.7x slower on throughput. What could explain this?
+
+#### 1. IOCP Concurrency Setting
+We pass `0` to `CreateIoCompletionPort` for the concurrency hint. What value does C++ use?
+
+#### 2. Multiple Completion Threads?
+Do you have multiple threads calling `GetQueuedCompletionStatus`? We use a single thread.
+
+#### 3. Read Size
+We use 1MB per read. You mentioned ~8K reads for the same data. What's your exact read size?
+
+#### 4. Buffer Allocation
+We pre-allocate one large buffer (11.5GB) and issue reads directly into it. Do you do the same, or use separate buffers per read?
+
+#### 5. OVERLAPPED Structure Handling
+We `Box::pin` each OVERLAPPED struct for pointer stability. Is there a more efficient approach?
+
+#### 6. Any Other IOCP Tuning?
+- `SetFileIoOverlappedRange`?
+- `SetFileCompletionNotificationModes`?
+- Priority hints?
+- Any other Windows I/O tuning APIs?
+
+#### 7. Disk Queue Depth
+Is there a way to check/tune the disk queue depth? Maybe Windows is limiting how many reads are actually in flight.
+
+### Profiler Observations
+
+When viewing in VS 2026 profiler:
+- **C++**: Shows one massive continuous read block
+- **Rust**: Shows continuous read, but at lower throughput
+
+The I/O pattern is correct now, but the raw throughput is lower. This suggests either:
+1. IOCP configuration difference
+2. Windows I/O scheduler treating our requests differently
+3. Some overhead in our completion handling loop
+
+### Next Steps
+
+Pending C++ team feedback on IOCP configuration details.
+
+---
+
+*Please update Section 20 with C++ team responses.*
+
+---
+
+## 20. C++ Team Response: IOCP Configuration Details
+
+**Date**: 2026-01-23
+**From**: C++ Team
+**To**: Rust Team
+
+Thank you for the detailed questions! Here's exactly how our IOCP implementation works:
+
+### Answers to Your Questions
+
+#### 1. IOCP Concurrency Setting
+
+We pass `0` (NULL) to `CreateIoCompletionPort` for the concurrency hint, same as you:
+
+```cpp
+// Line 6946 in UltraFastFileSearch.cpp
+IoCompletionPort() : _handle(CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, NULL, 0)), ...
+```
+
+When `NumberOfConcurrentThreads` is 0, Windows uses the number of processors. This is the same as your approach.
+
+#### 2. Multiple Completion Threads
+
+**Yes, we use multiple worker threads** - one per CPU core:
+
+```cpp
+// Lines 6964-6978
+void ensure_initialized() {
+    if (this->_threads.empty()) {
+        size_t const nthreads = static_cast<size_t>(get_num_threads());  // = CPU count
+        this->_threads.resize(nthreads);
+        for (size_t i = nthreads; i != 0 && ((void)--i, true);) {
+            unsigned int id;
+            Handle(reinterpret_cast<HANDLE>(_beginthreadex(NULL, 0, iocp_worker, this, 0, &id)))
+                .swap(this->_threads.at(i).handle);
+        }
+        this->_initialized.store(true, atomic_namespace::memory_order_release);
+    }
+}
+```
+
+Each worker thread calls `GetQueuedCompletionStatus` in a loop:
+
+```cpp
+// Lines 6820-6885
+for (unsigned long nr; GetQueuedCompletionStatus(this->_handle, &nr, &key, &overlapped_ptr, timeout);) {
+    p = static_cast<Overlapped*>(overlapped_ptr);
+    intrusive_ptr<Overlapped> overlapped(p, false);
+    if (overlapped.get()) {
+        int r = (*overlapped)(static_cast<size_t>(nr), key);
+        // ... handle completion
+    }
+}
+```
+
+**This is likely a key difference!** You're using a single thread for completions. With multiple threads:
+- Completions are processed in parallel
+- While one thread processes a completion, others can dequeue more
+- Better CPU utilization during I/O-bound phases
+
+#### 3. Read Size
+
+We use **1MB** per read, same as you:
+
+```cpp
+// Line 7119
+read_block_size(1 << 20)  // 1MB = 1,048,576 bytes
+```
+
+This is used to break MFT extents into chunks:
+
+```cpp
+// Lines 7490, 7518
+n = std::min(i->first - prev_vcn, 1 + (static_cast<unsigned long long>(this->read_block_size) - 1) / this->cluster_size);
+```
+
+#### 4. Buffer Allocation
+
+**We allocate a separate buffer per read operation**, not one giant buffer:
+
+```cpp
+// Lines 7140-7176 - ReadOperation uses custom allocator with recycling
+static void* operator new(size_t n, size_t m) {
+    return operator new(n + m);  // n = sizeof(ReadOperation), m = buffer size
+}
+```
+
+Each `ReadOperation` object has its buffer appended after the struct:
+
+```cpp
+// Line 7258
+void* const buffer = this + 1;  // Buffer is right after the ReadOperation struct
+```
+
+We recycle these allocations to avoid malloc overhead:
+
+```cpp
+// Lines 7185-7195
+static void operator delete(void* p) {
+    if (true) {
+        atomic_namespace::unique_lock<atomic_namespace::recursive_mutex>(recycled_mutex),
+            recycled.push_back(std::pair<size_t, void*>(_msize(p), p));
+    }
+}
+```
+
+**Key insight**: We don't pre-allocate 11.5GB. We allocate ~1MB buffers on demand and recycle them. This:
+- Reduces memory pressure
+- Allows Windows to manage physical memory better
+- Avoids committing 11.5GB upfront
+
+#### 5. OVERLAPPED Structure Handling
+
+Each `ReadOperation` inherits from `Overlapped` (which contains the Windows `OVERLAPPED`):
+
+```cpp
+// Line 7132
+class OverlappedNtfsMftReadPayload::ReadOperation : public Overlapped {
+    // OVERLAPPED is in the base class
+    // Buffer is allocated after this struct
+};
+```
+
+We use `intrusive_ptr` for reference counting, not `Box::pin`. The struct is heap-allocated with the buffer appended, so no separate pinning is needed.
+
+#### 6. Other IOCP Tuning
+
+**We don't use any special IOCP tuning APIs.** No:
+- `SetFileIoOverlappedRange`
+- `SetFileCompletionNotificationModes`
+- Priority hints beyond `IoPriorityLow`
+
+However, we do set **I/O priority to Low** for MFT reading:
+
+```cpp
+// Line 7833
+IoPriority(reinterpret_cast<uintptr_t>(volume), winnt::IoPriorityLow).swap(set_priorities[i]);
+```
+
+This prevents MFT reading from starving other system I/O.
+
+#### 7. Disk Queue Depth
+
+We don't explicitly tune disk queue depth. Windows manages this based on:
+- Number of outstanding I/O requests
+- Disk controller capabilities
+- I/O priority settings
+
+### Key Architectural Differences
+
+| Aspect | Rust | C++ | Impact |
+|--------|------|-----|--------|
+| Completion threads | 1 | CPU count | **HIGH** - parallel completion processing |
+| Buffer allocation | 11.5GB upfront | 1MB per read, recycled | **MEDIUM** - memory pressure |
+| OVERLAPPED handling | Box::pin each | Heap alloc with buffer appended | Low |
+| I/O priority | Normal? | IoPriorityLow | Low |
+
+### Recommended Changes
+
+1. **Use multiple completion threads**
+   - Create `num_cpus` threads
+   - Each calls `GetQueuedCompletionStatus` in a loop
+   - Process completions in parallel
+   - Expected improvement: **20-40%** (this is likely your biggest gap)
+
+2. **Don't pre-allocate the entire MFT buffer**
+   - Allocate 1MB buffers per read
+   - Recycle them after completion
+   - Reduces memory commit and page fault overhead
+
+3. **Set I/O priority to Low**
+   - Prevents starving other system I/O
+   - May improve overall system responsiveness
+
+### Why Multiple Completion Threads Matter
+
+With a single completion thread:
+```
+Time: |--Read1--|--Process1--|--Read2--|--Process2--|--Read3--|...
+```
+
+With multiple completion threads:
+```
+Thread 1: |--Read1--|--Process1--|--Read4--|--Process4--|...
+Thread 2: |--Read2--|--Process2--|--Read5--|--Process5--|...
+Thread 3: |--Read3--|--Process3--|--Read6--|--Process6--|...
+```
+
+Even though I/O is the bottleneck, processing completions in parallel means:
+- Less time between I/O completion and next read being queued
+- Better I/O pipeline utilization
+- CPU cores stay busy during I/O waits
+
+### Code Reference
+
+Key files and line numbers in `UltraFastFileSearch.cpp`:
+
+| Component | Lines | Description |
+|-----------|-------|-------------|
+| `IoCompletionPort` class | 6740-7050 | IOCP wrapper with worker threads |
+| `get_num_threads()` | 6777-6804 | Returns CPU count |
+| `ensure_initialized()` | 6964-6978 | Creates worker threads |
+| `worker()` | 6806-6902 | Completion processing loop |
+| `enqueue()` | 6904-6916 | Issues ReadFile |
+| `OverlappedNtfsMftReadPayload` | 7078-7130 | MFT read coordinator |
+| `ReadOperation` | 7132-7430 | Per-read operation with buffer |
+| `read_block_size` | 7111, 7119 | 1MB read size |
+
+---
+
+*End of C++ Team Response*
+
+---
+
+## 21. Summary: Root Cause of 1.7x Gap
+
+Based on our analysis, the primary cause of the remaining performance gap is:
+
+### Single vs Multiple Completion Threads
+
+| Metric | Rust (1 thread) | C++ (N threads) |
+|--------|-----------------|-----------------|
+| Completion processing | Sequential | Parallel |
+| CPU utilization during I/O | Low | High |
+| Time between completions | Higher | Lower |
+
+### Action Items for Rust Team
+
+1. **Implement multi-threaded completion processing**
+   - Spawn `num_cpus` threads
+   - Each thread calls `GetQueuedCompletionStatus`
+   - Use a thread-safe queue or direct processing
+
+2. **Consider per-read buffer allocation**
+   - Instead of one 11.5GB buffer
+   - Allocate 1MB per read, recycle after use
+
+3. **Benchmark after changes**
+   - Target: Match C++ at ~41s
+   - Stretch: Beat C++ with Rust's zero-cost abstractions
+
+---
+
+*Document complete. Please update Section 22 with benchmark results after implementing multi-threaded completions.*
+
