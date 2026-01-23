@@ -123,6 +123,9 @@
 #include "src/io/io_priority.hpp"
 // Note: overlapped.hpp is documentation only - class not extracted yet
 // Note: src/index/ntfs_index.hpp is documentation only - class not extracted yet
+// Note: src/cli/cli_main.hpp is documentation only - entry point not extracted yet
+// Note: src/gui/gui_main.hpp is documentation only - entry point not extracted yet
+// Note: src/gui/main_dialog.hpp is documentation only - CMainDlg not extracted yet
 
 namespace WTL
 {
@@ -131,7 +134,7 @@ namespace WTL
 }
 
 #ifndef ILIsEmpty
-inline BOOL ILIsEmpty(LPCITEMIDLIST pidl) { return ((pidl == NULL) || (pidl->mkid.cb == 0)); }
+inline BOOL ILIsEmpty(LPCITEMIDLIST pidl) { return ((pidl == nullptr) || (pidl->mkid.cb == 0)); }
 #endif
 
 extern WTL::CAppModule _Module;
@@ -147,7 +150,7 @@ extern WTL::CAppModule _Module;
 #ifndef ILIsEmpty
 inline BOOL ILIsEmpty(LPCITEMIDLIST pidl)
 {
-	return ((pidl == NULL) || (pidl->mkid.cb == 0));
+	return ((pidl == nullptr) || (pidl->mkid.cb == 0));
 }
 #endif
 
@@ -364,7 +367,7 @@ public:
 
 	const_pointer data() const
 	{
-		return this->empty() ? NULL : &*this->begin();
+		return this->empty() ? nullptr : &*this->begin();
 	}
 
 	iterator erase(size_t
@@ -566,7 +569,7 @@ public:
 	typedef void *pointer;
 	typedef void const *const_pointer;
 	virtual void deallocate(pointer const p, size_t const n) = 0;
-	virtual pointer allocate(size_t const n, pointer const hint = NULL) = 0;
+	virtual pointer allocate(size_t const n, pointer const hint = nullptr) = 0;
 	virtual pointer reallocate(pointer const p, size_t const n, bool const allow_movement) = 0;
 };
 
@@ -616,7 +619,7 @@ public: typedef typename base_type::value_type value_type;
 	  }
 
 	  pointer allocate(size_type
-		  const n, void* const p = NULL)
+		  const n, void* const p = nullptr)
 	  {
 		  pointer r;
 		  if (this->_alloc)
@@ -656,7 +659,7 @@ public: typedef typename base_type::value_type value_type;
 		  }
 		  else
 		  {
-			  return NULL;
+			  return nullptr;
 		  }
 	  }
 
@@ -703,7 +706,7 @@ public:
 		if (this->_recycled)
 		{
 			GlobalFree(this->_recycled);
-			this->_recycled = NULL;
+			this->_recycled = nullptr;
 		}
 	}
 
@@ -716,7 +719,7 @@ public:
 			const same = h == this->_recycled;
 		if (same)
 		{
-			this->_recycled = NULL;
+			this->_recycled = nullptr;
 		}
 
 		return same;
@@ -746,9 +749,9 @@ public:
 
 	pointer allocate(size_t
 		const n, pointer
-		const hint = NULL)
+		const hint = nullptr)
 	{
-		HGLOBAL mem = NULL;
+		HGLOBAL mem = nullptr;
 		if (n)
 		{
 			if (this->_recycled)
@@ -756,7 +759,7 @@ public:
 				mem = GlobalReAlloc(this->_recycled, n, GMEM_MOVEABLE);
 				if (mem)
 				{
-					this->_recycled = NULL;
+					this->_recycled = nullptr;
 				}
 			}
 
@@ -766,7 +769,7 @@ public:
 			}
 		}
 
-		pointer p = NULL;
+		pointer p = nullptr;
 		if (mem)
 		{
 			p = GlobalLock(mem);
@@ -780,7 +783,7 @@ public:
 		const n, bool
 		const allow_movement)
 	{
-		pointer result = NULL;
+		pointer result = nullptr;
 		if (HGLOBAL h = GlobalHandle(p))
 		{
 			if (allow_movement || GlobalUnlock(h))
@@ -1535,12 +1538,12 @@ void DisplayError(LPTSTR lpszFunction)
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
 		FORMAT_MESSAGE_FROM_SYSTEM |
 		FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL,
+		nullptr,
 		dw,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
 		(LPTSTR)&lpMsgBuf,
 		0,
-		NULL);
+		nullptr);
 
 	lpDisplayBuf =
 		(LPVOID)LocalAlloc(LMEM_ZEROINIT,
@@ -1669,7 +1672,7 @@ static void append_directional(std::tvstring& str, TCHAR
 void CppRaiseException(unsigned long
 	const error)
 {
-	struct _EXCEPTION_POINTERS* pExPtrs = NULL;
+	struct _EXCEPTION_POINTERS* pExPtrs = nullptr;
 	bool thrown = false;
 	int exCode = 0;
 	struct CppExceptionThrower
@@ -1712,13 +1715,13 @@ void CheckAndThrow(int
 	}
 }
 
-LPTSTR GetAnyErrorText(DWORD errorCode, va_list* pArgList = NULL)
+LPTSTR GetAnyErrorText(DWORD errorCode, va_list* pArgList = nullptr)
 {
 	static TCHAR buffer[1 << 15];
 	ZeroMemory(buffer, sizeof(buffer));
-	if (!FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | (pArgList == NULL ? FORMAT_MESSAGE_IGNORE_INSERTS : 0), NULL, errorCode, 0, buffer, sizeof(buffer) / sizeof(*buffer), pArgList))
+	if (!FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | (pArgList == nullptr ? FORMAT_MESSAGE_IGNORE_INSERTS : 0), nullptr, errorCode, 0, buffer, sizeof(buffer) / sizeof(*buffer), pArgList))
 	{
-		if (!FormatMessage(FORMAT_MESSAGE_FROM_HMODULE | (pArgList == NULL ? FORMAT_MESSAGE_IGNORE_INSERTS : 0), GetModuleHandle(_T("NTDLL.dll")), errorCode, 0, buffer, sizeof(buffer) / sizeof(*buffer), pArgList))
+		if (!FormatMessage(FORMAT_MESSAGE_FROM_HMODULE | (pArgList == nullptr ? FORMAT_MESSAGE_IGNORE_INSERTS : 0), GetModuleHandle(_T("NTDLL.dll")), errorCode, 0, buffer, sizeof(buffer) / sizeof(*buffer), pArgList))
 		{
 			safe_stprintf(buffer, _T("%#lx"), errorCode);
 		}
@@ -1731,8 +1734,8 @@ struct Wow64
 {
 	static HMODULE GetKernel32()
 	{
-		HMODULE kernel32 = NULL;
-		return GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCTSTR> (&GetSystemInfo), &kernel32) ? kernel32 : NULL;
+		HMODULE kernel32 = nullptr;
+		return GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCTSTR> (&GetSystemInfo), &kernel32) ? kernel32 : nullptr;
 }
 
 	typedef BOOL WINAPI IsWow64Process_t(IN HANDLE hProcess, OUT PBOOL Wow64Process);
@@ -1756,7 +1759,7 @@ struct Wow64
 	static Wow64DisableWow64FsRedirection_t* Wow64DisableWow64FsRedirection;
 	static void* disable()
 	{
-		void* old = NULL; 
+		void* old = nullptr;
 #ifdef _M_IX86
 			if (!Wow64DisableWow64FsRedirection)
 			{
@@ -1765,7 +1768,7 @@ struct Wow64
 
 		if (Wow64DisableWow64FsRedirection && !Wow64DisableWow64FsRedirection(&old))
 		{
-			old = NULL;
+			old = nullptr;
 		}
 #endif
 			return old;
@@ -1793,9 +1796,9 @@ struct Wow64
 #ifdef _M_IX86
 Wow64
 const init_wow64;
-Wow64::IsWow64Process_t* Wow64::IsWow64Process = NULL;
-Wow64::Wow64DisableWow64FsRedirection_t* Wow64::Wow64DisableWow64FsRedirection = NULL;
-Wow64::Wow64RevertWow64FsRedirection_t* Wow64::Wow64RevertWow64FsRedirection = NULL;
+Wow64::IsWow64Process_t* Wow64::IsWow64Process = nullptr;
+Wow64::Wow64DisableWow64FsRedirection_t* Wow64::Wow64DisableWow64FsRedirection = nullptr;
+Wow64::Wow64RevertWow64FsRedirection_t* Wow64::Wow64RevertWow64FsRedirection = nullptr;
 #endif
 
 
@@ -2371,7 +2374,7 @@ std::tstring GetDisplayName(HWND hWnd, const std::tstring& path, DWORD shgdn)
 	ATL::CComBSTR bstr;
 	ULONG attrs = SFGAO_ISSLOW | SFGAO_HIDDEN;
 	std::tstring result = (SHGetDesktopFolder(&desktop) == S_OK &&
-		desktop->ParseDisplayName(hWnd, NULL, path.empty() ? NULL : const_cast<LPWSTR> (path.c_str()), NULL, &shidl, &attrs) == S_OK &&
+		desktop->ParseDisplayName(hWnd, nullptr, path.empty() ? nullptr : const_cast<LPWSTR> (path.c_str()), nullptr, &shidl, &attrs) == S_OK &&
 		(attrs & SFGAO_ISSLOW) == 0 &&
 		desktop->GetDisplayNameOf(shidl, shgdn, &ret) == S_OK &&
 		StrRetToBSTR(&ret, shidl, &bstr) == S_OK
@@ -2384,7 +2387,7 @@ int LCIDToLocaleName_XPCompatible(LCID lcid, LPTSTR name, int name_length)
 	HMODULE hKernel32;
 	if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCTSTR> (&GetSystemInfo), &hKernel32))
 	{
-		hKernel32 = NULL;
+		hKernel32 = nullptr;
 	}
 
 	typedef int WINAPI LCIDToLocaleName_t(LCID Locale, LPTSTR lpName, int cchName, DWORD dwFlags);
@@ -2749,7 +2752,7 @@ std::vector<std::pair < unsigned long long, long long >> get_retrieval_pointers(
 	if (path)
 	{
 		HANDLE
-			const opened = CreateFile(path, FILE_READ_ATTRIBUTES | SYNCHRONIZE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_NO_BUFFERING, NULL);
+			const opened = CreateFile(path, FILE_READ_ATTRIBUTES | SYNCHRONIZE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_NO_BUFFERING, nullptr);
 		unsigned long
 			const error = opened != INVALID_HANDLE_VALUE ? ERROR_SUCCESS : GetLastError();
 		if (!error)
@@ -2771,7 +2774,7 @@ std::vector<std::pair < unsigned long long, long long >> get_retrieval_pointers(
 		STARTING_VCN_INPUT_BUFFER input = {};
 
 		BOOL success;
-		for (unsigned long nr; !(success = DeviceIoControl(handle, FSCTL_GET_RETRIEVAL_POINTERS, &input, sizeof(input), &*result.begin(), static_cast<unsigned long> (result.size()) * sizeof(*result.begin()), &nr, NULL), success) && GetLastError() == ERROR_MORE_DATA;)
+		for (unsigned long nr; !(success = DeviceIoControl(handle, FSCTL_GET_RETRIEVAL_POINTERS, &input, sizeof(input), &*result.begin(), static_cast<unsigned long> (result.size()) * sizeof(*result.begin()), &nr, nullptr), success) && GetLastError() == ERROR_MORE_DATA;)
 		{
 			size_t
 				const n = result.size();
@@ -2923,12 +2926,12 @@ struct intrusive_ptr
 	pointer detach()
 	{
 		pointer p_ = this->p;
-		this->p = NULL;
+		this->p = nullptr;
 		return p_;
 	}
 
 	intrusive_ptr(pointer
-		const p = NULL, bool
+		const p = nullptr, bool
 		const addref = true) : p(p)
 	{
 		if (addref)
@@ -2969,7 +2972,7 @@ struct intrusive_ptr
 	}
 
 	void reset(pointer
-		const p = NULL, bool
+		const p = nullptr, bool
 		const add_ref = true)
 	{
 		this_type(p, add_ref).swap(*this);
@@ -3442,7 +3445,7 @@ private:
 			}
 
 			using namespace std;
-			this->p = c ? realloc(this->p, c) : NULL;
+			this->p = c ? realloc(this->p, c) : nullptr;
 			this->n = n;
 		}
 	}
@@ -4050,7 +4053,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 	};
 
 	Records::iterator at(size_t
-		const frs, Records::iterator* const existing_to_revalidate = NULL)
+		const frs, Records::iterator* const existing_to_revalidate = nullptr)
 	{
 		if (frs >= this->records_lookup.size())
 		{
@@ -4089,7 +4092,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 		}
 		else
 		{
-			result = me->records_data.empty() ? NULL : &*(me->records_data.end() - 1) + 1;
+			result = me->records_data.empty() ? nullptr : &*(me->records_data.end() - 1) + 1;
 		}
 
 		return result;
@@ -4123,58 +4126,58 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 	ChildInfos::value_type* childinfo(ChildInfo::next_entry_type
 		const i)
 	{
-		return !~i ? NULL : fast_subscript(this->childinfos.begin(), i);
+		return !~i ? nullptr : fast_subscript(this->childinfos.begin(), i);
 	}
 
 	ChildInfos::value_type
 		const* childinfo(ChildInfo::next_entry_type
 			const i) const
 	{
-		return !~i ? NULL : fast_subscript(this->childinfos.begin(), i);
+		return !~i ? nullptr : fast_subscript(this->childinfos.begin(), i);
 	}
 
 	LinkInfos::value_type* nameinfo(LinkInfo::next_entry_type
 		const i)
 	{
-		return !~i ? NULL : fast_subscript(this->nameinfos.begin(), i);
+		return !~i ? nullptr : fast_subscript(this->nameinfos.begin(), i);
 	}
 
 	LinkInfos::value_type
 		const* nameinfo(LinkInfo::next_entry_type
 			const i) const
 	{
-		return !~i ? NULL : fast_subscript(this->nameinfos.begin(), i);
+		return !~i ? nullptr : fast_subscript(this->nameinfos.begin(), i);
 	}
 
 	LinkInfos::value_type* nameinfo(Records::value_type* const i)
 	{
-		return ~i->first_name.name.offset() ? &i->first_name : NULL;
+		return ~i->first_name.name.offset() ? &i->first_name : nullptr;
 	}
 
 	LinkInfos::value_type
 		const* nameinfo(Records::value_type
 			const* const i) const
 	{
-		return ~i->first_name.name.offset() ? &i->first_name : NULL;
+		return ~i->first_name.name.offset() ? &i->first_name : nullptr;
 	}
 
 	StreamInfos::value_type* streaminfo(StreamInfo::next_entry_type
 		const i)
 	{
-		return !~i ? NULL : fast_subscript(this->streaminfos.begin(), i);
+		return !~i ? nullptr : fast_subscript(this->streaminfos.begin(), i);
 	}
 
 	StreamInfos::value_type
 		const* streaminfo(StreamInfo::next_entry_type
 			const i) const
 	{
-		return !~i ? NULL : fast_subscript(this->streaminfos.begin(), i);
+		return !~i ? nullptr : fast_subscript(this->streaminfos.begin(), i);
 	}
 
 	StreamInfos::value_type* streaminfo(Records::value_type* const i)
 	{
 		assert(~i->first_stream.name.offset() || (!i->first_stream.name.length && !i->first_stream.length));
-		return ~i->first_stream.name.offset() ? &i->first_stream : NULL;
+		return ~i->first_stream.name.offset() ? &i->first_stream : nullptr;
 	}
 
 	StreamInfos::value_type
@@ -4182,7 +4185,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 			const* const i) const
 	{
 		assert(~i->first_stream.name.offset() || (!i->first_stream.name.length && !i->first_stream.length));
-		return ~i->first_stream.name.offset() ? &i->first_stream : NULL;
+		return ~i->first_stream.name.offset() ? &i->first_stream : nullptr;
 	}
 
 public: typedef key_type_internal key_type;
@@ -4194,7 +4197,7 @@ public: typedef key_type_internal key_type;
 	  value_initialized < unsigned int > cluster_size;
 	  value_initialized < unsigned int > mft_record_size;
 	  value_initialized < unsigned int > mft_capacity;
-	  NtfsIndex(std::tvstring value) : _root_path(value), _finished_event(CreateEvent(NULL, TRUE, FALSE, NULL)), _finished(), _total_names_and_streams(0), _cancelled(false), _records_so_far(0), _preprocessed_so_far(0), _perf_reports_circ(1 << 6), _perf_avg_speed(Speed()), reserved_clusters(0) {}
+	  NtfsIndex(std::tvstring value) : _root_path(value), _finished_event(CreateEvent(nullptr, TRUE, FALSE, nullptr)), _finished(), _total_names_and_streams(0), _cancelled(false), _records_so_far(0), _preprocessed_so_far(0), _perf_reports_circ(1 << 6), _perf_avg_speed(Speed()), reserved_clusters(0) {}
 	  ~NtfsIndex() {}
 
 	  bool init_called() const
@@ -4213,7 +4216,7 @@ public: typedef key_type_internal key_type;
 		  }
 
 		  HANDLE
-			  const h = CreateFile(path_name.c_str(), FILE_READ_DATA | FILE_READ_ATTRIBUTES | SYNCHRONIZE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+			  const h = CreateFile(path_name.c_str(), FILE_READ_DATA | FILE_READ_ATTRIBUTES | SYNCHRONIZE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr);
 		  CheckAndThrow(h != INVALID_HANDLE_VALUE);
 		  Handle volume(h);
 		  winnt::IO_STATUS_BLOCK iosb;
@@ -4588,7 +4591,7 @@ public: typedef key_type_internal key_type;
 								  const name_length = isdir ? static_cast<unsigned char> (0) : ah->NameLength;
 							  unsigned char
 								  const type_name_id = static_cast<unsigned char> (isdir ? 0 : ah->Type >> (CHAR_BIT / 2));
-							  StreamInfo* info = NULL;
+							  StreamInfo* info = nullptr;
 							  if (StreamInfos::value_type* const si = this->streaminfo(&*base_record))
 							  {
 								  if (isdir)	// Do we want to merge this with another attribute? (e.g. AttributeIndexAllocation with AttributeIndexRoot, or secondary entry with primary entry)
@@ -4779,7 +4782,7 @@ public: typedef key_type_internal key_type;
 							  }
 						  };
 
-						  StreamInfos::value_type* default_stream = NULL, * compressed_default_stream_to_merge = NULL;
+						  StreamInfos::value_type* default_stream = nullptr, * compressed_default_stream_to_merge = nullptr;
 						  unsigned long long default_allocated_delta = 0, compressed_default_allocated_delta = 0;
 						  for (StreamInfos::value_type* k = me->streaminfo(fr); k; k = me->streaminfo(k->next_entry))
 						  {
@@ -4905,7 +4908,7 @@ public: typedef key_type_internal key_type;
 		  }
 
 		  file_pointers result;
-		  result.record = NULL;
+		  result.record = nullptr;
 		  if (~key.frs())
 		  {
 			  Records::value_type
@@ -5176,7 +5179,7 @@ public: typedef key_type_internal key_type;
 				  case 6:;
 					  if (is_root())
 					  {
-						  this->index = NULL;
+						  this->index = nullptr;
 						  break;
 					  }
 
@@ -5196,7 +5199,7 @@ public: typedef key_type_internal key_type;
 	  };
 
 	  size_t get_path(key_type key, std::tvstring& result, bool
-		  const name_only, unsigned int* attributes = NULL) const
+		  const name_only, unsigned int* attributes = nullptr) const
 	  {
 		  size_t
 			  const old_size = result.size();
@@ -5205,7 +5208,7 @@ public: typedef key_type_internal key_type;
 			  if (attributes)
 			  {
 				  *attributes = pi.attributes();
-				  attributes = NULL;
+				  attributes = nullptr;
 			  }
 
 			  TCHAR
@@ -5352,7 +5355,7 @@ private: template < class F>
 					if (k->name.length)
 					{
 						path->push_back(_T(':'));
-						append_directional(*path, k->name.length ? &me->names[k->name.offset()] : NULL, k->name.length, k->name.ascii() ? -1 : 0);
+						append_directional(*path, k->name.length ? &me->names[k->name.offset()] : nullptr, k->name.length, k->name.ascii() ? -1 : 0);
 					}
 
 					if (is_attribute)
@@ -5439,7 +5442,7 @@ private: template < class F>
 								}
 
 								name = j->name;
-								this->operator()(static_cast<key_type::frs_type> (record_number), ji, NULL, 0);
+								this->operator()(static_cast<key_type::frs_type> (record_number), ji, nullptr, 0);
 								if (buffered_matching)
 								{
 									path->erase(path->end() - static_cast<ptrdiff_t> (j->name.length), path->end());
@@ -5602,7 +5605,7 @@ public:
 
 	HRESULT hr;
 	CoInit(bool initialize = true) :
-		hr(initialize ? CoInitialize(NULL) : S_FALSE) {}
+		hr(initialize ? CoInitialize(nullptr) : S_FALSE) {}
 
 	~CoInit()
 	{
@@ -5621,7 +5624,7 @@ class OleInit
 		const&);
 public:
 	HRESULT hr;
-	OleInit(bool initialize = true) : hr(initialize ? OleInitialize(NULL) : S_FALSE) {}
+	OleInit(bool initialize = true) : hr(initialize ? OleInitialize(nullptr) : S_FALSE) {}
 	~OleInit()
 	{
 		if (this->hr == S_OK)
@@ -6007,7 +6010,7 @@ public:
 
 		for (;;)
 		{
-			col.pszText = col.text.empty() ? NULL : &*col.text.begin();
+			col.pszText = col.text.empty() ? nullptr : &*col.text.begin();
 			col.cchTextMax = static_cast<int> (col.text.size());
 			if (!header.GetItem(j, &col))
 			{
@@ -6117,7 +6120,7 @@ public:
 			temp2.clear();
 		}
 
-		return success ? &temp2 : NULL;
+		return success ? &temp2 : nullptr;
 	}
 
 	Size GetClientSize() const
@@ -6633,7 +6636,7 @@ public: using Base::IsWindow;
 	  void ProcessMessages()
 	  {
 		  MSG msg;
-		  while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		  while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		  {
 			  if (!this->windowCreated || !this->IsDialogMessage(&msg))
 			  {
@@ -6931,7 +6934,7 @@ protected:
 	void enqueue(Task& task) volatile
 	{
 		bool attempted_reading_file = false;
-		if (!task.cb || (!this->_terminated.load(atomic_namespace::memory_order_acquire) && ((attempted_reading_file = true), ReadFile(task.file, task.buffer, task.cb, NULL, task.overlapped.get()))))
+		if (!task.cb || (!this->_terminated.load(atomic_namespace::memory_order_acquire) && ((attempted_reading_file = true), ReadFile(task.file, task.buffer, task.cb, nullptr, task.overlapped.get()))))
 		{
 			this->post(task.cb, 0, task.overlapped);
 		}
@@ -6970,7 +6973,7 @@ public:
 		this->close();
 	}
 
-	IoCompletionPort() : _handle(CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, NULL, 0)), _initialized(false), _terminated(false), _pending_scan_offset() {}
+	IoCompletionPort() : _handle(CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, nullptr, 0)), _initialized(false), _terminated(false), _pending_scan_offset() {}
 
 	this_type* unvolatile() volatile
 	{
@@ -6998,7 +7001,7 @@ public:
 			for (size_t i = nthreads; i != 0 && ((void) --i, true);)
 			{
 				unsigned int id;
-				Handle(reinterpret_cast<HANDLE> (_beginthreadex(NULL, 0, iocp_worker, this, 0, &id))).swap(this->_threads.at(i).handle);
+				Handle(reinterpret_cast<HANDLE> (_beginthreadex(nullptr, 0, iocp_worker, this, 0, &id))).swap(this->_threads.at(i).handle);
 			}
 
 			this->_initialized.store(true, atomic_namespace::memory_order_release);
@@ -7051,7 +7054,7 @@ public:
 			task.overlapped = overlapped;
 		}
 
-		this->post(0, 1, NULL);
+		this->post(0, 1, nullptr);
 	}
 
 	void associate(HANDLE
@@ -7066,7 +7069,7 @@ public:
 	{
 		for (size_t i = 0; i != this->_threads.size(); ++i)
 		{
-			this->post(0, 0, NULL);
+			this->post(0, 0, nullptr);
 		}
 
 		this->cancel_thread_ios();
@@ -7186,7 +7189,7 @@ class OverlappedNtfsMftReadPayload::ReadOperation : public Overlapped
 			}
 			else
 			{
-				p = NULL;
+				p = nullptr;
 			}
 			}
 
@@ -7492,7 +7495,7 @@ int OverlappedNtfsMftReadPayload::operator()(size_t
 			this->preopen();
 			unsigned long br;
 			NTFS_VOLUME_DATA_BUFFER info;
-			CheckAndThrow(DeviceIoControl(volume, FSCTL_GET_NTFS_VOLUME_DATA, NULL, 0, &info, sizeof(info), &br, NULL));
+			CheckAndThrow(DeviceIoControl(volume, FSCTL_GET_NTFS_VOLUME_DATA, nullptr, 0, &info, sizeof(info), &br, nullptr));
 			this->cluster_size = static_cast<unsigned int> (info.BytesPerCluster);
 			p->cluster_size = info.BytesPerCluster;
 			p->mft_record_size = info.BytesPerFileRecordSegment;
@@ -7577,7 +7580,7 @@ std::vector<std::tvstring > get_volume_path_names()
 	size_t prev;
 	do {
 		prev = buf.size();
-		buf.resize(std::max(static_cast<size_t> (GetLogicalDriveStrings(static_cast<unsigned long> (buf.size()), buf.empty() ? NULL : &*buf.begin())), buf.size()));
+		buf.resize(std::max(static_cast<size_t> (GetLogicalDriveStrings(static_cast<unsigned long> (buf.size()), buf.empty() ? nullptr : &*buf.begin())), buf.size()));
 	} while (prev < buf.size());
 	for (size_t i = 0, n; n = std::char_traits<TCHAR>::length(&buf[i]), i < buf.size() && buf[i]; i += n + 1)
 	{
@@ -7976,7 +7979,7 @@ class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResi
 				  };
 
 				  HWND hWndParent = this->GetParent();
-				  return hWndParent == NULL || this->SendMessage(hWndParent, WM_NOTIFY, id, (LPARAM)&msg) ? this->DefWindowProc(uMsg, wParam, lParam) : 0;
+				  return hWndParent == nullptr || this->SendMessage(hWndParent, WM_NOTIFY, id, (LPARAM)&msg) ? this->DefWindowProc(uMsg, wParam, lParam) : 0;
 			  }
 			  else
 			  {
@@ -8171,7 +8174,7 @@ class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResi
 			relative_item_ids[i] = ILFindChild(p->first.first, p->second[i]);
 		}
 
-		return SHOpenFolderAndSelectItems(p->first.first, static_cast<UINT> (relative_item_ids.size()), relative_item_ids.empty() ? NULL : &relative_item_ids[0], 0);
+		return SHOpenFolderAndSelectItems(p->first.first, static_cast<UINT> (relative_item_ids.size()), relative_item_ids.empty() ? nullptr : &relative_item_ids[0], 0);
 	}
 
 public:
@@ -8180,7 +8183,7 @@ public:
 		const rtl) :
 		CModifiedDialogImpl<CMainDlg>(true, rtl),
 		iconLoader(BackgroundWorker::create(true, global_exception_handler)),
-		closing_event(CreateEvent(NULL, TRUE, FALSE, NULL)),
+		closing_event(CreateEvent(nullptr, TRUE, FALSE, nullptr)),
 		nformat_ui(std::locale("")), nformat_io(std::locale()), lcid(GetThreadLocale()), hEvent(hEvent),
 		deletedColor(RGB(0xC0, 0xC0, 0xC0)), encryptedColor(RGB(0, 0xFF, 0)), compressedColor(RGB(0, 0, 0xFF)), directoryColor(RGB(0xFF, 0x99, 0x33)), hiddenColor(RGB(0xFF, 0x99, 0x99)), systemColor(RGB(0xFF, 0, 0))
 	{
@@ -8309,13 +8312,13 @@ public:
 				const buffer_size = sizeof(buf) / sizeof(*buf);
 			size_t cch = 0;
 			size_t
-				const cchDate = static_cast<size_t> (GetDateFormat(lcid, 0, &sysTime, NULL, &buf[0], static_cast<int> (buffer_size)));
+				const cchDate = static_cast<size_t> (GetDateFormat(lcid, 0, &sysTime, nullptr, &buf[0], static_cast<int> (buffer_size)));
 			cch += cchDate - !!cchDate /*null terminator */;
 			if (cchDate > 0 && include_time)
 			{
 				buf[cch++] = _T(' ');
 				size_t
-					const cchTime = static_cast<size_t> (GetTimeFormat(lcid, 0, &sysTime, NULL, &buf[cchDate], static_cast<int> (buffer_size - cchDate)));
+					const cchTime = static_cast<size_t> (GetTimeFormat(lcid, 0, &sysTime, nullptr, &buf[cchDate], static_cast<int> (buffer_size - cchDate)));
 				cch += cchTime - !!cchTime;
 			}
 
@@ -8418,11 +8421,11 @@ public:
 						std::vector<BYTE> buffer;
 						DWORD temp;
 						buffer.resize(GetFileVersionInfoSize(normalizedPath.c_str(), &temp));
-						if (GetFileVersionInfo(normalizedPath.c_str(), NULL, static_cast<DWORD> (buffer.size()), buffer.empty() ? NULL : &buffer[0]))
+						if (GetFileVersionInfo(normalizedPath.c_str(), nullptr, static_cast<DWORD> (buffer.size()), buffer.empty() ? nullptr : &buffer[0]))
 						{
 							LPVOID p;
 							UINT uLen;
-							if (VerQueryValue(buffer.empty() ? NULL : &buffer[0], _T("\\StringFileInfo\\040904E4\\FileDescription"), &p, &uLen))
+							if (VerQueryValue(buffer.empty() ? nullptr : &buffer[0], _T("\\StringFileInfo\\040904E4\\FileDescription"), &p, &uLen))
 							{
 								description = std::tvstring((LPCTSTR)p, uLen);
 							}
@@ -8441,14 +8444,14 @@ public:
 							if (pass == 0 && fileTemp && fileTemp != INVALID_HANDLE_VALUE)
 							{
 								HANDLE
-									const opened = CreateFile(path.c_str(), FILE_READ_ATTRIBUTES | FILE_WRITE_ATTRIBUTES | SYNCHRONIZE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, NULL, OPEN_EXISTING, FILE_FLAG_NO_BUFFERING | FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_OVERLAPPED | FILE_FLAG_BACKUP_SEMANTICS, NULL);
+									const opened = CreateFile(path.c_str(), FILE_READ_ATTRIBUTES | FILE_WRITE_ATTRIBUTES | SYNCHRONIZE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, FILE_FLAG_NO_BUFFERING | FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_OVERLAPPED | FILE_FLAG_BACKUP_SEMANTICS, nullptr);
 								if (opened != INVALID_HANDLE_VALUE)
 								{
 									Handle(opened).swap(fileTemp);
 									FILETIME preserve = { ULONG_MAX, ULONG_MAX
 									};
 
-									SetFileTime(fileTemp, NULL, &preserve, NULL);
+									SetFileTime(fileTemp, nullptr, &preserve, nullptr);
 								}
 							}
 
@@ -8858,7 +8861,7 @@ public:
 		}
 
 		this->cmbDrive.SetCueBannerText(this->LoadString(IDS_SEARCH_VOLUME_BANNER));
-		HINSTANCE hInstance = GetModuleHandle(NULL);
+		HINSTANCE hInstance = GetModuleHandle(nullptr);
 		this->SetIcon((HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 0), FALSE);
 		this->SetIcon((HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON), 0), TRUE);
 
@@ -8871,7 +8874,7 @@ public:
 		}
 
 		this->lvFiles.OpenThemeData(VSCLASS_LISTVIEW);
-		SetWindowTheme(this->lvFiles, _T("Explorer"), NULL);
+		SetWindowTheme(this->lvFiles, _T("Explorer"), nullptr);
 		if (false)
 		{
 			WTL::CFontHandle font = this->txtPattern.GetFont();
@@ -8893,7 +8896,7 @@ public:
 
 		//this->SendMessage(WM_COMMAND, ID_VIEW_FITCOLUMNSTOWINDOW);
 
-		this->statusbar = CreateStatusWindow(WS_CHILD | SBT_TOOLTIPS | WS_VISIBLE, NULL, *this, IDC_STATUS_BAR);
+		this->statusbar = CreateStatusWindow(WS_CHILD | SBT_TOOLTIPS | WS_VISIBLE, nullptr, *this, IDC_STATUS_BAR);
 		int
 			const rcStatusPaneWidths[] = { 360, -1 };
 
@@ -8972,7 +8975,7 @@ public:
 
 			void operator()(SearchResult& a, SearchResult& b)
 			{
-				SearchResult* const real_b = &a == &b ? NULL : &b;
+				SearchResult* const real_b = &a == &b ? nullptr : &b;
 				me->check_cancelled(&a, real_b);
 				if (real_b)
 				{
@@ -9011,8 +9014,8 @@ public:
 		unsigned long long numerator;
 		std::tvstring buffer, buffer2;
 		void check_cancelled(SearchResult
-			const* const a = NULL, SearchResult
-			const* const b = NULL)
+			const* const a = nullptr, SearchResult
+			const* const b = nullptr)
 		{
 			++numerator;
 			if (dlg)
@@ -9023,7 +9026,7 @@ public:
 				{
 					if (dlg->HasUserCancelled(tnow))
 					{
-						throw CStructured_Exception(ERROR_CANCELLED, NULL);
+						throw CStructured_Exception(ERROR_CANCELLED, nullptr);
 					}
 
 					buffer.clear();
@@ -9181,7 +9184,7 @@ public:
 			const& a, second_argument_type
 			const& b) const
 		{
-			base->check_cancelled(NULL, NULL);
+			base->check_cancelled(nullptr, nullptr);
 			return a < b;
 		}
 
@@ -9543,7 +9546,7 @@ public:
 							};
 
 							this->get_subitem_text(static_cast<size_t> (item.iItem), item.iSubItem, text);
-							item.pszText = (text.c_str() /*ensure null-terminated */, text.empty() ? NULL : &*text.begin());
+							item.pszText = (text.c_str() /*ensure null-terminated */, text.empty() ? nullptr : &*text.begin());
 							item.cchTextMax = static_cast<int> (text.size());
 							if (!item.iSubItem)
 							{
@@ -9746,7 +9749,7 @@ public:
 			}
 
 			unsigned long
-				const wait_result = dlg.WaitMessageLoop(wait_handles.empty() ? NULL : &*wait_handles.begin(), wait_handles.size());
+				const wait_result = dlg.WaitMessageLoop(wait_handles.empty() ? nullptr : &*wait_handles.begin(), wait_handles.size());
 			if (wait_result == WAIT_TIMEOUT)
 			{
 				if (dlg.HasUserCancelled())
@@ -9871,7 +9874,7 @@ public:
 								{
 									if (dlg.HasUserCancelled(now))
 									{
-										throw CStructured_Exception(ERROR_CANCELLED, NULL);
+										throw CStructured_Exception(ERROR_CANCELLED, nullptr);
 									}
 
 									// this->lvFiles.SetItemCountEx(static_cast< int>(this->results.size()), 0), this->lvFiles.UpdateWindow();
@@ -9920,7 +9923,7 @@ public:
 
 								TCHAR
 									const* const path_begin = name;
-								size_t high_water_mark = 0, * phigh_water_mark = matchop.is_path_pattern && this->trie_filtering ? &high_water_mark : NULL;
+								size_t high_water_mark = 0, * phigh_water_mark = matchop.is_path_pattern && this->trie_filtering ? &high_water_mark : nullptr;
 								bool
 									const match = ascii ?
 									matchop.matcher.is_match(static_cast<char
@@ -10044,7 +10047,7 @@ public:
 		std::tstring path(MAX_PATH, _T('\0'));
 		CoInit
 			const coinit;
-		BROWSEINFO info = { this->m_hWnd, NULL, &*path.begin(), this->LoadString(IDS_BROWSE_BODY), BIF_NONEWFOLDERBUTTON | BIF_USENEWUI | BIF_RETURNONLYFSDIRS | BIF_RETURNFSANCESTORS | BIF_DONTGOBELOWDOMAIN, Callback::BrowseCallbackProc, reinterpret_cast<LPARAM> (&callback)
+		BROWSEINFO info = { this->m_hWnd, nullptr, &*path.begin(), this->LoadString(IDS_BROWSE_BODY), BIF_NONEWFOLDERBUTTON | BIF_USENEWUI | BIF_RETURNONLYFSDIRS | BIF_RETURNFSANCESTORS | BIF_DONTGOBELOWDOMAIN, Callback::BrowseCallbackProc, reinterpret_cast<LPARAM> (&callback)
 		};
 
 		CShellItemIDList pidl(SHBrowseForFolder(&info));
@@ -10131,13 +10134,13 @@ public:
 					this->lvFiles.GetItemRect(index, &bounds, LVIR_SELECTBOUNDS);
 					point.x = bounds.left;
 					point.y = bounds.top;
-					this->lvFiles.MapWindowPoints(NULL, &point, 1);
+					this->lvFiles.MapWindowPoints(nullptr, &point, 1);
 					indices.push_back(static_cast<size_t> (index));
 				}
 			}
 			else
 			{
-				POINT clientPoint = point; ::MapWindowPoints(NULL, this->lvFiles, &clientPoint, 1);
+				POINT clientPoint = point; ::MapWindowPoints(nullptr, this->lvFiles, &clientPoint, 1);
 				index = this->lvFiles.HitTest(clientPoint, 0);
 				if (index >= 0)
 				{
@@ -10228,7 +10231,7 @@ public:
 				}
 
 				CShellItemIDList itemIdList;
-				hr = SHParseDisplayName(path.c_str(), NULL, &itemIdList, sfgao, &sfgao);
+				hr = SHParseDisplayName(path.c_str(), nullptr, &itemIdList, sfgao, &sfgao);
 				if (hr == S_OK)
 				{
 					if (p->first.first.IsNull())
@@ -10254,7 +10257,7 @@ public:
 				{
 					if (!p->first.first.IsNull() && !ILIsEmpty(static_cast<LPCITEMIDLIST> (p->first.first)))
 					{
-						hr = desktop->BindToObject(p->first.first, NULL, IID_IShellFolder, reinterpret_cast<void**> (&p->first.second));
+						hr = desktop->BindToObject(p->first.first, nullptr, IID_IShellFolder, reinterpret_cast<void**> (&p->first.second));
 					}
 					else
 					{
@@ -10283,9 +10286,9 @@ public:
 				hr = (desktop_relative ? desktop : p->first.second)->GetUIObjectOf(*
 					this,
 					static_cast<UINT> (relative_item_ids.size()),
-					relative_item_ids.empty() ? NULL : &relative_item_ids[0],
+					relative_item_ids.empty() ? nullptr : &relative_item_ids[0],
 					IID_IContextMenu,
-					NULL, &reinterpret_cast<void*&> (contextMenu.p));
+					nullptr, &reinterpret_cast<void*&> (contextMenu.p));
 			}
 
 			if (hr == S_OK)
@@ -10306,7 +10309,7 @@ public:
 
 		if (indices.size() == 1)
 		{
-			MENUITEMINFO mii2 = { sizeof(mii2), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, MFS_ENABLED, openContainingFolderId, NULL, NULL, NULL, NULL, this->LoadString(IDS_MENU_OPEN_CONTAINING_FOLDER)
+			MENUITEMINFO mii2 = { sizeof(mii2), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, MFS_ENABLED, openContainingFolderId, nullptr, nullptr, nullptr, nullptr, this->LoadString(IDS_MENU_OPEN_CONTAINING_FOLDER)
 			};
 
 			menu.InsertMenuItem(ninserted++, TRUE, &mii2);
@@ -10321,7 +10324,7 @@ public:
 		{
 			{ 	RefCountedCString text = this->LoadString(IDS_MENU_FILE_NUMBER);
 			text += static_cast<std::tstring> (nformat_ui(this->results[static_cast<size_t> (focused)].key().frs())).c_str();
-			MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, MFS_DISABLED, fileIdId, NULL, NULL, NULL, NULL, text
+			MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, MFS_DISABLED, fileIdId, nullptr, nullptr, nullptr, nullptr, text
 			};
 
 			menu.InsertMenuItem(ninserted++, TRUE, &mii);
@@ -10329,7 +10332,7 @@ public:
 
 			{
 
-				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyId, NULL, NULL, NULL, NULL, this->LoadString(IDS_MENU_COPY)
+				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyId, nullptr, nullptr, nullptr, nullptr, this->LoadString(IDS_MENU_COPY)
 				};
 
 				menu.InsertMenuItem(ninserted++, TRUE, &mii);
@@ -10337,7 +10340,7 @@ public:
 
 			{
 
-				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyPathId, NULL, NULL, NULL, NULL, this->LoadString(IDS_MENU_COPY_PATHS)
+				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyPathId, nullptr, nullptr, nullptr, nullptr, this->LoadString(IDS_MENU_COPY_PATHS)
 				};
 
 				menu.InsertMenuItem(ninserted++, TRUE, &mii);
@@ -10345,7 +10348,7 @@ public:
 
 			{
 
-				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyTableId, NULL, NULL, NULL, NULL, this->LoadString(IDS_MENU_COPY_TABLE)
+				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyTableId, nullptr, nullptr, nullptr, nullptr, this->LoadString(IDS_MENU_COPY_TABLE)
 				};
 
 				menu.InsertMenuItem(ninserted++, TRUE, &mii);
@@ -10353,7 +10356,7 @@ public:
 
 			{
 
-				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, dumpId, NULL, NULL, NULL, NULL, this->LoadString(IDS_MENU_DUMP_TO_TABLE)
+				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, dumpId, nullptr, nullptr, nullptr, nullptr, this->LoadString(IDS_MENU_DUMP_TO_TABLE)
 				};
 
 				menu.InsertMenuItem(ninserted++, TRUE, &mii);
@@ -10388,7 +10391,7 @@ public:
 		}
 		else if (id >= minID)
 		{
-			CMINVOKECOMMANDINFO cmd = { sizeof(cmd), CMIC_MASK_ASYNCOK, *this, reinterpret_cast<LPCSTR> (static_cast<uintptr_t> (id - minID)), NULL, NULL, SW_SHOW
+			CMINVOKECOMMANDINFO cmd = { sizeof(cmd), CMIC_MASK_ASYNCOK, *this, reinterpret_cast<LPCSTR> (static_cast<uintptr_t> (id - minID)), nullptr, nullptr, SW_SHOW
 			};
 
 			hr = contextMenu ? contextMenu->InvokeCommand(&cmd) : S_FALSE;
@@ -10423,8 +10426,8 @@ public:
 			file_dialog_save_options += null_char;
 		}
 
-		WTL::CFileDialog fdlg(FALSE, _T("csv"), NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, file_dialog_save_options.c_str(), *this);
-		fdlg.m_ofn.lpfnHook = NULL;
+		WTL::CFileDialog fdlg(FALSE, _T("csv"), nullptr, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, file_dialog_save_options.c_str(), *this);
+		fdlg.m_ofn.lpfnHook = nullptr;
 		fdlg.m_ofn.Flags &= ~OFN_ENABLEHOOK;
 		fdlg.m_ofn.lpstrTitle = this->LoadString(IDS_SAVE_TABLE_TITLE);
 		if (mode <= 0 ? GetSaveFileName(&fdlg.m_ofn) : (locked_indices.size() <= 1 << 16 || this->MessageBox(this->LoadString(IDS_COPY_MAY_USE_TOO_MUCH_MEMORY_BODY), this->LoadString(IDS_WARNING_TITLE), MB_OKCANCEL | MB_ICONWARNING) == IDOK))
@@ -10435,10 +10438,10 @@ public:
 			int
 				const ncolumns = this->lvFiles.GetHeader().GetItemCount();
 			File
-				const output = { mode <= 0 ? _topen(fdlg.m_ofn.lpstrFile, _O_BINARY | _O_TRUNC | _O_CREAT | _O_RDWR | _O_SEQUENTIAL, _S_IREAD | _S_IWRITE) : NULL
+				const output = { mode <= 0 ? _topen(fdlg.m_ofn.lpstrFile, _O_BINARY | _O_TRUNC | _O_CREAT | _O_RDWR | _O_SEQUENTIAL, _S_IREAD | _S_IWRITE) : nullptr
 			};
 
-			if (mode > 0 || output != NULL)
+			if (mode > 0 || output != nullptr)
 			{
 				bool
 					const shell_file_list = mode == 2;
@@ -10466,7 +10469,7 @@ public:
 					}
 				};
 
-				Clipboard clipboard(output ? NULL : this->m_hWnd);
+				Clipboard clipboard(output ? nullptr : this->m_hWnd);
 				if (clipboard)
 				{
 					EmptyClipboard();
@@ -10481,7 +10484,7 @@ public:
 
 				std::string line_buffer_utf8;
 				SingleMovableGlobalAllocator global_alloc;
-				std::tvstring line_buffer(static_cast<std::tvstring::allocator_type> (output ? NULL : &global_alloc));
+				std::tvstring line_buffer(static_cast<std::tvstring::allocator_type> (output ? nullptr : &global_alloc));
 				size_t
 					const buffer_size = 1 << 22;
 				line_buffer.reserve(buffer_size);	// this is necessary since MSVC STL reallocates poorly, degenerating into O(n^2)
@@ -10553,7 +10556,7 @@ public:
 								{
 									if (dlg.HasUserCancelled(update_time))
 									{
-										throw CStructured_Exception(ERROR_CANCELLED, NULL);
+										throw CStructured_Exception(ERROR_CANCELLED, nullptr);
 									}
 
 									should_flush = true;
@@ -10638,7 +10641,7 @@ public:
 									using std::max;
 								line_buffer_utf8.resize(max(line_buffer_utf8.size(), (line_buffer.size() + 1) * 6), _T('\0'));
 								int
-									const cch = WideCharToMultiByte(CP_UTF8, 0, line_buffer.empty() ? NULL : &line_buffer[0], static_cast<int> (line_buffer.size()), &line_buffer_utf8[0], static_cast<int> (line_buffer_utf8.size()), NULL, NULL);
+									const cch = WideCharToMultiByte(CP_UTF8, 0, line_buffer.empty() ? nullptr : &line_buffer[0], static_cast<int> (line_buffer.size()), &line_buffer_utf8[0], static_cast<int> (line_buffer_utf8.size()), nullptr, nullptr);
 								if (cch > 0)
 								{
 									nwritten_since_update += _write(output, line_buffer_utf8.data(), sizeof(*line_buffer_utf8.data()) * static_cast<size_t> (cch));
@@ -10698,7 +10701,7 @@ public:
 		SFGAOF sfgao = 0;
 		std::tstring
 			const path_directory(path.begin(), dirname(path.begin(), path.end()));
-		HRESULT hr = SHParseDisplayName(path_directory.c_str(), NULL, &p->first.first, 0, &sfgao);
+		HRESULT hr = SHParseDisplayName(path_directory.c_str(), nullptr, &p->first.first, 0, &sfgao);
 		if (hr == S_OK)
 		{
 			ATL::CComPtr<IShellFolder> desktop;
@@ -10707,7 +10710,7 @@ public:
 			{
 				if (!ILIsEmpty(static_cast<LPCITEMIDLIST> (p->first.first)))
 				{
-					hr = desktop->BindToObject(p->first.first, NULL, IID_IShellFolder, reinterpret_cast<void**> (&p->first.second));
+					hr = desktop->BindToObject(p->first.first, nullptr, IID_IShellFolder, reinterpret_cast<void**> (&p->first.second));
 				}
 				else
 				{
@@ -10719,10 +10722,10 @@ public:
 		if (hr == S_OK && basename(path.begin(), path.end()) != path.end())
 		{
 			p->second.resize(1);
-			hr = SHParseDisplayName((path.c_str(), path.empty() ? NULL : &path[0]), NULL, &p->second.back().m_pidl, sfgao, &sfgao);
+			hr = SHParseDisplayName((path.c_str(), path.empty() ? nullptr : &path[0]), nullptr, &p->second.back().m_pidl, sfgao, &sfgao);
 		}
 
-		SHELLEXECUTEINFO shei = { sizeof(shei), SEE_MASK_INVOKEIDLIST | SEE_MASK_UNICODE, *this, NULL, NULL, p->second.empty() ? path_directory.c_str() : NULL, path_directory.c_str(), SW_SHOWDEFAULT, 0, p->second.empty() ? NULL : p->second.back().m_pidl
+		SHELLEXECUTEINFO shei = { sizeof(shei), SEE_MASK_INVOKEIDLIST | SEE_MASK_UNICODE, *this, nullptr, nullptr, p->second.empty() ? path_directory.c_str() : nullptr, path_directory.c_str(), SW_SHOWDEFAULT, 0, p->second.empty() ? nullptr : p->second.back().m_pidl
 		};
 
 		ShellExecuteEx(&shei);
@@ -11246,7 +11249,7 @@ public:
 						if (!this->richEdit)
 						{
 							this->hRichEdit = LoadLibrary(_T("riched20.dll"));
-							this->richEdit.Create(this->lvFiles, NULL, 0, ES_MULTILINE, WS_EX_TRANSPARENT);
+							this->richEdit.Create(this->lvFiles, nullptr, 0, ES_MULTILINE, WS_EX_TRANSPARENT);
 							this->richEdit.SetFont(this->lvFiles.GetFont());
 						}
 #ifdef _UNICODE
@@ -11304,7 +11307,7 @@ public:
 						formatRange.rc.top += (formatRange.rc.bottom - formatRange.rc.top - height) / 2;
 						this->richEdit.FormatRange(formatRange, TRUE);
 
-						this->richEdit.FormatRange(NULL);
+						this->richEdit.FormatRange(nullptr);
 					}
 
 					dc.RestoreDC(savedDC);
@@ -11324,7 +11327,7 @@ public:
 		return result;
 	}
 
-	void OnClose(UINT /*uNotifyCode*/ = 0, int nID = IDCANCEL, HWND /*hWnd*/ = NULL)
+	void OnClose(UINT /*uNotifyCode*/ = 0, int nID = IDCANCEL, HWND /*hWnd*/ = nullptr)
 	{
 		this->DestroyWindow();
 		PostQuitMessage(nID);
@@ -11576,7 +11579,7 @@ public:
 
 	void open_project_page()
 	{
-		ShellExecute(NULL, _T("open"), this->get_project_url(IDS_PROJECT_ROBUST_URL), NULL, NULL, SW_SHOWNORMAL);
+		ShellExecute(nullptr, _T("open"), this->get_project_url(IDS_PROJECT_ROBUST_URL), nullptr, nullptr, SW_SHOWNORMAL);
 	}
 
 	void OnViewLargeIcons(UINT /*uNotifyCode*/, int /*nID*/, CWindow /*wndCtl*/)
@@ -11689,7 +11692,7 @@ public:
 					{
 						path_name = q->root_path();
 						q->cancel();
-						if (this->cmbDrive.SetItemDataPtr(ii, NULL) != CB_ERR)
+						if (this->cmbDrive.SetItemDataPtr(ii, nullptr) != CB_ERR)
 						{
 							--this->indices_created;
 							intrusive_ptr_release(q.get());
@@ -11788,7 +11791,7 @@ public:
 
 					};
 
-HMODULE mui_module = NULL;
+HMODULE mui_module = nullptr;
 WTL::CAppModule _Module;
 
 
@@ -11845,23 +11848,23 @@ std::pair<int, std::tstring > extract_and_run_if_needed(HINSTANCE hInstance, int
 	else
 	{
 		module_path.resize(USHRT_MAX, _T('\0'));
-		module_path.resize(GetModuleFileName(hInstance, module_path.empty() ? NULL : &*module_path.begin(), static_cast<unsigned int> (module_path.size())));
+		module_path.resize(GetModuleFileName(hInstance, module_path.empty() ? nullptr : &*module_path.begin(), static_cast<unsigned int> (module_path.size())));
 	}
 
 	if (Wow64::is_wow64() && !string_matcher(string_matcher::pattern_regex, string_matcher::pattern_option_case_insensitive, _T("^.*(?:(?:\\.|_)(?:x86|I386|IA32)|32)(?:\\.[^:/\\\\\\.]+)(?::.*)?$")).is_match(module_path.data(), module_path.size()))
 	{
 		if (!IsDebuggerPresent())
 		{
-			HRSRC hRsrs = NULL;
+			HRSRC hRsrs = nullptr;
 			WORD langs[] = { GetUserDefaultUILanguage(), MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), MAKELANGID(LANG_NEUTRAL, SUBLANG_SYS_DEFAULT), MAKELANGID(LANG_INVARIANT, SUBLANG_NEUTRAL)
 			};
 
 			for (size_t ilang = 0; ilang < sizeof(langs) / sizeof(*langs) && !hRsrs; ++ilang)
 			{
-				hRsrs = FindResourceEx(NULL, _T("BINARY"), _T("AMD64"), langs[ilang]);
+				hRsrs = FindResourceEx(nullptr, _T("BINARY"), _T("AMD64"), langs[ilang]);
 			}
 
-			LPVOID pBinary = LockResource(LoadResource(NULL, hRsrs));
+			LPVOID pBinary = LockResource(LoadResource(nullptr, hRsrs));
 			if (pBinary)
 			{
 				std::tstring tempDir(32 * 1024, _T('\0'));
@@ -11921,7 +11924,7 @@ std::pair<int, std::tstring > extract_and_run_if_needed(HINSTANCE hInstance, int
 							{
 								deleter.file = fileName;
 								file.sputn(static_cast<char
-									const*> (pBinary), static_cast<std::streamsize> (SizeofResource(NULL, hRsrs)));
+									const*> (pBinary), static_cast<std::streamsize> (SizeofResource(nullptr, hRsrs)));
 								file.close();
 							}
 					}
@@ -11933,7 +11936,7 @@ std::pair<int, std::tstring > extract_and_run_if_needed(HINSTANCE hInstance, int
 
 						GetStartupInfo(&si);
 						PROCESS_INFORMATION pi;
-						HANDLE hJob = CreateJobObject(NULL, NULL);
+						HANDLE hJob = CreateJobObject(nullptr, nullptr);
 						JOBOBJECT_EXTENDED_LIMIT_INFORMATION jobLimits = {
 		{ 					{ 						0
 								},
@@ -11941,11 +11944,11 @@ std::pair<int, std::tstring > extract_and_run_if_needed(HINSTANCE hInstance, int
 							}
 						};
 
-						if (hJob != NULL &&
+						if (hJob != nullptr &&
 							SetInformationJobObject(hJob, JobObjectExtendedLimitInformation, &jobLimits, sizeof(jobLimits)) &&
 							AssignProcessToJobObject(hJob, GetCurrentProcess()))
 						{
-							if (CreateProcess(fileName.c_str(), GetCommandLine(), NULL, NULL, FALSE, CREATE_PRESERVE_CODE_AUTHZ_LEVEL | CREATE_SUSPENDED | CREATE_UNICODE_ENVIRONMENT, NULL, NULL, &si, &pi))
+							if (CreateProcess(fileName.c_str(), GetCommandLine(), nullptr, nullptr, FALSE, CREATE_PRESERVE_CODE_AUTHZ_LEVEL | CREATE_SUSPENDED | CREATE_UNICODE_ENVIRONMENT, nullptr, nullptr, &si, &pi))
 							{
 								jobLimits.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK;
 								SetInformationJobObject(hJob, JobObjectExtendedLimitInformation, &jobLimits, sizeof(jobLimits));
@@ -12079,7 +12082,7 @@ std::string GetLastErrorAsString()
 
 	LPSTR messageBuffer = nullptr;
 	size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+		nullptr, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, nullptr);
 
 	std::string message(messageBuffer, size);
 
@@ -12137,10 +12140,10 @@ int dump_raw_mft(char drive_letter, const char* output_path, std::ostream& OS)
         volume_path.c_str(),
         FILE_READ_DATA | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-        NULL,
+        nullptr,
         OPEN_EXISTING,
         FILE_FLAG_NO_BUFFERING,
-        NULL
+        nullptr
     );
 
     if (volume_handle == INVALID_HANDLE_VALUE) {
@@ -12157,10 +12160,10 @@ int dump_raw_mft(char drive_letter, const char* output_path, std::ostream& OS)
     if (!DeviceIoControl(
         volume_handle,
         FSCTL_GET_NTFS_VOLUME_DATA,
-        NULL, 0,
+        nullptr, 0,
         &volume_data, sizeof(volume_data),
         &bytes_returned,
-        NULL
+        nullptr
     )) {
         DWORD err = GetLastError();
         CloseHandle(volume_handle);
@@ -12219,10 +12222,10 @@ int dump_raw_mft(char drive_letter, const char* output_path, std::ostream& OS)
         output_path,
         GENERIC_WRITE,
         0,
-        NULL,
+        nullptr,
         CREATE_ALWAYS,
         FILE_ATTRIBUTE_NORMAL,
-        NULL
+        nullptr
     );
 
     if (out_handle == INVALID_HANDLE_VALUE) {
@@ -12244,7 +12247,7 @@ int dump_raw_mft(char drive_letter, const char* output_path, std::ostream& OS)
     memset(header.reserved, 0, sizeof(header.reserved));
 
     DWORD written = 0;
-    if (!WriteFile(out_handle, &header, sizeof(header), &written, NULL) || written != sizeof(header)) {
+    if (!WriteFile(out_handle, &header, sizeof(header), &written, nullptr) || written != sizeof(header)) {
         DWORD err = GetLastError();
         CloseHandle(out_handle);
         CloseHandle(volume_handle);
@@ -12283,7 +12286,7 @@ int dump_raw_mft(char drive_letter, const char* output_path, std::ostream& OS)
             // Seek to position
             LARGE_INTEGER seek_pos;
             seek_pos.QuadPart = byte_offset + static_cast<long long>(extent_bytes_read);
-            if (!SetFilePointerEx(volume_handle, seek_pos, NULL, FILE_BEGIN)) {
+            if (!SetFilePointerEx(volume_handle, seek_pos, nullptr, FILE_BEGIN)) {
                 DWORD err = GetLastError();
                 CloseHandle(out_handle);
                 CloseHandle(volume_handle);
@@ -12304,7 +12307,7 @@ int dump_raw_mft(char drive_letter, const char* output_path, std::ostream& OS)
             if (to_read == 0) to_read = volume_data.BytesPerSector;
 
             DWORD bytes_read = 0;
-            if (!ReadFile(volume_handle, read_buffer.data(), static_cast<DWORD>(to_read), &bytes_read, NULL)) {
+            if (!ReadFile(volume_handle, read_buffer.data(), static_cast<DWORD>(to_read), &bytes_read, nullptr)) {
                 DWORD err = GetLastError();
                 CloseHandle(out_handle);
                 CloseHandle(volume_handle);
@@ -12319,7 +12322,7 @@ int dump_raw_mft(char drive_letter, const char* output_path, std::ostream& OS)
             ));
 
             DWORD out_written = 0;
-            if (!WriteFile(out_handle, read_buffer.data(), static_cast<DWORD>(to_write), &out_written, NULL)) {
+            if (!WriteFile(out_handle, read_buffer.data(), static_cast<DWORD>(to_write), &out_written, nullptr)) {
                 DWORD err = GetLastError();
                 CloseHandle(out_handle);
                 CloseHandle(volume_handle);
@@ -12378,10 +12381,10 @@ int dump_mft_extents(char drive_letter, const char* output_path, bool verify_ext
         volume_path.c_str(),
         FILE_READ_DATA | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-        NULL,
+        nullptr,
         OPEN_EXISTING,
         FILE_FLAG_NO_BUFFERING,
-        NULL
+        nullptr
     );
 
     if (volume_handle == INVALID_HANDLE_VALUE) {
@@ -12397,10 +12400,10 @@ int dump_mft_extents(char drive_letter, const char* output_path, bool verify_ext
     if (!DeviceIoControl(
         volume_handle,
         FSCTL_GET_NTFS_VOLUME_DATA,
-        NULL, 0,
+        nullptr, 0,
         &volume_data, sizeof(volume_data),
         &bytes_returned,
-        NULL
+        nullptr
     )) {
         DWORD err = GetLastError();
         CloseHandle(volume_handle);
@@ -12486,10 +12489,10 @@ int dump_mft_extents(char drive_letter, const char* output_path, bool verify_ext
             LARGE_INTEGER seek_pos;
             seek_pos.QuadPart = static_cast<LONGLONG>(byte_offset);
 
-            if (SetFilePointerEx(volume_handle, seek_pos, NULL, FILE_BEGIN)) {
+            if (SetFilePointerEx(volume_handle, seek_pos, nullptr, FILE_BEGIN)) {
                 DWORD bytes_read = 0;
                 if (ReadFile(volume_handle, verify_buffer.data(),
-                    static_cast<DWORD>(bytes_per_cluster), &bytes_read, NULL) && bytes_read >= record_size) {
+                    static_cast<DWORD>(bytes_per_cluster), &bytes_read, nullptr) && bytes_read >= record_size) {
                     // Check FILE signature and extract FRS number from record header
                     // MFT record header: offset 0x2C (44) contains the FRS number (48-bit)
                     bool valid_signature = (verify_buffer[0] == 'F' && verify_buffer[1] == 'I' &&
@@ -12585,10 +12588,10 @@ int benchmark_mft_read(char drive_letter, std::ostream& OS)
         volume_path.c_str(),
         FILE_READ_DATA | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-        NULL,
+        nullptr,
         OPEN_EXISTING,
         FILE_FLAG_NO_BUFFERING,
-        NULL
+        nullptr
     );
 
     if (volume_handle == INVALID_HANDLE_VALUE) {
@@ -12605,10 +12608,10 @@ int benchmark_mft_read(char drive_letter, std::ostream& OS)
     if (!DeviceIoControl(
         volume_handle,
         FSCTL_GET_NTFS_VOLUME_DATA,
-        NULL, 0,
+        nullptr, 0,
         &volume_data, sizeof(volume_data),
         &bytes_returned,
-        NULL
+        nullptr
     )) {
         DWORD err = GetLastError();
         CloseHandle(volume_handle);
@@ -12696,7 +12699,7 @@ int benchmark_mft_read(char drive_letter, std::ostream& OS)
             // Seek to position
             LARGE_INTEGER seek_pos;
             seek_pos.QuadPart = byte_offset + static_cast<long long>(extent_bytes_read);
-            if (!SetFilePointerEx(volume_handle, seek_pos, NULL, FILE_BEGIN)) {
+            if (!SetFilePointerEx(volume_handle, seek_pos, nullptr, FILE_BEGIN)) {
                 DWORD err = GetLastError();
                 CloseHandle(volume_handle);
                 OS << "ERROR: Failed to seek (error " << err << ")\n";
@@ -12716,7 +12719,7 @@ int benchmark_mft_read(char drive_letter, std::ostream& OS)
             if (to_read == 0) to_read = volume_data.BytesPerSector;
 
             DWORD bytes_read = 0;
-            if (!ReadFile(volume_handle, read_buffer.data(), static_cast<DWORD>(to_read), &bytes_read, NULL)) {
+            if (!ReadFile(volume_handle, read_buffer.data(), static_cast<DWORD>(to_read), &bytes_read, nullptr)) {
                 DWORD err = GetLastError();
                 CloseHandle(volume_handle);
                 OS << "ERROR: Failed to read from volume (error " << err << ")\n";
@@ -13039,10 +13042,10 @@ int main(int argc, char* argv[])
 			outHandle = CreateFileA((LPCSTR)OutputFilename.c_str(),	//argv[1],    	// name of the write	//(L"uffs.csv")
 				GENERIC_WRITE,	// open for writing
 				FILE_SHARE_READ,	//0,                                                     	// do not share
-				NULL,	// default security
+				nullptr,	// default security
 				CREATE_ALWAYS,	// create new file only
 				FILE_ATTRIBUTE_NORMAL,	// normal file
-				NULL);
+				nullptr);
 		};
 
 		int err = GetLastError();
@@ -13518,19 +13521,19 @@ int main(int argc, char* argv[])
 								unsigned long nwritten;
 								if (force || line_buffer.size() >= max_buffer_size || (tnow - tprev) * 1000 * second_fraction_denominator >= CLOCKS_PER_SEC)
 								{
-									if ((!output_isatty || (!WriteConsole(output, line_buffer.data(), static_cast<unsigned int> (line_buffer.size()), &nwritten, NULL) && GetLastError() == ERROR_INVALID_HANDLE)))
+									if ((!output_isatty || (!WriteConsole(output, line_buffer.data(), static_cast<unsigned int> (line_buffer.size()), &nwritten, nullptr) && GetLastError() == ERROR_INVALID_HANDLE)))
 									{
 #if defined(_UNICODE) &&_UNICODE
 											using std::max;
 										line_buffer_utf8.resize(max(line_buffer_utf8.size(), (line_buffer.size() + 1) * 6), _T('\0'));
 										int
-											const cch = WideCharToMultiByte(CP_UTF8, 0, line_buffer.empty() ? NULL : &line_buffer[0], static_cast<int> (line_buffer.size()), &line_buffer_utf8[0], static_cast<int> (line_buffer_utf8.size()), NULL, NULL);
+											const cch = WideCharToMultiByte(CP_UTF8, 0, line_buffer.empty() ? nullptr : &line_buffer[0], static_cast<int> (line_buffer.size()), &line_buffer_utf8[0], static_cast<int> (line_buffer_utf8.size()), nullptr, nullptr);
 										if (cch > 0)
 										{
-											nwritten_since_update += WriteFile(output, line_buffer_utf8.data(), sizeof(*line_buffer_utf8.data()) * static_cast<size_t> (cch), &nwritten, NULL);
+											nwritten_since_update += WriteFile(output, line_buffer_utf8.data(), sizeof(*line_buffer_utf8.data()) * static_cast<size_t> (cch), &nwritten, nullptr);
 										}
 #else
-											nwritten_since_update += WriteFile(output, line_buffer.data(), sizeof(*line_buffer.data()) * line_buffer.size(), & nwritten, NULL); 
+											nwritten_since_update += WriteFile(output, line_buffer.data(), sizeof(*line_buffer.data()) * line_buffer.size(), & nwritten, nullptr);
 #endif
 									}
 
@@ -13595,7 +13598,7 @@ int main(int argc, char* argv[])
 						const depth)
 						/*TODO: Factor out common code from here and GUI-based version! */
 						{
-							size_t high_water_mark = 0, * phigh_water_mark = matchop.is_path_pattern ? &high_water_mark : NULL;
+							size_t high_water_mark = 0, * phigh_water_mark = matchop.is_path_pattern ? &high_water_mark : nullptr;
 							TCHAR
 								const* const path_begin = name2;
 							bool
@@ -14103,7 +14106,7 @@ if (GetLocaleInfo(LOCALE_USER_DEFAULT, 0x00000070 /*LOCALE_IREADINGLAYOUT*/ | LO
 }
 else
 {
-	right_to_left = !!(GetWindowLongPtr(FindWindow(_T("Shell_TrayWnd"), NULL), GWL_EXSTYLE) & WS_EX_LAYOUTRTL);
+	right_to_left = !!(GetWindowLongPtr(FindWindow(_T("Shell_TrayWnd"), nullptr), GWL_EXSTYLE) & WS_EX_LAYOUTRTL);
 }
 
 if (right_to_left)
@@ -14113,14 +14116,14 @@ if (right_to_left)
 
 __if_exists(_Module)
 {
-	_Module.Init(NULL, hInstance);
+	_Module.Init(nullptr, hInstance);
 }
 
 {
 	RefCountedCString appname;
 	appname.LoadString(IDS_APPNAME);
-	HANDLE hEvent = CreateEvent(NULL, FALSE, FALSE, _T("Local\\") + appname + _T(".") + get_app_guid());
-	if (hEvent != NULL && GetLastError() != ERROR_ALREADY_EXISTS)
+	HANDLE hEvent = CreateEvent(nullptr, FALSE, FALSE, _T("Local\\") + appname + _T(".") + get_app_guid());
+	if (hEvent != nullptr && GetLastError() != ERROR_ALREADY_EXISTS)
 	{
 		WTL::CMessageLoop msgLoop;
 		_Module.AddMessageLoop(&msgLoop);
@@ -14155,13 +14158,13 @@ __if_exists(_Module)
 					const mui_load_flags = LOAD_LIBRARY_AS_DATAFILE;
 				for (int pass = 0; pass < 2 && !mui_module; ++pass)
 				{
-					mui_module = LoadLibraryEx(mui_paths[i].c_str(), NULL, mui_load_flags | (!pass ? 0x00000020 /*LOAD_LIBRARY_AS_IMAGE_RESOURCE only works on Vista and later*/ : 0));
+					mui_module = LoadLibraryEx(mui_paths[i].c_str(), nullptr, mui_load_flags | (!pass ? 0x00000020 /*LOAD_LIBRARY_AS_IMAGE_RESOURCE only works on Vista and later*/ : 0));
 				}
 			}
 		}
 
 		CMainDlg wnd(hEvent, right_to_left);
-		wnd.Create(reinterpret_cast<HWND> (NULL), NULL);
+		wnd.Create(reinterpret_cast<HWND> (nullptr), nullptr);
 		wnd.ShowWindow((wnd.GetStyle() & SW_MAXIMIZE) ? SW_SHOW : SW_SHOWDEFAULT);
 		msgLoop.Run();
 		_Module.RemoveMessageLoop();
