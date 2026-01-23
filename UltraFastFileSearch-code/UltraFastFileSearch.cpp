@@ -12923,7 +12923,7 @@ int main(int argc, char* argv[])
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		// CLI11 Command Line Parsing (replaces LLVM CommandLine)
 		////////////////////////////////////////////////////////////////////////////////////////////////
-		CommandLineParser parser(converter.to_bytes(diskdrives));
+		CommandLineParser parser(diskdrives);
 		int parseResult = parser.parse(new_argc, new_argv);
 		if (parseResult != 0) {
 			return parseResult;
