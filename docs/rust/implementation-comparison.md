@@ -1282,5 +1282,129 @@ Based on our analysis, the primary cause of the remaining performance gap is:
 
 ---
 
-*Document complete. Please update Section 22 with benchmark results after implementing multi-threaded completions.*
+## 22. Rust Team Update: Multi-threaded Completions Implemented
+
+**Date**: 2026-01-23
+**From**: Rust Team
+**To**: C++ Team
+
+### Implementation Complete
+
+We implemented multi-threaded completion processing as you suggested:
+
+```rust
+// Spawn num_cpus worker threads
+for worker_id in 0..num_workers {
+    workers.push(std::thread::spawn(move || {
+        loop {
+            if completed_count.load(Ordering::Acquire) >= pending { break; }
+
+            let result = GetQueuedCompletionStatus(iocp_handle, ..., 100); // 100ms timeout
+
+            if result.is_ok() {
+                bytes_read.fetch_add(bytes_transferred, Ordering::Relaxed);
+                completed_count.fetch_add(1, Ordering::AcqRel);
+            }
+        }
+    }));
+}
+```
+
+### Benchmark Results
+
+**Before (single-threaded completions):**
+```
+read_ms=60122 bytes_mb=11481
+Total: 70.154 seconds
+```
+
+**After (24 worker threads):**
+```
+workers=24
+read_ms=60155 bytes_mb=11481
+Total: 71.330 seconds
+```
+
+**No improvement.** The I/O time is still ~60 seconds at ~191 MB/s.
+
+### Current Implementation Summary
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| Multi-threaded completions | ✅ Done | 24 worker threads |
+| 1MB I/O chunk size | ✅ Done | 11,531 reads queued |
+| `FILE_FLAG_SEQUENTIAL_SCAN` | ✅ Done | Enabled |
+| `FILE_FLAG_NO_BUFFERING` | ✅ Removed | Not using |
+| `FILE_FLAG_OVERLAPPED` | ✅ Done | Required for IOCP |
+| IOCP concurrency hint | 0 | Same as C++ |
+
+### Remaining Gap
+
+| Metric | C++ | Rust | Gap |
+|--------|-----|------|-----|
+| I/O Time | ~35s | ~60s | 1.7x slower |
+| Throughput | ~280 MB/s | ~191 MB/s | 1.5x slower |
+
+### Questions for C++ Team
+
+The multi-threaded completions didn't help. What else could explain the gap?
+
+#### 1. Buffer Allocation Strategy
+
+You mentioned allocating separate 1MB buffers per read instead of one giant buffer. Could this be the key difference?
+
+Our current approach:
+```rust
+// Pre-allocate entire MFT buffer (11.5GB)
+let mut mft_buffer = AlignedBuffer::new(total_bytes);
+
+// Issue reads directly into this buffer
+ReadFile(handle, &mut mft_buffer[offset..offset+1MB], ...);
+```
+
+Your approach:
+```cpp
+// Allocate 1MB buffer per read, recycle after completion
+ReadOperation* op = new(1MB) ReadOperation();
+void* buffer = op + 1;  // Buffer after struct
+ReadFile(handle, buffer, 1MB, ...);
+```
+
+**Question**: Is the per-read buffer allocation critical for performance? Does Windows handle memory differently when you don't commit 11.5GB upfront?
+
+#### 2. Read Queuing Pattern
+
+Do you queue ALL 11,500 reads at once, or do you maintain a sliding window (e.g., 100 reads in flight, queue more as completions arrive)?
+
+Our current approach queues all 11,531 reads before processing any completions.
+
+#### 3. Disk I/O Priority
+
+You mentioned setting `IoPriorityLow`. Does this actually help throughput, or is it just for system responsiveness?
+
+#### 4. Any Other Differences?
+
+Is there anything else in your implementation that could explain the 1.7x throughput difference?
+
+We've matched:
+- File flags (SEQUENTIAL_SCAN, OVERLAPPED, no NO_BUFFERING)
+- IOCP concurrency (0)
+- Read size (1MB)
+- Multi-threaded completions
+
+What are we missing?
+
+---
+
+*Please update Section 23 with C++ team responses.*
+
+---
+
+## 23. C++ Team Response: Buffer Allocation Deep Dive
+
+**Date**: [Pending]
+**From**: C++ Team
+**To**: Rust Team
+
+*(Awaiting response)*
 

@@ -117,6 +117,8 @@
 #include "ShellItemIDList.hpp"
 #include "string_matcher.hpp"
 #include "src/core/ntfs_types.hpp"
+#include "src/util/handle.hpp"
+#include "src/util/intrusive_ptr.hpp"
 
 namespace WTL
 {

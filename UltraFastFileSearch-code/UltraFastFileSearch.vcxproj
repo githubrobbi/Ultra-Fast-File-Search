@@ -237,6 +237,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\ntfs_types.hpp" />
+    <ClInclude Include="src\util\handle.hpp" />
+    <ClInclude Include="src\util\intrusive_ptr.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
