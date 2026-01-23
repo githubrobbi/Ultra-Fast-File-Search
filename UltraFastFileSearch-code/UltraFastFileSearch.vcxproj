@@ -242,6 +242,7 @@
     <ClInclude Include="src\io\winnt_types.hpp" />
     <ClInclude Include="src\io\io_priority.hpp" />
     <ClInclude Include="src\io\overlapped.hpp" />
+    <ClInclude Include="src\index\ntfs_index.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
