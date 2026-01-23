@@ -118,7 +118,7 @@
 #include "string_matcher.hpp"
 #include "src/core/ntfs_types.hpp"
 #include "src/util/handle.hpp"
-#include "src/util/intrusive_ptr.hpp"
+// Note: intrusive_ptr.hpp not included - conflicts with existing RefCounted ADL functions
 
 namespace WTL
 {
