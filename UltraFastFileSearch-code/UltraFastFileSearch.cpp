@@ -122,6 +122,7 @@
 #include "src/io/winnt_types.hpp"
 #include "src/io/io_priority.hpp"
 // Note: overlapped.hpp is documentation only - class not extracted yet
+// Note: src/index/ntfs_index.hpp is documentation only - class not extracted yet
 
 namespace WTL
 {
