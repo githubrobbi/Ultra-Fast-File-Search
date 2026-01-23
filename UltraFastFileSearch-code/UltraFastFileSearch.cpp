@@ -12893,6 +12893,23 @@ int main(int argc, char* argv[])
 	{
 		std::ostream& OS = std::cout;
 
+		// ============================================================================
+		// HARDCODED: Benchmark S: drive only - no arguments needed
+		// ============================================================================
+		(void)argc;
+		(void)argv;
+
+		OS << "\n";
+		OS << "=== HARDCODED SINGLE-DRIVE BENCHMARK ===\n";
+		OS << "Benchmarking S: drive only (Storage - 7.4 TB)\n";
+		OS << "=========================================\n\n";
+
+		return benchmark_index_build('S', OS);
+
+		// ============================================================================
+		// ORIGINAL CODE BELOW (commented out)
+		// ============================================================================
+		/*
 		int new_argc = argc;
 		char** new_argv = argv;
 
@@ -12935,6 +12952,7 @@ int main(int argc, char* argv[])
 		if (opts.helpRequested || opts.versionRequested) {
 			return 0;
 		}
+		*/
 
 		// Map options to local variables for minimal code changes
 		std::string searchPathCopy = opts.searchPath;
