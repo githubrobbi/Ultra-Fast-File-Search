@@ -1,14 +1,21 @@
-// Things to FIX : 
+// ============================================================================
+// UltraFastFileSearch - Main Source File
+// ============================================================================
+// Known Issues (TODO):
+// - Sort is not 100% ==> UPPER and lowercase treated differently
+// - Search results are NOT sorted ... should we?
+// - Check if FS needs REFRESH between searches
+// - Return error if NO results
+// ============================================================================
 
-// Sort is not 100% ==> UPPER and lowercase treated differently
-
-// Search results are NOT sorted ... should we ?
-
-// check if FS needs REFRESH between searches
-
-// return error if NO results
-
+// ============================================================================
+// Project Configuration
+// ============================================================================
 #include "targetver.h"
+
+// ============================================================================
+// Standard C Headers
+// ============================================================================
 #include <fcntl.h>
 #include <io.h>
 #include <process.h>
@@ -18,84 +25,98 @@
 #include <tchar.h>
 #include <time.h>
 #include <wchar.h>
+
+// ============================================================================
+// Standard C++ Headers
+// ============================================================================
 #include <algorithm>
-#include <memory>
-#include <mmintrin.h>
-#include <map>
-#include <fstream>
-#include <iterator>
-#include <string>
-#include <utility>
-#include <vector>
-#include <Windows.h>
-#include <Dbt.h>
-#include <muiload.h>
-#include <ProvExce.h>
-#include <ShlObj.h>
-#include <WinNLS.h>
-#include <atlbase.h>
-#include <atlapp.h>
-#include <atlcrack.h>
-#include <atlmisc.h>
-#include <atlwin.h>
-#include <atldlgs.h>
-#include <atlframe.h>
-#include <atlctrls.h>
-#include <atlctrlx.h>
-#include <atltheme.h>
-#include "nformat.hpp"
-#include "path.hpp"
-#include "BackgroundWorker.hpp"
-#include "ShellItemIDList.hpp"
-#include "CModifiedDialogImpl.hpp"
-#include "NtUserCallHook.hpp"
-#include "string_matcher.hpp"
-#include <boost/algorithm/string.hpp>
+#include <cassert>
 #include <chrono>
 #include <codecvt>
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <iterator>
+#include <map>
+#include <memory>
 #include <sstream>
-#include <strsafe.h>
-#include "BackgroundWorker.hpp"
-#include "CModifiedDialogImpl.hpp"
-#include "CommandLineParser.hpp"
-#include "nformat.hpp"
-#include "NtUserCallHook.hpp"
-#include "path.hpp"
-#include "resource.h"
-#include "ShellItemIDList.hpp"
-#include "string_matcher.hpp"
-#include "targetver.h"
+#include <string>
+#include <utility>
+#include <vector>
 
-#ifdef __clang__
-#pragma clang diagnostic push# pragma clang diagnostic ignored "-Wignored-attributes"
-#endif
-
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-
+// ============================================================================
+// Compiler-Specific Headers
+// ============================================================================
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 
-#if defined(_MSC_VER) && _MSC_VER >= 1800	// We don't check _CPPLIB_VER here, because we want to use the<atomic> that came with the compiler, even if we use a different STL
-
+#if defined(_MSC_VER) && _MSC_VER >= 1800
+// We don't check _CPPLIB_VER here, because we want to use the <atomic>
+// that came with the compiler, even if we use a different STL
 #define is_trivially_copyable_v sizeof is_trivially_copyable
 #include <atomic>
 #undef is_trivially_copyable_v
-
 #endif
 
 #if defined(_CPPLIB_VER) && _CPPLIB_VER >= 610
 #include <mutex>
 #endif
 
-#ifndef assert
-#include <cassert>
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wignored-attributes"
 #endif
+#include <mmintrin.h>
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
+// ============================================================================
+// Windows SDK Headers
+// ============================================================================
+#include <Windows.h>
+#include <Dbt.h>
+#include <muiload.h>
+#include <ProvExce.h>
+#include <ShlObj.h>
+#include <strsafe.h>
+#include <WinNLS.h>
+
+// ============================================================================
+// ATL/WTL Headers
+// ============================================================================
+#include <atlbase.h>
+#include <atlapp.h>
+#include <atlcrack.h>
+#include <atlctrls.h>
+#include <atlctrlx.h>
+#include <atldlgs.h>
+#include <atlframe.h>
+#include <atlmisc.h>
+#include <atltheme.h>
+#include <atlwin.h>
+
+// ============================================================================
+// Third-Party Headers
+// ============================================================================
+#include <boost/algorithm/string.hpp>
+
+// ============================================================================
+// Project Headers
+// ============================================================================
+#include "resource.h"
+#include "BackgroundWorker.hpp"
+#include "CDlgTemplate.hpp"
+#include "CModifiedDialogImpl.hpp"
+#include "CommandLineParser.hpp"
+#include "nformat.hpp"
+#include "NtUserCallHook.hpp"
+#include "path.hpp"
+#include "ShellItemIDList.hpp"
+#include "string_matcher.hpp"
+#include "src/core/ntfs_types.hpp"
 
 namespace WTL
 {
