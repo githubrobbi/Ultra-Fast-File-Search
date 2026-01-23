@@ -12780,12 +12780,11 @@ int benchmark_index_build(char drive_letter, llvm::raw_ostream& OS)
     OS << "Drive: " << drive_letter << ":\n";
     OS << "This measures the full UFFS indexing pipeline (async I/O + parsing + index building)\n\n";
 
-    // Build path name
-    std::tvstring path_name;
-    path_name += static_cast<TCHAR>(toupper(drive_letter));
-    path_name += _T(":\\");
+    // Build path name (e.g., "C:\")
+    TCHAR path_buf[4] = { static_cast<TCHAR>(toupper(drive_letter)), _T(':'), _T('\\'), _T('\0') };
+    std::tvstring path_name(path_buf);
 
-    OS << "Creating index for " << static_cast<char>(drive_letter) << ":\\ ...\n";
+    OS << "Creating index for " << static_cast<char>(toupper(drive_letter)) << ":\\ ...\n";
     OS.flush();
 
     // Start timing
@@ -12839,7 +12838,7 @@ int benchmark_index_build(char drive_letter, llvm::raw_ostream& OS)
     double seconds = duration.count() / 1000.0;
     double clock_seconds = static_cast<double>(tend - tbegin) / CLOCKS_PER_SEC;
 
-    // Get index statistics
+    // Get index statistics from public accessors
     size_t total_records = index->records_so_far();
     size_t total_names = index->total_names();
     size_t total_names_and_streams = index->total_names_and_streams();
@@ -12847,30 +12846,10 @@ int benchmark_index_build(char drive_letter, llvm::raw_ostream& OS)
     unsigned int mft_record_size = index->mft_record_size;
     unsigned long long mft_bytes = static_cast<unsigned long long>(mft_capacity) * mft_record_size;
 
-    // Count files vs directories by iterating through records
-    size_t file_count = 0;
-    size_t dir_count = 0;
-
-    // Use lock to safely access the index
-    {
-        auto locked = lock(index);
-        // Iterate through all records to count files vs directories
-        for (unsigned int frs = 0; frs < mft_capacity; ++frs) {
-            NtfsIndex::Records::value_type const* record = locked->find(frs);
-            if (record) {
-                if (record->stdinfo.is_directory) {
-                    ++dir_count;
-                } else {
-                    ++file_count;
-                }
-            }
-        }
-    }
-
     // Calculate throughput
     double mb_per_sec = (seconds > 0) ? (mft_bytes / (1024.0 * 1024.0)) / seconds : 0;
-    double records_per_sec = (seconds > 0) ? total_records / seconds : 0;
-    double files_per_sec = (seconds > 0) ? (file_count + dir_count) / seconds : 0;
+    double records_per_sec = (seconds > 0) ? static_cast<double>(total_records) / seconds : 0;
+    double names_per_sec = (seconds > 0) ? static_cast<double>(total_names) / seconds : 0;
 
     // Output results
     OS << "\n=== Volume Information ===\n";
@@ -12880,9 +12859,6 @@ int benchmark_index_build(char drive_letter, llvm::raw_ostream& OS)
 
     OS << "\n=== Index Statistics ===\n";
     OS << "Records Processed: " << total_records << "\n";
-    OS << "Files: " << file_count << "\n";
-    OS << "Directories: " << dir_count << "\n";
-    OS << "Total Entries: " << (file_count + dir_count) << "\n";
     OS << "Name Entries: " << total_names << "\n";
     OS << "Names + Streams: " << total_names_and_streams << "\n";
 
@@ -12891,11 +12867,11 @@ int benchmark_index_build(char drive_letter, llvm::raw_ostream& OS)
     OS << "CPU Time: " << llvm::format("%.3f", clock_seconds) << " seconds\n";
     OS << "MFT Read Speed: " << llvm::format("%.2f", mb_per_sec) << " MB/s\n";
     OS << "Record Processing: " << llvm::format("%.0f", records_per_sec) << " records/sec\n";
-    OS << "File Indexing: " << llvm::format("%.0f", files_per_sec) << " files+dirs/sec\n";
+    OS << "Name Indexing: " << llvm::format("%.0f", names_per_sec) << " names/sec\n";
 
     // Summary line for easy comparison
     OS << "\n=== Summary ===\n";
-    OS << "Indexed " << (file_count + dir_count) << " items in "
+    OS << "Indexed " << total_names << " names in "
        << llvm::format("%.3f", seconds) << " seconds\n";
 
     return 0;
