@@ -6973,7 +6973,7 @@ public:
 		this->close();
 	}
 
-	IoCompletionPort() : _handle(CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, nullptr, 0)), _initialized(false), _terminated(false), _pending_scan_offset() {}
+	IoCompletionPort() : _handle(CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, 0)), _initialized(false), _terminated(false), _pending_scan_offset() {}
 
 	this_type* unvolatile() volatile
 	{
@@ -10309,7 +10309,7 @@ public:
 
 		if (indices.size() == 1)
 		{
-			MENUITEMINFO mii2 = { sizeof(mii2), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, MFS_ENABLED, openContainingFolderId, nullptr, nullptr, nullptr, nullptr, this->LoadString(IDS_MENU_OPEN_CONTAINING_FOLDER)
+			MENUITEMINFO mii2 = { sizeof(mii2), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, MFS_ENABLED, openContainingFolderId, nullptr, nullptr, nullptr, 0, this->LoadString(IDS_MENU_OPEN_CONTAINING_FOLDER)
 			};
 
 			menu.InsertMenuItem(ninserted++, TRUE, &mii2);
@@ -10324,7 +10324,7 @@ public:
 		{
 			{ 	RefCountedCString text = this->LoadString(IDS_MENU_FILE_NUMBER);
 			text += static_cast<std::tstring> (nformat_ui(this->results[static_cast<size_t> (focused)].key().frs())).c_str();
-			MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, MFS_DISABLED, fileIdId, nullptr, nullptr, nullptr, nullptr, text
+			MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, MFS_DISABLED, fileIdId, nullptr, nullptr, nullptr, 0, text
 			};
 
 			menu.InsertMenuItem(ninserted++, TRUE, &mii);
@@ -10332,7 +10332,7 @@ public:
 
 			{
 
-				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyId, nullptr, nullptr, nullptr, nullptr, this->LoadString(IDS_MENU_COPY)
+				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyId, nullptr, nullptr, nullptr, 0, this->LoadString(IDS_MENU_COPY)
 				};
 
 				menu.InsertMenuItem(ninserted++, TRUE, &mii);
@@ -10340,7 +10340,7 @@ public:
 
 			{
 
-				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyPathId, nullptr, nullptr, nullptr, nullptr, this->LoadString(IDS_MENU_COPY_PATHS)
+				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyPathId, nullptr, nullptr, nullptr, 0, this->LoadString(IDS_MENU_COPY_PATHS)
 				};
 
 				menu.InsertMenuItem(ninserted++, TRUE, &mii);
@@ -10348,7 +10348,7 @@ public:
 
 			{
 
-				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyTableId, nullptr, nullptr, nullptr, nullptr, this->LoadString(IDS_MENU_COPY_TABLE)
+				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyTableId, nullptr, nullptr, nullptr, 0, this->LoadString(IDS_MENU_COPY_TABLE)
 				};
 
 				menu.InsertMenuItem(ninserted++, TRUE, &mii);
@@ -10356,7 +10356,7 @@ public:
 
 			{
 
-				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, dumpId, nullptr, nullptr, nullptr, nullptr, this->LoadString(IDS_MENU_DUMP_TO_TABLE)
+				MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, dumpId, nullptr, nullptr, nullptr, 0, this->LoadString(IDS_MENU_DUMP_TO_TABLE)
 				};
 
 				menu.InsertMenuItem(ninserted++, TRUE, &mii);
@@ -10438,10 +10438,10 @@ public:
 			int
 				const ncolumns = this->lvFiles.GetHeader().GetItemCount();
 			File
-				const output = { mode <= 0 ? _topen(fdlg.m_ofn.lpstrFile, _O_BINARY | _O_TRUNC | _O_CREAT | _O_RDWR | _O_SEQUENTIAL, _S_IREAD | _S_IWRITE) : nullptr
+				const output = { mode <= 0 ? _topen(fdlg.m_ofn.lpstrFile, _O_BINARY | _O_TRUNC | _O_CREAT | _O_RDWR | _O_SEQUENTIAL, _S_IREAD | _S_IWRITE) : -1
 			};
 
-			if (mode > 0 || output != nullptr)
+			if (mode > 0 || output != -1)
 			{
 				bool
 					const shell_file_list = mode == 2;
@@ -14164,7 +14164,7 @@ __if_exists(_Module)
 		}
 
 		CMainDlg wnd(hEvent, right_to_left);
-		wnd.Create(reinterpret_cast<HWND> (nullptr), nullptr);
+		wnd.Create(reinterpret_cast<HWND> (nullptr), 0);
 		wnd.ShowWindow((wnd.GetStyle() & SW_MAXIMIZE) ? SW_SHOW : SW_SHOWDEFAULT);
 		msgLoop.Run();
 		_Module.RemoveMessageLoop();
