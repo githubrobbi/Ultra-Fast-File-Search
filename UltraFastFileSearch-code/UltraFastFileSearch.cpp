@@ -5718,7 +5718,9 @@ class RefCountedCString : public WTL::CString	// ref-counted in order to ensure 
 	void check_same_buffer(this_type
 		const& other) const
 	{
-		if (this->GetData() != other.GetData())
+		// In newer ATL, GetData() is private. Use GetString() instead -
+		// if strings share the same buffer, GetString() returns the same pointer.
+		if (this->GetString() != other.GetString())
 		{
 			throw std::logic_error("expected the same buffer for both strings");
 		}
