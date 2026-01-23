@@ -12769,6 +12769,143 @@ int benchmark_mft_read(char drive_letter, llvm::raw_ostream& OS)
 // ============================================================================
 
 // ============================================================================
+// Index Build Benchmark Tool Implementation
+// ============================================================================
+
+// Benchmark full index building (read + parse + build) using the real UFFS async pipeline
+// Returns 0 on success, error code on failure
+int benchmark_index_build(char drive_letter, llvm::raw_ostream& OS)
+{
+    OS << "\n=== Index Build Benchmark Tool ===\n";
+    OS << "Drive: " << drive_letter << ":\n";
+    OS << "This measures the full UFFS indexing pipeline (async I/O + parsing + index building)\n\n";
+
+    // Build path name
+    std::tvstring path_name;
+    path_name += static_cast<TCHAR>(toupper(drive_letter));
+    path_name += _T(":\\");
+
+    OS << "Creating index for " << static_cast<char>(drive_letter) << ":\\ ...\n";
+    OS.flush();
+
+    // Start timing
+    auto start_time = std::chrono::high_resolution_clock::now();
+    clock_t tbegin = clock();
+
+    // Create the index
+    intrusive_ptr<NtfsIndex> index(new NtfsIndex(path_name), true);
+
+    // Create IOCP and closing event
+    IoCompletionPort iocp;
+    Handle closing_event;
+
+    // Check if volume opened successfully
+    if (!index->volume()) {
+        OS << "ERROR: Failed to open volume " << static_cast<char>(drive_letter) << ":\n";
+        OS << "Make sure you are running as Administrator and the volume is NTFS.\n";
+        return ERROR_OPEN_FAILED;
+    }
+
+    // Post the read payload to start async indexing
+    typedef OverlappedNtfsMftReadPayload T;
+    intrusive_ptr<T> payload(new T(iocp, index, closing_event));
+    iocp.post(0, 0, payload);
+
+    // Wait for indexing to complete
+    OS << "Indexing in progress...\n";
+    OS.flush();
+
+    HANDLE wait_handle = reinterpret_cast<HANDLE>(index->finished_event());
+    DWORD wait_result = WaitForSingleObject(wait_handle, INFINITE);
+
+    if (wait_result != WAIT_OBJECT_0) {
+        OS << "ERROR: Wait failed (result=" << wait_result << ")\n";
+        return ERROR_WAIT_1;
+    }
+
+    // Stop timing
+    auto end_time = std::chrono::high_resolution_clock::now();
+    clock_t tend = clock();
+
+    // Check for indexing errors
+    unsigned int task_result = index->get_finished();
+    if (task_result != 0) {
+        OS << "ERROR: Indexing failed with error " << task_result << "\n";
+        return static_cast<int>(task_result);
+    }
+
+    // Calculate timing
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    double seconds = duration.count() / 1000.0;
+    double clock_seconds = static_cast<double>(tend - tbegin) / CLOCKS_PER_SEC;
+
+    // Get index statistics
+    size_t total_records = index->records_so_far();
+    size_t total_names = index->total_names();
+    size_t total_names_and_streams = index->total_names_and_streams();
+    unsigned int mft_capacity = index->mft_capacity;
+    unsigned int mft_record_size = index->mft_record_size;
+    unsigned long long mft_bytes = static_cast<unsigned long long>(mft_capacity) * mft_record_size;
+
+    // Count files vs directories by iterating through records
+    size_t file_count = 0;
+    size_t dir_count = 0;
+
+    // Use lock to safely access the index
+    {
+        auto locked = lock(index);
+        // Iterate through all records to count files vs directories
+        for (unsigned int frs = 0; frs < mft_capacity; ++frs) {
+            NtfsIndex::Records::value_type const* record = locked->find(frs);
+            if (record) {
+                if (record->stdinfo.is_directory) {
+                    ++dir_count;
+                } else {
+                    ++file_count;
+                }
+            }
+        }
+    }
+
+    // Calculate throughput
+    double mb_per_sec = (seconds > 0) ? (mft_bytes / (1024.0 * 1024.0)) / seconds : 0;
+    double records_per_sec = (seconds > 0) ? total_records / seconds : 0;
+    double files_per_sec = (seconds > 0) ? (file_count + dir_count) / seconds : 0;
+
+    // Output results
+    OS << "\n=== Volume Information ===\n";
+    OS << "MFT Capacity: " << mft_capacity << " records\n";
+    OS << "MFT Record Size: " << mft_record_size << " bytes\n";
+    OS << "MFT Total Size: " << mft_bytes << " bytes (" << (mft_bytes / (1024 * 1024)) << " MB)\n";
+
+    OS << "\n=== Index Statistics ===\n";
+    OS << "Records Processed: " << total_records << "\n";
+    OS << "Files: " << file_count << "\n";
+    OS << "Directories: " << dir_count << "\n";
+    OS << "Total Entries: " << (file_count + dir_count) << "\n";
+    OS << "Name Entries: " << total_names << "\n";
+    OS << "Names + Streams: " << total_names_and_streams << "\n";
+
+    OS << "\n=== Benchmark Results ===\n";
+    OS << "Time Elapsed: " << duration.count() << " ms (" << llvm::format("%.3f", seconds) << " seconds)\n";
+    OS << "CPU Time: " << llvm::format("%.3f", clock_seconds) << " seconds\n";
+    OS << "MFT Read Speed: " << llvm::format("%.2f", mb_per_sec) << " MB/s\n";
+    OS << "Record Processing: " << llvm::format("%.0f", records_per_sec) << " records/sec\n";
+    OS << "File Indexing: " << llvm::format("%.0f", files_per_sec) << " files+dirs/sec\n";
+
+    // Summary line for easy comparison
+    OS << "\n=== Summary ===\n";
+    OS << "Indexed " << (file_count + dir_count) << " items in "
+       << llvm::format("%.3f", seconds) << " seconds\n";
+
+    return 0;
+}
+
+// ============================================================================
+// End Index Build Benchmark Tool Implementation
+// ============================================================================
+
+// ============================================================================
 // End Raw MFT Dump Implementation
 // ============================================================================
 
@@ -12919,6 +13056,12 @@ int main(int argc, char* argv[])
 			cl::value_desc("drive_letter"),
 			cl::cat(OutputOptions));
 
+		// Index build benchmark option
+		static cl::opt<std::string> benchmarkIndexDrive("benchmark-index",
+			cl::desc("Benchmark full index build (async I/O + parsing). Usage: --benchmark-index=<drive_letter>"),
+			cl::value_desc("drive_letter"),
+			cl::cat(OutputOptions));
+
 		//cl::AddExtraVersionPrinter(PrintVersion);
 
 		static cl::bits<File_Attributes> output_columns("columns",
@@ -13051,6 +13194,21 @@ int main(int argc, char* argv[])
 				return ERROR_BAD_ARGUMENTS;
 			}
 			return benchmark_mft_read(drive_letter, OS);
+		}
+
+		// Handle --benchmark-index option (full index build benchmark)
+		if (benchmarkIndexDrive.getNumOccurrences() > 0) {
+			std::string drive_str = benchmarkIndexDrive.getValue();
+			if (drive_str.empty()) {
+				OS << "ERROR: --benchmark-index requires a drive letter (e.g., --benchmark-index=C)\n";
+				return ERROR_BAD_ARGUMENTS;
+			}
+			char drive_letter = drive_str[0];
+			if (!isalpha(drive_letter)) {
+				OS << "ERROR: Invalid drive letter: " << drive_str << "\n";
+				return ERROR_BAD_ARGUMENTS;
+			}
+			return benchmark_index_build(drive_letter, OS);
 		}
 
 		//OS << "\n Done reading arguments \n";

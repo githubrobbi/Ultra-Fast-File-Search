@@ -1,26 +1,39 @@
-# MFT Read Benchmark Tool
+# MFT Benchmark Tools
 
-A diagnostic tool to measure raw MFT reading performance on NTFS volumes.
+Diagnostic tools to measure MFT reading and indexing performance on NTFS volumes.
 
 ---
 
 ## Overview
 
-The `--benchmark-mft` command reads the entire Master File Table (MFT) from an NTFS volume and measures the time taken. It does **not** write any output file—this is a pure read benchmark to measure disk I/O performance.
+UFFS provides two benchmark commands:
+
+| Command | What It Measures |
+|---------|------------------|
+| `--benchmark-mft` | Raw disk read speed (synchronous I/O) |
+| `--benchmark-index` | Full indexing speed (async I/O + parsing + index building) |
+
+**Use `--benchmark-mft`** to measure your disk's raw throughput baseline.
+
+**Use `--benchmark-index`** to measure actual UFFS indexing performance—this is what users experience.
 
 ---
 
 ## Usage
 
 ```bash
+# Raw MFT read benchmark (disk I/O only)
 uffs --benchmark-mft=<drive_letter>
+
+# Full index build benchmark (the real UFFS pipeline)
+uffs --benchmark-index=<drive_letter>
 ```
 
 **Examples:**
 ```bash
 uffs --benchmark-mft=C
-uffs --benchmark-mft=D
-uffs --benchmark-mft=F
+uffs --benchmark-index=C
+uffs --benchmark-index=D
 ```
 
 **Requirements:**
@@ -222,17 +235,158 @@ Note: First 4 bytes should be 'FILE' (46 49 4C 45) - the MFT record signature.
 
 ---
 
-## Comparison with Full Indexing
+## Comparison: `--benchmark-mft` vs `--benchmark-index`
 
-This benchmark measures **raw read speed only**. Full UFFS indexing is faster because:
-
-1. **Async I/O** - Multiple reads in flight via IOCP
-2. **Bitmap Skipping** - Skips clusters with only unused records  
-3. **Parallel Parsing** - Parses while reading next chunk
-
-The benchmark uses synchronous I/O for simpler, more predictable measurement of pure disk throughput.
+| Aspect | `--benchmark-mft` | `--benchmark-index` |
+|--------|-------------------|---------------------|
+| **What it measures** | Raw disk read speed | Full indexing pipeline |
+| **I/O Mode** | Synchronous | Async (IOCP) |
+| **Parsing** | None (just reads bytes) | Full MFT record parsing |
+| **Index Building** | None | Builds complete NtfsIndex |
+| **Bitmap Optimization** | No | Yes (skips unused records) |
+| **Typical Speed** | Disk-limited | CPU+Disk balanced |
+| **Use Case** | Baseline disk speed | Real-world performance |
 
 ---
 
-*Document created January 2026*
+# Index Build Benchmark (`--benchmark-index`)
+
+This benchmark measures the **actual UFFS indexing performance**—what users experience when launching the application.
+
+---
+
+## What It Measures
+
+| Metric | Description |
+|--------|-------------|
+| **Time Elapsed** | Wall-clock time from start to index complete |
+| **CPU Time** | Actual CPU time consumed |
+| **Files** | Number of files indexed |
+| **Directories** | Number of directories indexed |
+| **MFT Read Speed** | Effective throughput (MFT size ÷ time) |
+| **Records/sec** | MFT records processed per second |
+| **Files+Dirs/sec** | Entries indexed per second |
+
+---
+
+## Output Format
+
+### Volume Information
+
+```
+=== Volume Information ===
+MFT Capacity: 1048576 records
+MFT Record Size: 1024 bytes
+MFT Total Size: 1073741824 bytes (1024 MB)
+```
+
+### Index Statistics
+
+```
+=== Index Statistics ===
+Records Processed: 1048576
+Files: 892451
+Directories: 156125
+Total Entries: 1048576
+Name Entries: 1048576
+Names + Streams: 1152034
+```
+
+### Benchmark Results
+
+```
+=== Benchmark Results ===
+Time Elapsed: 1823 ms (1.823 seconds)
+CPU Time: 1.456 seconds
+MFT Read Speed: 561.45 MB/s
+Record Processing: 575123 records/sec
+File Indexing: 575123 files+dirs/sec
+
+=== Summary ===
+Indexed 1048576 items in 1.823 seconds
+```
+
+---
+
+## Example Output
+
+```
+=== Index Build Benchmark Tool ===
+Drive: C:
+This measures the full UFFS indexing pipeline (async I/O + parsing + index building)
+
+Creating index for C:\ ...
+Indexing in progress...
+
+=== Volume Information ===
+MFT Capacity: 524288 records
+MFT Record Size: 1024 bytes
+MFT Total Size: 536870912 bytes (512 MB)
+
+=== Index Statistics ===
+Records Processed: 524288
+Files: 423156
+Directories: 101132
+Total Entries: 524288
+Name Entries: 524288
+Names + Streams: 576512
+
+=== Benchmark Results ===
+Time Elapsed: 1245 ms (1.245 seconds)
+CPU Time: 0.987 seconds
+MFT Read Speed: 411.12 MB/s
+Record Processing: 421116 records/sec
+File Indexing: 421116 files+dirs/sec
+
+=== Summary ===
+Indexed 524288 items in 1.245 seconds
+```
+
+---
+
+## How It Works
+
+The `--benchmark-index` command uses the **real UFFS indexing pipeline**:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  1. Create NtfsIndex for the volume                         │
+│  2. Create IoCompletionPort (IOCP)                          │
+│  3. Post OverlappedNtfsMftReadPayload to IOCP               │
+│  4. IOCP worker threads:                                    │
+│     - Read MFT chunks asynchronously                        │
+│     - Parse FILE_RECORD_SEGMENT_HEADER                      │
+│     - Extract $FILE_NAME, $DATA, $STANDARD_INFORMATION      │
+│     - Build index structures (records, names, streams)      │
+│  5. Wait for finished_event                                 │
+│  6. Report statistics                                       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+This is **exactly** what happens when UFFS starts up and indexes a volume.
+
+---
+
+## Interpreting Results
+
+### Typical Index Build Speeds
+
+| Storage Type | Files/sec | Time for 1M files |
+|--------------|-----------|-------------------|
+| HDD (7200 RPM) | 100K-200K | 5-10 seconds |
+| SATA SSD | 300K-500K | 2-3 seconds |
+| NVMe SSD | 500K-1M+ | 1-2 seconds |
+
+### CPU vs I/O Bound
+
+Compare **Time Elapsed** vs **CPU Time**:
+
+- **CPU Time ≈ Elapsed Time**: CPU-bound (parsing is the bottleneck)
+- **CPU Time << Elapsed Time**: I/O-bound (disk is the bottleneck)
+
+On fast NVMe SSDs, indexing is typically CPU-bound.
+
+---
+
+*Document updated January 2026*
 
