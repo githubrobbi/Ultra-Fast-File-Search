@@ -176,7 +176,7 @@ UltraFastFileSearch-code/
 
 | Dependency | Purpose | Version |
 |------------|---------|---------|
-| **Boost** | Xpressive (regex), Algorithm (Boyer-Moore-Horspool) | 1.73.0 |
+| **Boost** | Xpressive (regex), Algorithm (Boyer-Moore-Horspool) | 1.90.0 |
 | **WTL** | Windows Template Library for GUI | r636 |
 | **ATL** | Active Template Library | VS 2017+ |
 | **LLVM** | CommandLine parser for CLI | Support library |

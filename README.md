@@ -436,7 +436,7 @@ All tools are in the "Original Packages" folder
 	
 Download and install the WTL source (wtl-code-r636-trunk.zip) I put it @ "C:\uffs\wtl-code-r636-trunk"
 
-Download BOOST (https://www.boost.org/users/history/version_1_73_0.html) extract and I put it here @ "C:\uffs\boost_1_73_0"
+Download BOOST (https://www.boost.org/users/history/version_1_90_0.html) extract and I put it here @ "C:\uffs\boost_1_90_0"
 
 I am using LLVM support.lib (just in case you compiled your own version of LLVM):
 
@@ -487,7 +487,7 @@ C:\UFFS
 │       └───include
 │
 ├───Original Packages
-│       boost_1_73_0.7z
+│       boost_1_90_0.7z
 │       llvm.zip
 │       swiftsearch-code-4043bc-2023-03-24.zip
 │       wtl-code-r636-trunk.zip

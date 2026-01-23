@@ -54,7 +54,7 @@ This document provides exhaustive detail on building Ultra Fast File Search from
 | Visual Studio | 2017+ | C++ compiler and IDE |
 | Windows SDK | 10.0+ | Windows API headers and libraries |
 | ATL | VS 2017+ | Active Template Library |
-| Boost | 1.73.0 | Regex, Algorithm libraries |
+| Boost | 1.90.0 | Xpressive, Algorithm libraries (header-only) |
 | WTL | r636 | Windows Template Library for GUI |
 | LLVM | 10.0+ | CommandLine parser for CLI |
 
@@ -64,9 +64,9 @@ The default build expects this directory layout:
 
 ```
 C:\uffs\
-├── boost_1_73_0\           # Boost library
+├── boost_1_90_0\           # Boost library (header-only)
 │   ├── boost\              # Headers
-│   └── libs\               # Source files
+│   └── libs\               # Documentation/examples only
 ├── wtl-code-r636-trunk\    # WTL library
 │   └── wtl\
 │       └── Include\        # WTL headers
@@ -102,7 +102,7 @@ UltraFastFileSearch-code/
 ```xml
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <BOOST_ROOT>C:\uffs\boost_1_73_0\</BOOST_ROOT>
+    <BOOST_ROOT>C:\uffs\boost_1_90_0\</BOOST_ROOT>
     <XPDeprecationWarning>false</XPDeprecationWarning>
     <IncludePath>C:\uffs\wtl-code-r636-trunk\wtl\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
@@ -164,7 +164,7 @@ UltraFastFileSearch-code/
     <Optimization>Full</Optimization>
     <AdditionalIncludeDirectories>
       C:\uffs\llvm\llvm\include;
-      C:\uffs\boost_1_73_0;
+      C:\uffs\boost_1_90_0;
       C:\uffs\llvm\build\include
     </AdditionalIncludeDirectories>
     <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -225,25 +225,14 @@ UltraFastFileSearch-code/
 | `UltraFastFileSearch.cpp` | Main source (~13,400 lines) |
 | `string_matcher.cpp` | Pattern matching engine |
 | `stdafx.cpp` | Precompiled header creation |
-| Boost regex sources | Regex library (17 files) |
 
-### Boost Regex Integration
+### Boost Integration
 
-The project compiles Boost.Regex from source:
+The project uses **header-only** Boost libraries (Boost 1.90.0):
+- **Boost.Xpressive** - Regex engine (header-only)
+- **Boost.Algorithm** - Boyer-Moore-Horspool string search (header-only)
 
-```xml
-<ItemGroup>
-  <ClCompile Include="$(BOOST_ROOT)libs\regex\src\cpp_regex_traits.cpp">
-    <DisableSpecificWarnings>4640</DisableSpecificWarnings>
-  </ClCompile>
-  <ClCompile Include="$(BOOST_ROOT)libs\regex\src\cregex.cpp">
-    <DisableSpecificWarnings>4640</DisableSpecificWarnings>
-  </ClCompile>
-  <!-- ... 15 more regex source files ... -->
-</ItemGroup>
-```
-
-**Warning 4640**: "construction of local static object is not thread-safe" - disabled for Boost compatibility.
+No Boost source files need to be compiled.
 
 ### Header Files
 
@@ -327,6 +316,8 @@ The project compiles Boost.Regex from source:
 
 ### Boost Library
 
+**Version**: 1.90.0 (header-only)
+
 **Required Components**:
 - `boost/xpressive/xpressive.hpp` - Regex engine
 - `boost/algorithm/searching/boyer_moore_horspool.hpp` - String search
@@ -334,7 +325,7 @@ The project compiles Boost.Regex from source:
 **Configuration**:
 ```xml
 <PropertyGroup>
-  <BOOST_ROOT>C:\uffs\boost_1_73_0\</BOOST_ROOT>
+  <BOOST_ROOT>C:\uffs\boost_1_90_0\</BOOST_ROOT>
 </PropertyGroup>
 <ClCompile>
   <AdditionalIncludeDirectories>$(BOOST_ROOT);...</AdditionalIncludeDirectories>
@@ -396,7 +387,7 @@ For building with Clang instead of MSVC:
 @Set "INCLUDE=%BASEDIR%\inc\crt;%BASEDIR%\inc\wnet;%BASEDIR%\inc\atl30"
 @Set "LIB=%BASEDIR%\lib\crt\amd64;%BASEDIR%\lib\atl\amd64"
 @Set "WTL_ROOT=...\wtl\Include"
-@Set "BOOST_ROOT=C:\Program Files\boost\boost_1_73_0"
+@Set "BOOST_ROOT=C:\Program Files\boost\boost_1_90_0"
 
 clang-cl -fmsc-version=1300 ^
     /Og /Oi /Os /Oy /Ob2 /Gs /GF /Gy ^
@@ -523,7 +514,7 @@ If dependencies are in non-standard locations, update:
 Building UFFS requires:
 
 1. **Visual Studio 2017+** with C++ and ATL
-2. **Boost 1.73.0** for regex and algorithms
+2. **Boost 1.90.0** for regex and algorithms (header-only)
 3. **WTL r636** for GUI components
 4. **LLVM** for CLI argument parsing
 

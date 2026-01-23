@@ -106,14 +106,13 @@
 #define STRICT 1
 #define NOMINMAX 1
 #define BUILD_WINDOWS 1
-#define BOOST_ALL_NO_LIB 1
-#define BOOST_ALLOW_DEPRECATED_HEADERS 1
-#define BOOST_DISABLE_ASSERTS 1
-#define BOOST_EXCEPTION_DISABLE 1
-#define BOOST_NO_CXX11_CHAR16_T
-#define BOOST_NO_CXX11_CHAR32_T
-#define BOOST_NO_SWPRINTF
-#define BOOST_REGEX_NO_FILEITER
+// Boost configuration (updated for Boost 1.90.0)
+#define BOOST_ALL_NO_LIB 1           // No auto-linking (header-only)
+#define BOOST_DISABLE_ASSERTS 1      // Disable runtime asserts
+#define BOOST_EXCEPTION_DISABLE 1    // Disable exception support
+// Note: BOOST_NO_CXX11_CHAR16_T and BOOST_NO_CXX11_CHAR32_T removed - VS 2017+ has full C++11
+// Note: BOOST_ALLOW_DEPRECATED_HEADERS removed - Boost 1.90.0 cleaned up deprecated headers
+// Note: BOOST_REGEX_NO_FILEITER removed - no longer compiling Boost.Regex sources
 
 // Silence C++17 deprecation warnings for old code
 #define _SILENCE_CXX17_OLD_ALLOCATOR_MEMBERS_DEPRECATION_WARNING
