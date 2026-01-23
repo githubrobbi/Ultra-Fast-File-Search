@@ -54,12 +54,13 @@
 #include <chrono>
 #include <codecvt>
 #include <filesystem>
+#include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <strsafe.h>
 #include "BackgroundWorker.hpp"
 #include "CModifiedDialogImpl.hpp"
-#include "llvm/Support/CommandLine.h"
-#include "llvm/Support/host.h"
+#include "CommandLineParser.hpp"
 #include "nformat.hpp"
 #include "NtUserCallHook.hpp"
 #include "path.hpp"
@@ -11952,19 +11953,17 @@ std::wstring_convert<std::codecvt_utf8_utf16 < wchar_t>> converter;
 //std::wstring wide = converter.from_bytes(narrow_utf8_source_string);
 
 std::string PACKAGE_VERSION = "0.9.6";
-static void PrintVersion(llvm::raw_ostream& OS)
+
+// PrintVersion for CLI11 (called from CommandLineParser)
+void PrintVersion()
 {
-	OS << "Ultra Fast File Search \t https://github.com/githubrobbi/Ultra-Fast-File-Search\n\nbased on SwiftSearch \t https://sourceforge.net/projects/swiftsearch/\n\n";
-	OS << "\tUFFS" << " version:\t" << PACKAGE_VERSION << '\n';
-	std::string CPU = std::string(llvm::sys::getHostCPUName());
-	if (CPU == "generic")
-		CPU = "(unknown)";
-	OS << "\tBuild for:\t" << llvm::sys::getDefaultTargetTriple() << '\n' <<
-		"\tHost CPU:\t" << CPU << '\n';
-	OS << "\n";
-	OS << "\tOptimized build";
-	OS << "\n\n";
-};
+	std::cout << "Ultra Fast File Search \t https://github.com/githubrobbi/Ultra-Fast-File-Search\n\nbased on SwiftSearch \t https://sourceforge.net/projects/swiftsearch/\n\n";
+	std::cout << "\tUFFS" << " version:\t" << PACKAGE_VERSION << '\n';
+	std::cout << "\tBuild for:\t" << "x86_64-pc-windows-msvc" << '\n';
+	std::cout << "\n";
+	std::cout << "\tOptimized build";
+	std::cout << "\n\n";
+}
 
 // Buffer length
 DWORD maxdrives = 250;
@@ -12095,7 +12094,7 @@ static_assert(sizeof(UffsMftHeader) == 64, "UffsMftHeader must be exactly 64 byt
 
 // Dump raw MFT to file in UFFS-MFT format
 // Returns 0 on success, error code on failure
-int dump_raw_mft(char drive_letter, const char* output_path, llvm::raw_ostream& OS)
+int dump_raw_mft(char drive_letter, const char* output_path, std::ostream& OS)
 {
     OS << "\n=== Raw MFT Dump Tool ===\n";
     OS << "Drive: " << drive_letter << ":\n";
@@ -12332,7 +12331,7 @@ int dump_raw_mft(char drive_letter, const char* output_path, llvm::raw_ostream& 
 
 // Dump MFT extents as JSON for diagnostic purposes
 // Returns 0 on success, error code on failure
-int dump_mft_extents(char drive_letter, const char* output_path, bool verify_extents, llvm::raw_ostream& OS)
+int dump_mft_extents(char drive_letter, const char* output_path, bool verify_extents, std::ostream& OS)
 {
     // Get current timestamp in ISO 8601 format
     auto now = std::chrono::system_clock::now();
@@ -12544,7 +12543,7 @@ int dump_mft_extents(char drive_letter, const char* output_path, bool verify_ext
 
 // Benchmark raw MFT reading speed (read-only, no output file)
 // Returns 0 on success, error code on failure
-int benchmark_mft_read(char drive_letter, llvm::raw_ostream& OS)
+int benchmark_mft_read(char drive_letter, std::ostream& OS)
 {
     OS << "\n=== MFT Read Benchmark Tool ===\n";
     OS << "Drive: " << drive_letter << ":\n\n";
@@ -12731,16 +12730,17 @@ int benchmark_mft_read(char drive_letter, llvm::raw_ostream& OS)
     OS << "\n=== Benchmark Results ===\n";
     OS << "Total bytes read: " << bytes_read_total << " (" << (bytes_read_total / (1024 * 1024)) << " MB)\n";
     OS << "Total records: " << record_count << "\n";
-    OS << "Time elapsed: " << duration.count() << " ms (" << llvm::format("%.3f", seconds) << " seconds)\n";
-    OS << "Read speed: " << llvm::format("%.2f", mb_per_sec) << " MB/s\n\n";
+    OS << "Time elapsed: " << duration.count() << " ms (" << std::fixed << std::setprecision(3) << seconds << " seconds)\n";
+    OS << "Read speed: " << std::fixed << std::setprecision(2) << mb_per_sec << " MB/s\n\n";
 
     // Proof of reading - first and last 4 bytes
     OS << "=== Proof of Complete Read ===\n";
     OS << "First 4 bytes (hex): ";
     for (int i = 0; i < 4; ++i) {
-        OS << llvm::format("%02X", first_4_bytes[i]);
+        OS << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<int>(first_4_bytes[i]);
         if (i < 3) OS << " ";
     }
+    OS << std::dec;  // Reset to decimal
     OS << "  (ASCII: ";
     for (int i = 0; i < 4; ++i) {
         char c = static_cast<char>(first_4_bytes[i]);
@@ -12750,9 +12750,10 @@ int benchmark_mft_read(char drive_letter, llvm::raw_ostream& OS)
 
     OS << "Last 4 bytes (hex):  ";
     for (int i = 0; i < 4; ++i) {
-        OS << llvm::format("%02X", last_4_bytes[i]);
+        OS << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<int>(last_4_bytes[i]);
         if (i < 3) OS << " ";
     }
+    OS << std::dec;  // Reset to decimal
     OS << "  (ASCII: ";
     for (int i = 0; i < 4; ++i) {
         char c = static_cast<char>(last_4_bytes[i]);
@@ -12776,7 +12777,7 @@ int benchmark_mft_read(char drive_letter, llvm::raw_ostream& OS)
 
 // Benchmark full index building (read + parse + build) using the real UFFS async pipeline
 // Returns 0 on success, error code on failure
-int benchmark_index_build(char drive_letter, llvm::raw_ostream& OS)
+int benchmark_index_build(char drive_letter, std::ostream& OS)
 {
     OS << "\n=== Index Build Benchmark Tool ===\n";
     OS << "Drive: " << drive_letter << ":\n";
@@ -12864,16 +12865,16 @@ int benchmark_index_build(char drive_letter, llvm::raw_ostream& OS)
     OS << "Names + Streams: " << total_names_and_streams << "\n";
 
     OS << "\n=== Benchmark Results ===\n";
-    OS << "Time Elapsed: " << duration.count() << " ms (" << llvm::format("%.3f", seconds) << " seconds)\n";
-    OS << "CPU Time: " << llvm::format("%.3f", clock_seconds) << " seconds\n";
-    OS << "MFT Read Speed: " << llvm::format("%.2f", mb_per_sec) << " MB/s\n";
-    OS << "Record Processing: " << llvm::format("%.0f", records_per_sec) << " records/sec\n";
-    OS << "Name Indexing: " << llvm::format("%.0f", names_per_sec) << " names/sec\n";
+    OS << "Time Elapsed: " << duration.count() << " ms (" << std::fixed << std::setprecision(3) << seconds << " seconds)\n";
+    OS << "CPU Time: " << std::fixed << std::setprecision(3) << clock_seconds << " seconds\n";
+    OS << "MFT Read Speed: " << std::fixed << std::setprecision(2) << mb_per_sec << " MB/s\n";
+    OS << "Record Processing: " << std::fixed << std::setprecision(0) << records_per_sec << " records/sec\n";
+    OS << "Name Indexing: " << std::fixed << std::setprecision(0) << names_per_sec << " names/sec\n";
 
     // Summary line for easy comparison
     OS << "\n=== Summary ===\n";
     OS << "Indexed " << total_names << " names in "
-       << llvm::format("%.3f", seconds) << " seconds\n";
+       << std::fixed << std::setprecision(3) << seconds << " seconds\n";
 
     return 0;
 }
@@ -12888,10 +12889,9 @@ int benchmark_index_build(char drive_letter, llvm::raw_ostream& OS)
 
 // Command Line Version
 //int _tmain(int argc, TCHAR *argv[])
-using namespace llvm;
 int main(int argc, char* argv[])
 	{
-		llvm::raw_ostream& OS = llvm::outs();
+		std::ostream& OS = std::cout;
 
 		int new_argc = argc;
 		char** new_argv = argv;
@@ -12920,290 +12920,94 @@ int main(int argc, char* argv[])
 		disks.erase(disks.find_last_of("|") - 1, std::string::npos);
 		disks = removeSpaces(disks);
 
-		cl::OptionCategory SearchOptions("Search options");
-		cl::OptionCategory FiltersOptions("Filter options");
-		cl::OptionCategory OutputOptions("Output options");
-
-		enum File_Attributes
-		{
-			all, path, name, pathonly, type, size, sizeondisk, created, written, accessed, decendents,
-			r, a, s, h, o,
-			notcontent, noscrub, integrity, pinned, unpinned,
-			directory, compressed, encrypted, sparse, reparse,
-			attributevalue
-		};
-
-		const cl::OptionCategory* VisibleCategories[] = { &SearchOptions, &FiltersOptions, &OutputOptions
-		};
-
 		////////////////////////////////////////////////////////////////////////////////////////////////
-		// Setting DEFAULTS
+		// CLI11 Command Line Parsing (replaces LLVM CommandLine)
 		////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////////////////////////////////////////////////////////////////////////////////
-		const std::string default_searchPath       = "*";
-		const std::string default_file_extention   = "*";
-		//const std::string default_output_file    = "uffs.csv";
-		const std::string default_output_file      = "console";
-		const std::string default_separator        = ",";
-		const std::string default_positive         = "1";
-		const std::string default_negative         = "0";
-		const std::string default_quote            = "\"";
-		const int default_columns                  = static_cast<File_Attributes> (static_cast<int> (File_Attributes::path) | static_cast<int> (File_Attributes::name));
-		//const File_Attributes default_columns    = path      ;
-		////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////////////////////////////////////////////////////////////////////////////////
-		////////////////////////////////////////////////////////////////////////////////////////////////
+		CommandLineParser parser(ws2s(diskdrives));
+		int parseResult = parser.parse(new_argc, new_argv);
+		if (parseResult != 0) {
+			return parseResult;
+		}
 
-		static std::string temp_string0, temp_string1, temp_string2, temp_string3, temp_string4, temp_string5, temp_string6, temp_string7, temp_string8, temp_string;
+		const auto& opts = parser.options();
 
-		static cl::opt<bool> Help("h", cl::desc("Alias for -help"), cl::Hidden);
-		//static cl::list<std::string > searchPath(cl::Positional, cl::CommaSeparated, cl::desc("  <<< One or more search paths. E.g. 'C:/' or 'C:/Prog*, D:/' >>>"), cl::OneOrMore, cl::Required, cl::cat(SearchOptions));
-		static cl::opt<std::string > searchPath(cl::Positional, cl::desc("  <<< Search path. E.g. 'C:/' or 'C:/Prog*' >>>"), cl::cat(SearchOptions));	//, cl::init(default_searchPath)
+		// If help was requested, exit successfully
+		if (opts.helpRequested) {
+			return 0;
+		}
 
-		temp_string0 = "Disk Drive(s) to search e.g. 'C:, D:' or any combination of (" + diskdrives + ")\nDEFAULT: all disk drives";
-		static cl::list<std::string > drives("drives", cl::CommaSeparated, cl::desc(temp_string0), cl::ZeroOrMore, cl::cat(SearchOptions));
+		// Map options to local variables for minimal code changes
+		std::string searchPathCopy = opts.searchPath;
+		bool header = opts.includeHeader;
+		std::string OutputFilename = opts.outputFilename;
+		std::string quotes = opts.quotes;
+		std::string separator = opts.separator;
+		std::string positive = opts.positiveMarker;
+		std::string negative = opts.negativeMarker;
+		uint32_t output_columns_flags = opts.columnFlags;
+		bool columnsSpecified = opts.columnsSpecified;
 
-		static cl::list<std::string > extentions("ext", cl::CommaSeparated, cl::desc("File extentions e.g. '--ext=pys' or '--ext=pdf,doc'"), cl::ZeroOrMore, cl::cat(FiltersOptions));
-
-		//temp_string1 = "Specify output filename\t\t\t\t\t\t\t\tDEFAULT: console";
-		temp_string1 = "Specify output filename\tDEFAULT: console";
-		static cl::opt<std::string > OutputFilename("out", cl::desc(temp_string1), cl::value_desc("string"), cl::cat(OutputOptions));
-
-		//temp_string2 = "Include column header\t\t\t\t\t\t\t\tDEFAULT: True";
-		temp_string2 = "Include column header\tDEFAULT: True";
-		static cl::opt<bool> header("header", cl::desc(temp_string2), cl::value_desc("bool"), cl::init(true), cl::cat(OutputOptions));
-
-		//temp_string3 = "Char / String to enclose outputvalues in e.g.<'> or<\"> or '--quotes=-*-' etc. \tDEFAULT: " + default_quote;
-		temp_string3 = "Char / String to enclose outputvalues in e.g.<'> or<\"> or '--quotes=-*-' etc. \tDEFAULT: " + default_quote;
-		static cl::opt<std::string > quotes("quotes", cl::desc(temp_string3), cl::value_desc("string"), cl::init(default_quote), cl::cat(OutputOptions), cl::Hidden);
-
-		//temp_string4 = "Column separator\t\t\t\t\t\t\t\t\tDEFAULT: " + default_separator;
-		temp_string4 = "Column separator\t\tDEFAULT: " + default_separator;
-		static cl::opt<std::string > separator("sep", cl::desc(temp_string4), cl::value_desc("string"), cl::init(default_separator), cl::cat(OutputOptions));
-
-		//temp_string5 = "Marker for BOOLEAN attributes e.g. '1' or '+' or '--pos=plus' etc. \t\tDEFAULT: " + default_positive;
-		temp_string5 = "Marker for BOOLEAN attributes e.g. '1' or '+' or '--pos=plus' etc. \t\tDEFAULT: " + default_positive;
-		static cl::opt<std::string > positive("pos", cl::desc(temp_string5), cl::value_desc("string"), cl::init(default_positive), cl::cat(OutputOptions), cl::Hidden);
-
-		//temp_string6 = "Marker for BOOLEAN attributes e.g. '1' or '+' or '--neg=minus' etc. \t\tDEFAULT: " + default_negative;
-		temp_string6 = "Marker for BOOLEAN attributes e.g. '1' or '+' or '--neg=minus' etc. \t\tDEFAULT: " + default_negative;
-		static cl::opt<std::string > negative("neg", cl::desc(temp_string6), cl::value_desc("string"), cl::init(default_negative), cl::cat(OutputOptions), cl::Hidden);
-
-		//temp_string7 = "Switch CASE sensitivity ON or OFF \t\t\t\t\tDEFAULT: False";
-		temp_string7 = "Switch CASE sensitivity ON or OFF \t\t\t\t\tDEFAULT: False";
-		static cl::opt<bool> casepat("case", cl::desc(temp_string7), cl::value_desc("bool"), cl::init(false), cl::cat(FiltersOptions), cl::ReallyHidden);
-
-		//temp_string8 = "Bypass User Access Control (UAC) \t\t\tDEFAULT: False";
-		temp_string8 = "Bypass User Access Control (UAC) \t\t\tDEFAULT: False";
-		static cl::opt<bool> uac("pass", cl::desc(temp_string8), cl::value_desc("bool"), cl::init(false), cl::cat(FiltersOptions), cl::ReallyHidden);
-
-		// Raw MFT dump option (UFFS-MFT format)
-		static cl::opt<std::string> dumpMftDrive("dump-mft",
-			cl::desc("Dump raw MFT to file in UFFS-MFT format. Usage: --dump-mft=<drive_letter> --dump-mft-out=<output_file>"),
-			cl::value_desc("drive_letter"),
-			cl::cat(OutputOptions));
-
-		static cl::opt<std::string> dumpMftOutput("dump-mft-out",
-			cl::desc("Output file path for raw MFT dump"),
-			cl::value_desc("file_path"),
-			cl::init("mft_dump.raw"),
-			cl::cat(OutputOptions));
-
-		// MFT extent diagnostic options
-		static cl::opt<std::string> dumpExtentsDrive("dump-extents",
-			cl::desc("Dump MFT extent map as JSON. Usage: --dump-extents=<drive_letter>"),
-			cl::value_desc("drive_letter"),
-			cl::cat(OutputOptions));
-
-		static cl::opt<std::string> dumpExtentsOutput("dump-extents-out",
-			cl::desc("Output file path for MFT extent JSON (default: stdout)"),
-			cl::value_desc("file_path"),
-			cl::init(""),
-			cl::cat(OutputOptions));
-
-		static cl::opt<bool> dumpExtentsVerify("verify",
-			cl::desc("Verify extent mapping by reading first record from each extent"),
-			cl::init(false),
-			cl::cat(OutputOptions));
-
-		// MFT read benchmark option
-		static cl::opt<std::string> benchmarkMftDrive("benchmark-mft",
-			cl::desc("Benchmark MFT read speed (read-only, no output). Usage: --benchmark-mft=<drive_letter>"),
-			cl::value_desc("drive_letter"),
-			cl::cat(OutputOptions));
-
-		// Index build benchmark option
-		static cl::opt<std::string> benchmarkIndexDrive("benchmark-index",
-			cl::desc("Benchmark full index build (async I/O + parsing). Usage: --benchmark-index=<drive_letter>"),
-			cl::value_desc("drive_letter"),
-			cl::cat(OutputOptions));
-
-		//cl::AddExtraVersionPrinter(PrintVersion);
-
-		static cl::bits<File_Attributes> output_columns("columns",
-			cl::desc("OUTPUT Value-columns: e.g. '--columns=name,path,size,r,h,s' "),
-			cl::values(clEnumVal(all,     "All columns will be put out."),
-				clEnumVal(path,           "File or Directory PATH incl. FILENAME."),
-				clEnumVal(name,           "File or Directory NAME."),
-				clEnumVal(pathonly,       "File or Directory PATH ONLY."),
-				clEnumVal(type,           "File Type."),
-				clEnumVal(size,           "Actual size of the file."),
-				clEnumVal(sizeondisk,     "Space used on disk."),
-				clEnumVal(created,        "The time the file was created."),
-				clEnumVal(written,        "The time the file was last written or truncated."),
-				clEnumVal(accessed,       "The time the file was last accessed."),
-				clEnumVal(decendents,     "Number of files / dir starting from path incl. subdirectories."),
-				clEnumVal(r,              "Read - only file attribute."),
-				clEnumVal(a,              "Archive file attribute."),
-				clEnumVal(s,              "System file attribute."),
-				clEnumVal(h,              "Hidden file attribute."),
-				clEnumVal(o,              "Offline attribute."),
-				clEnumVal(notcontent,     "Not content indexed file attribute."),
-				clEnumVal(noscrub,        "No scrub file attribute."),
-				clEnumVal(integrity,      "Integrity attribute."),
-				clEnumVal(pinned,         "Pinned attribute."),
-				clEnumVal(unpinned,       "Unpinned attribute."),
-				clEnumVal(directory,      "Is a directory folder."),
-				clEnumVal(compressed,     "Is compressed."),
-				clEnumVal(encrypted,      "Is encrypted."),
-				clEnumVal(sparse,         "Is sparse."),
-				clEnumVal(reparse,        "Is a reparse point."),
-				clEnumVal(attributevalue, "Number representing the condensed file attributes")
-
-			),
-			cl::ZeroOrMore,
-			cl::CommaSeparated,
-			cl::cat(OutputOptions)
-		);
-
-		// if (output_columns.getNumOccurrences() == 0)  output_columns.setValueStr("path");
-
-		cl::SetVersionPrinter(PrintVersion);
-
-		StringMap<cl::Option*>& Map = cl::getRegisteredOptions();
-
-		//Change --help-list description &hide
-		assert(Map.count("help-list") > 0);
-		Map["help-list"]->setDescription("Display list of available options");
-		Map["help-list"]->setHiddenFlag(cl::Hidden);
-
-		//Change --print-options ==> REALLY hide
-		assert(Map.count("print-options") > 0);
-		Map["print-options"]->setHiddenFlag(cl::ReallyHidden);
-
-		//Change --print-all-options ==> REALLY hide
-		assert(Map.count("print-all-options") > 0);
-		Map["print-all-options"]->setHiddenFlag(cl::ReallyHidden);
-
-		//Change --help-list-hidden ==> REALLY hide
-		assert(Map.count("help-list-hidden") > 0);
-		Map["help-list-hidden"]->setHiddenFlag(cl::ReallyHidden);
-
-		//Change --help-hidden ==> REALLY hide
-		assert(Map.count("help-hidden") > 0);
-		Map["help-hidden"]->setHiddenFlag(cl::ReallyHidden);
-
-		//Hide an option we don't want to see
-		assert(Map.count("color") > 0);
-		Map["color"]->setHiddenFlag(cl::ReallyHidden);
-
-		//Change --help description
-		assert(Map.count("help") > 0);
-		Map["help"]->setDescription("Display available options");
-
-		// Mark all our options with this category, everything else (except for -version
-		// and -help) will be hidden.
-		cl::HideUnrelatedOptions(makeArrayRef(VisibleCategories));
+		// Create a vector reference for drives and extensions
+		const std::vector<std::string>& drives = opts.drives;
+		const std::vector<std::string>& extentions = opts.extensions;
 
 		OS << "\n";
 
-		llvm::cl::ParseCommandLineOptions(new_argc, new_argv, "\n\t\tLocate files and folders by name instantly.\n\n"
-			"\t\tUltra Fast File Search is a very fast file search utility \n"
-			"\t\tthat can find files on your hard drive almost instantly. \n"
-			"\t\tThe entire file system can be quickly sorted by name, size \n"
-			"\t\tor date.Ultra Fast File Search supports all types of hard \n"
-			"\t\tdrives, hard drive folders and network shares\n\n");
-
 		// Handle --dump-mft option (raw MFT dump in UFFS-MFT format)
-		if (dumpMftDrive.getNumOccurrences() > 0) {
-			std::string drive_str = dumpMftDrive.getValue();
-			if (drive_str.empty()) {
-				OS << "ERROR: --dump-mft requires a drive letter (e.g., --dump-mft=C)\n";
-				return ERROR_BAD_ARGUMENTS;
-			}
-			char drive_letter = drive_str[0];
+		if (!opts.dumpMftDrive.empty()) {
+			char drive_letter = opts.dumpMftDrive[0];
 			if (!isalpha(drive_letter)) {
-				OS << "ERROR: Invalid drive letter: " << drive_str << "\n";
+				OS << "ERROR: Invalid drive letter: " << opts.dumpMftDrive << "\n";
 				return ERROR_BAD_ARGUMENTS;
 			}
-			std::string output_file = dumpMftOutput.getValue();
-			return dump_raw_mft(drive_letter, output_file.c_str(), OS);
+			return dump_raw_mft(drive_letter, opts.dumpMftOutput.c_str(), OS);
 		}
 
 		// Handle --dump-extents option (MFT extent diagnostic tool)
-		if (dumpExtentsDrive.getNumOccurrences() > 0) {
-			std::string drive_str = dumpExtentsDrive.getValue();
-			if (drive_str.empty()) {
-				OS << "ERROR: --dump-extents requires a drive letter (e.g., --dump-extents=F)\n";
-				return ERROR_BAD_ARGUMENTS;
-			}
-			char drive_letter = drive_str[0];
+		if (!opts.dumpExtentsDrive.empty()) {
+			char drive_letter = opts.dumpExtentsDrive[0];
 			if (!isalpha(drive_letter)) {
-				OS << "ERROR: Invalid drive letter: " << drive_str << "\n";
+				OS << "ERROR: Invalid drive letter: " << opts.dumpExtentsDrive << "\n";
 				return ERROR_BAD_ARGUMENTS;
 			}
-			std::string output_file = dumpExtentsOutput.getValue();
-			bool verify = dumpExtentsVerify.getValue();
-			return dump_mft_extents(drive_letter, output_file.c_str(), verify, OS);
+			return dump_mft_extents(drive_letter, opts.dumpExtentsOutput.c_str(), opts.verifyExtents, OS);
 		}
 
 		// Handle --benchmark-mft option (MFT read speed benchmark)
-		if (benchmarkMftDrive.getNumOccurrences() > 0) {
-			std::string drive_str = benchmarkMftDrive.getValue();
-			if (drive_str.empty()) {
-				OS << "ERROR: --benchmark-mft requires a drive letter (e.g., --benchmark-mft=C)\n";
-				return ERROR_BAD_ARGUMENTS;
-			}
-			char drive_letter = drive_str[0];
+		if (!opts.benchmarkMftDrive.empty()) {
+			char drive_letter = opts.benchmarkMftDrive[0];
 			if (!isalpha(drive_letter)) {
-				OS << "ERROR: Invalid drive letter: " << drive_str << "\n";
+				OS << "ERROR: Invalid drive letter: " << opts.benchmarkMftDrive << "\n";
 				return ERROR_BAD_ARGUMENTS;
 			}
 			return benchmark_mft_read(drive_letter, OS);
 		}
 
 		// Handle --benchmark-index option (full index build benchmark)
-		if (benchmarkIndexDrive.getNumOccurrences() > 0) {
-			std::string drive_str = benchmarkIndexDrive.getValue();
-			if (drive_str.empty()) {
-				OS << "ERROR: --benchmark-index requires a drive letter (e.g., --benchmark-index=C)\n";
-				return ERROR_BAD_ARGUMENTS;
-			}
-			char drive_letter = drive_str[0];
+		if (!opts.benchmarkIndexDrive.empty()) {
+			char drive_letter = opts.benchmarkIndexDrive[0];
 			if (!isalpha(drive_letter)) {
-				OS << "ERROR: Invalid drive letter: " << drive_str << "\n";
+				OS << "ERROR: Invalid drive letter: " << opts.benchmarkIndexDrive << "\n";
 				return ERROR_BAD_ARGUMENTS;
 			}
 			return benchmark_index_build(drive_letter, OS);
 		}
 
-		//OS << "\n Done reading arguments \n";
-
-		//OS << "2\n";
-
 		HANDLE outHandle = 0;
 
-		if (OutputFilename.getNumOccurrences() == 0) OutputFilename.setValue(default_output_file);
-
-		else if (OutputFilename.compare("f") == 0) OutputFilename.setValue("uffs.csv");
+		// Handle output filename defaults
+		if (OutputFilename.empty() || OutputFilename == "console") {
+			OutputFilename = "console";
+		} else if (OutputFilename == "f") {
+			OutputFilename = "uffs.csv";
+		}
 
 		static
-			const bool console = (OutputFilename.compare("console") == 0 || OutputFilename.compare("con") == 0 || OutputFilename.compare("terminal") == 0 || OutputFilename.compare("term") == 0);
+			const bool console = (OutputFilename == "console" || OutputFilename == "con" || OutputFilename == "terminal" || OutputFilename == "term");
 
 		SetLastError(0);
 
-		if ((OutputFilename.getNumOccurrences() > 0 && !console) || (output_columns.getNumOccurrences() == 0))	//&OutputFilename.ValueStr == true)
+		if ((opts.outputSpecified && !console) || (!columnsSpecified))	//&OutputFilename.ValueStr == true)
 		{
 			outHandle = CreateFileA((LPCSTR)OutputFilename.c_str(),	//argv[1],    	// name of the write	//(L"uffs.csv")
 				GENERIC_WRITE,	// open for writing
@@ -13222,7 +13026,7 @@ int main(int argc, char* argv[])
 			return err;
 		};
 
-		std::string searchPathCopy = searchPath;	//.ValueStr();
+		// searchPathCopy already defined above from opts.searchPath
 
 		std::tvstring laufwerke;
 		std::tvstring tvtemp;
@@ -13233,11 +13037,13 @@ int main(int argc, char* argv[])
 		std::filesystem::path tempath;
 		static char driveletter = '\0';
 		std::string searchsubstring = "";
-		searchPathCopy[0] == '>' ? searchsubstring = searchPathCopy.substr(1, 4) : searchsubstring = searchPathCopy.substr(0, 3);
+		if (!searchPathCopy.empty()) {
+			searchPathCopy[0] == '>' ? searchsubstring = searchPathCopy.substr(1, 4) : searchsubstring = searchPathCopy.substr(0, 3);
+		}
 		boost::to_upper(searchsubstring);
-		static char s1 = searchsubstring[0];
-		static char s2 = searchsubstring[1];
-		static char s3 = searchsubstring[2];
+		static char s1 = searchsubstring.size() > 0 ? searchsubstring[0] : '\0';
+		static char s2 = searchsubstring.size() > 1 ? searchsubstring[1] : '\0';
+		static char s3 = searchsubstring.size() > 2 ? searchsubstring[2] : '\0';
 		static char searchdrive = '\0';
 		static bool drivematch = false;
 		if (s1 == '>' && s3 == ':') searchdrive = s2;
@@ -13248,10 +13054,6 @@ int main(int argc, char* argv[])
 			searchdrivestr = searchdrive;
 			searchdrivestr += ":";
 			gotdrives = 1;
-			//if (s1 != '>')
-			//{
-			//	searchPathCopy.setValue(searchPathCopy.substr(2, (searchPathCopy.size() - 2 - 1)));
-			//}
 		}
 
 		//OS << "searchPathCopy =" << searchPathCopy << "\n\n";
@@ -13260,27 +13062,39 @@ int main(int argc, char* argv[])
 		tvtemp = tempath.c_str();
 		laufwerke += tvtemp;
 
-		if (drives.getNumOccurrences() > 0 && searchdrive == '\0')
-		{
-			if (!drives.ValueStr.contains("*"))
-			{
-				const size_t zahl = drives.size();
+		// Create a mutable copy of drives for processing
+		std::vector<std::string> drivesCopy = drives;
 
-				for (size_t i = 0, e = drives.size(); i != e; ++i)
+		if (!drivesCopy.empty() && searchdrive == '\0')
+		{
+			// Check if any drive is "*"
+			bool hasWildcard = false;
+			for (const auto& d : drivesCopy) {
+				if (d.find('*') != std::string::npos) {
+					hasWildcard = true;
+					break;
+				}
+			}
+
+			if (!hasWildcard)
+			{
+				const size_t zahl = drivesCopy.size();
+
+				for (size_t i = 0, e = drivesCopy.size(); i != e; ++i)
 				{
-					replaceAll(drives[i], "\\", "");
-					replaceAll(drives[i], ":", "");
-					replaceAll(drives[i], "|", "");
-					boost::to_upper(drives[i]);
-					driveletter = drives[i][0];
+					replaceAll(drivesCopy[i], "\\", "");
+					replaceAll(drivesCopy[i], ":", "");
+					replaceAll(drivesCopy[i], "|", "");
+					boost::to_upper(drivesCopy[i]);
+					driveletter = drivesCopy[i][0];
 					if (diskdrives.find(driveletter) != std::tvstring::npos)
 					{
 						if (i < (e - 1))
-							drives[i] += ":|";
+							drivesCopy[i] += ":|";
 						else
-							drives[i] += ":";
+							drivesCopy[i] += ":";
 
-						tempath = drives[i];
+						tempath = drivesCopy[i];
 						tvtemp = tempath.c_str();
 						laufwerke += tvtemp;
 						gotdrives += 1;
@@ -13288,12 +13102,12 @@ int main(int argc, char* argv[])
 					else
 					{
 						OS << "\n\n";
-						OS << "\tInvalid DRIVE LETTER:\t" + drives[i];
+						OS << "\tInvalid DRIVE LETTER:\t" + drivesCopy[i];
 						OS << "\n\n";
 						exit(-13);
 					}
 
-					//OS << drives[i];
+					//OS << drivesCopy[i];
 				}
 
 				//OS << '\n';
@@ -13316,12 +13130,12 @@ int main(int argc, char* argv[])
 		static std::string tempathstr = "";
 
 		// Normalize / correct any path string
-		if (searchPathCopy[0] != '>')
+		if (!searchPathCopy.empty() && searchPathCopy[0] != '>')
 		{
 			// check if we need to UPPER the first letter
-			if (searchPathCopy[1] == ':')
+			if (searchPathCopy.size() > 1 && searchPathCopy[1] == ':')
 			{
-				//gotdrives += 1; 
+				//gotdrives += 1;
 				searchPathCopy[0] = char(toupper(searchPathCopy[0]));
 				//laufwerke = s2ws(searchPathCopy.substr(0, 2)).c_str();
 				//tempathstr = searchPathCopy.substr(2, searchPathCopy.size());
@@ -13329,7 +13143,7 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				if (drives.getNumOccurrences() == 1) searchPathCopy = std::string(laufwerke.begin(), laufwerke.end()) + searchPathCopy;
+				if (drivesCopy.size() == 1) searchPathCopy = std::string(laufwerke.begin(), laufwerke.end()) + searchPathCopy;
 			}
 
 			std::filesystem::path tempath = searchPathCopy;
@@ -13340,7 +13154,7 @@ int main(int argc, char* argv[])
 				exten = tempath.extension().generic_string();
 			};
 
-			if (extentions.getNumOccurrences() > 0)
+			if (!extentions.empty())
 			{
 				exten.empty() ? endung = extopen : endung = extopen + +"\\" + exten + extsep;
 
@@ -13765,7 +13579,7 @@ int main(int argc, char* argv[])
 								matchop.matcher.is_match(path_begin, name_length, phigh_water_mark);
 							if (match)
 							{
-								if ((output_columns.isSet(all)) || (output_columns.getNumOccurrences() == 0))
+								if ((output_columns_flags & COL_ALL) || (!columnsSpecified))
 								{
 									if (header)
 									{
@@ -13881,127 +13695,127 @@ int main(int argc, char* argv[])
 								{
 									if (header)
 									{
-										if (output_columns.isSet(path))
+										if (output_columns_flags & COL_PATH)
 										{
 											line_buffer += quote + PathN        + quote + sep;
 										}
 
-										if (output_columns.isSet(name))
+										if (output_columns_flags & COL_NAME)
 										{
 											line_buffer += quote + NameN        + quote + sep;
 										}
 
-										if (output_columns.isSet(pathonly))
+										if (output_columns_flags & COL_PATHONLY)
 										{
 											line_buffer += quote + PathonlyN    + quote + sep;
 										}
 
-										if (output_columns.isSet(size))
+										if (output_columns_flags & COL_SIZE)
 										{
 											line_buffer += quote + SizeN        + quote + sep;
 										}
 
-										if (output_columns.isSet(sizeondisk))
+										if (output_columns_flags & COL_SIZEONDISK)
 										{
 											line_buffer += quote + SizeondiskN  + quote + sep;
 										}
 
-										if (output_columns.isSet(created))
+										if (output_columns_flags & COL_CREATED)
 										{
 											line_buffer += quote + CreatedN     + quote + sep;
 										}
 
-										if (output_columns.isSet(written))
+										if (output_columns_flags & COL_WRITTEN)
 										{
 											line_buffer += quote + writtenN     + quote + sep;
 										}
 
-										if (output_columns.isSet(accessed))
+										if (output_columns_flags & COL_ACCESSED)
 										{
 											line_buffer += quote + AccessedN    + quote + sep;
 										}
 
-										if (output_columns.isSet(decendents))
+										if (output_columns_flags & COL_DECENDENTS)
 										{
 											line_buffer += quote + DescendantsN + quote + sep;
 										}
 
-										if (output_columns.isSet(r))
+										if (output_columns_flags & COL_R)
 										{
 											line_buffer += quote + ReadonlyN    + quote + sep;
 										}
 
-										if (output_columns.isSet(a))
+										if (output_columns_flags & COL_A)
 										{
 											line_buffer += quote + ArchiveN     + quote + sep;
 										}
 
-										if (output_columns.isSet(s))
+										if (output_columns_flags & COL_S)
 										{
 											line_buffer += quote + SystemN      + quote + sep;
 										}
 
-										if (output_columns.isSet(h))
+										if (output_columns_flags & COL_H)
 										{
 											line_buffer += quote + HiddenN      + quote + sep;
 										}
 
-										if (output_columns.isSet(o))
+										if (output_columns_flags & COL_O)
 										{
 											line_buffer += quote + OfflineN     + quote + sep;
 										}
 
-										if (output_columns.isSet(notcontent))
+										if (output_columns_flags & COL_NOTCONTENT)
 										{
 											line_buffer += quote + NotcontentN  + quote + sep;
 										}
 
-										if (output_columns.isSet(noscrub))
+										if (output_columns_flags & COL_NOSCRUB)
 										{
 											line_buffer += quote + NoscrubN     + quote + sep;
 										}
 
-										if (output_columns.isSet(integrity))
+										if (output_columns_flags & COL_INTEGRITY)
 										{
 											line_buffer += quote + IntegrityN   + quote + sep;
 										}
 
-										if (output_columns.isSet(pinned))
+										if (output_columns_flags & COL_PINNED)
 										{
 											line_buffer += quote + PinnedN      + quote + sep;
 										}
 
-										if (output_columns.isSet(unpinned))
+										if (output_columns_flags & COL_UNPINNED)
 										{
 											line_buffer += quote + UnpinnedN    + quote + sep;
 										}
 
-										if (output_columns.isSet(directory))
+										if (output_columns_flags & COL_DIRECTORY)
 										{
 											line_buffer += quote + DirectoryN   + quote + sep;
 										}
 
-										if (output_columns.isSet(compressed))
+										if (output_columns_flags & COL_COMPRESSED)
 										{
 											line_buffer += quote + CompressedN  + quote + sep;
 										}
 
-										if (output_columns.isSet(encrypted))
+										if (output_columns_flags & COL_ENCRYPTED)
 										{
 											line_buffer += quote + EncryptedN   + quote + sep;
 										}
 
-										if (output_columns.isSet(sparse))
+										if (output_columns_flags & COL_SPARSE)
 										{
 											line_buffer += quote + SparseN      + quote + sep;
 										}
 
-										if (output_columns.isSet(reparse))
+										if (output_columns_flags & COL_REPARSE)
 										{
 											line_buffer += quote + ReparseN     + quote + sep;
 										}
 
-										if (output_columns.isSet(attributevalue))
+										if (output_columns_flags & COL_ATTRVALUE)
 										{
 											line_buffer += quote + AttributesN  + quote + sep;
 										}
@@ -14023,21 +13837,21 @@ int main(int argc, char* argv[])
 									pathonlystr = pathstr;
 									pathonlystr.resize(pathstr.size() - namestr.size());
 
-									if (output_columns.isSet(path))
+									if (output_columns_flags & COL_PATH)
 									{
 										line_buffer += quote + root_path;
 										line_buffer += pathstr;
 										line_buffer += quote + sep;
-									}	//path 
+									}	//path
 
-									if (output_columns.isSet(name))
+									if (output_columns_flags & COL_NAME)
 									{
 										line_buffer += quote;
 										line_buffer += namestr;
 										line_buffer += quote + sep;
-									}	//name 
+									}	//name
 
-									if (output_columns.isSet(pathonly))
+									if (output_columns_flags & COL_PATHONLY)
 									{
 										line_buffer += quote + root_path;
 										line_buffer += pathonlystr;
@@ -14046,13 +13860,13 @@ int main(int argc, char* argv[])
 
 									NtfsIndex::size_info
 										const& sizeinfo = i->get_sizes(key);
-									if (output_columns.isSet(size))
+									if (output_columns_flags & COL_SIZE)
 									{
 										line_buffer += nformat(sizeinfo.length);
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(sizeondisk))
+									if (output_columns_flags & COL_SIZEONDISK)
 									{
 										line_buffer += nformat(sizeinfo.allocated);
 										line_buffer += sep;
@@ -14061,121 +13875,121 @@ int main(int argc, char* argv[])
 									NtfsIndex::standard_info
 										const& stdinfo = i->get_stdinfo(key.frs());
 									/* File attribute abbreviations: https://en.wikipedia.org/wiki/File_attribute#Types */
-									if (output_columns.isSet(created))
+									if (output_columns_flags & COL_CREATED)
 									{
 										CMainDlg::SystemTimeToStringImpl(stdinfo.created, line_buffer, true, true, time_zone_bias, lcid);
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(written))
+									if (output_columns_flags & COL_WRITTEN)
 									{
 										CMainDlg::SystemTimeToStringImpl(stdinfo.written, line_buffer, true, true, time_zone_bias, lcid);
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(accessed))
+									if (output_columns_flags & COL_ACCESSED)
 									{
 										CMainDlg::SystemTimeToStringImpl(stdinfo.accessed, line_buffer, true, true, time_zone_bias, lcid);
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(decendents))
+									if (output_columns_flags & COL_DECENDENTS)
 									{
 										line_buffer += nformat(static_cast<unsigned int> (sizeinfo.treesize));
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(r))
+									if (output_columns_flags & COL_R)
 									{
 										(stdinfo.is_readonly        > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(a))
+									if (output_columns_flags & COL_A)
 									{
 										(stdinfo.is_archive         > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(s))
+									if (output_columns_flags & COL_S)
 									{
 										(stdinfo.is_system          > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(h))
+									if (output_columns_flags & COL_H)
 									{
 										(stdinfo.is_hidden          > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(o))
+									if (output_columns_flags & COL_O)
 									{
 										(stdinfo.is_offline         > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(notcontent))
+									if (output_columns_flags & COL_NOTCONTENT)
 									{
 										(stdinfo.is_notcontentidx   > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(noscrub))
+									if (output_columns_flags & COL_NOSCRUB)
 									{
 										(stdinfo.is_noscrubdata     > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(integrity))
+									if (output_columns_flags & COL_INTEGRITY)
 									{
 										(stdinfo.is_integretystream > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(pinned))
+									if (output_columns_flags & COL_PINNED)
 									{
 										(stdinfo.is_pinned          > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(unpinned))
+									if (output_columns_flags & COL_UNPINNED)
 									{
 										(stdinfo.is_unpinned        > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(directory))
+									if (output_columns_flags & COL_DIRECTORY)
 									{
 										(stdinfo.is_directory       > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(compressed))
+									if (output_columns_flags & COL_COMPRESSED)
 									{
 										(stdinfo.is_compressed      > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(encrypted))
+									if (output_columns_flags & COL_ENCRYPTED)
 									{
 										(stdinfo.is_encrypted       > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(sparse))
+									if (output_columns_flags & COL_SPARSE)
 									{
 										(stdinfo.is_sparsefile      > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(reparse))
+									if (output_columns_flags & COL_REPARSE)
 									{
 										(stdinfo.is_reparsepoint    > 0) ? line_buffer += pos : line_buffer += neg;
 										line_buffer += sep;
 									}
 
-									if (output_columns.isSet(attributevalue))
+									if (output_columns_flags & COL_ATTRVALUE)
 									{
 										line_buffer += nformat(stdinfo.attributes());
 										line_buffer += sep;
