@@ -209,7 +209,17 @@ extern WTL::CAppModule _Module;
 #include <atlctrls.h>
 #include <atlctrlx.h>
 #include <atltheme.h>
+#include <atlstr.h>    // For ATL::CString
+#include <atltypes.h>  // For ATL::CRect, CSize, CPoint
 #pragma warning(pop)
+
+// WTL 10 compatibility: These types moved from WTL to ATL
+namespace WTL {
+    using CString = ATL::CString;
+    using CRect = ATL::CRect;
+    using CSize = ATL::CSize;
+    using CPoint = ATL::CPoint;
+}
 #endif
 
 #ifdef __clang__
