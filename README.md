@@ -412,55 +412,42 @@ The original source code was quite dense and challenging to understand, covering
 
 To improve the codebase, I have taken several steps. First, I cleaned up the source code, making it more readable and organized. Additionally, I added a Command Line Interface (CLI) wrapper around the tool, bringing it up to date with modern programming practices.
 
-Initially, I considered rewriting the entire project from scratch and updating all tools to their latest versions. However, after further consideration, I chose to port the project to the Rust programming language, which offers benefits in performance and safety. This Rust port will be implemented in the future.
+**Recent Update:** The CLI has been migrated from LLVM's command line library to [CLI11](https://github.com/CLIUtils/CLI11), a modern header-only C++ library. This significantly simplifies the build process by eliminating the LLVM dependency entirely.
+
+A Rust port of the MFT reader is also in development (see `mft-reader-rs/` directory).
 
 ### Tool Chain
 
-Setting up the toolchain to compile this code on your machine can be a bit challenging. Here are some steps to guide you through the process:
+Setting up the toolchain to compile this code on your machine is straightforward. Here are the steps:
 
-My current setup is based on VS2022
+**Requirements:**
+- Visual Studio 2022 with C++ Desktop Development workload
+- Windows 10 SDK (10.0 or later)
 
-Add these components to your VS installation:
+The project uses the **v145** platform toolset (VS2022 native). No legacy XP tooling is required.
 
-	Visual Studio INSTALLER:
+**Dependencies:**
 
-		Visual Studio VS2022 
+1. **WTL** (Windows Template Library) - Extract `WTL10_10320_Release.zip` from `Original Packages/` to `wtl/` in the repo root
+2. **Boost 1.90.0** - Download from https://www.boost.org/users/download/ (not included due to size ~250 MB)
+3. **CLI11** - Already included as `CLI11.hpp` in the source directory (no setup needed)
 
-			"C++ Windows XP Support for VS 2017 (v141) tools [Deprecated]"
-			"Microsoft.VisualStudio.Component.WinXP",
-			"Microsoft.VisualStudio.Component.VC.v141.ATL"
-			"Microsoft.VisualStudio.Component.Windows10SDK.19041",
-			"Microsoft.VisualStudio.Component.VC.v141.x86.x64",
+**Setup:**
 
-All tools are in the "Original Packages" folder
-	
-Download and install the WTL source (wtl-code-r636-trunk.zip) I put it @ "C:\uffs\wtl-code-r636-trunk"
+```
+# From the repo root:
+unzip "Original Packages/WTL10_10320_Release.zip" -d wtl
 
-Download BOOST (https://www.boost.org/users/history/version_1_90_0.html) extract and I put it here @ "C:\uffs\boost_1_90_0"
+# Download Boost separately and extract:
+unzip boost_1_90_0.zip -d .
+mv boost_1_90_0 boost
+```
 
-I am using LLVM support.lib (just in case you compiled your own version of LLVM):
+**Optional:** If you prefer to use your own Boost or WTL installations, set these environment variables:
+- `UFFS_BOOST` - path to Boost headers
+- `UFFS_WTL` - path to WTL Include folder
 
-	llvm-config --version ==>	11.0.0git
-
-UNZIP llvm\lib\Debug\LLVMSupport.zip   ==> llvm\lib\Debug\LLVMSupport.lib
-
-UNZIP llvm\lib\Release\LLVMSupport.zip ==> llvm\lib\Release\LLVMSupport.lib
-
-EDIT Project.props in source directory:
-
-	-----------------------------------------------------------------------------------------
-	<?xml version="1.0" encoding="utf-8"?>
-	<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	  <ImportGroup Label="PropertySheets" />
-	  <PropertyGroup Label="UserMacros" >
-	  <BOOST_ROOT>---insert BOOST root location ---\</BOOST_ROOT>
-		<XPDeprecationWarning>false</XPDeprecationWarning>
-		<IncludePath>--- insert location of WTL library ---wtl\Include;$(IncludePath)</IncludePath>
-	  </PropertyGroup>
-	  
-	-----------------------------------------------------------------------------------------
-
-Once you have the tool-chain in place you should just be able to compile the code.
+Once dependencies are in place, open `UltraFastFileSearch.sln` and build.
 
 ### Directory Tree of Files
 
@@ -477,52 +464,28 @@ C:\UFFS
 │       └───EXE
 │               uffs.exe
 │               uffs.exe.sha512
-├───llvm
-│   ├───build
-│   │   └───include
-│   ├───lib
-│   │   ├───Debug
-│   │   └───Release
-│   └───llvm
-│       └───include
+│
+├───boost                          <-- Download from boost.org and extract here
+│       (Boost headers)
+│
+├───wtl                            <-- Extract from Original Packages/WTL10_10320_Release.zip
+│   └───Include
+│           (WTL headers)
 │
 ├───Original Packages
-│       boost_1_90_0.7z
-│       llvm.zip
+│       BOOST_1_90_0_NOT_INCLUDED.txt   <-- Instructions for downloading Boost
 │       swiftsearch-code-4043bc-2023-03-24.zip
-│       wtl-code-r636-trunk.zip
+│       WTL10_10320_Release.zip
 │
 └───UltraFastFileSearch-code
-        BackgroundWorker.hpp
-        CDlgTemplate.hpp
-        Clang-Compile.bat
-        CModifiedDialogImpl.hpp
-        CxxFrameHandler.asm
-        file.cpp
-        MUIConfig.xml
-        nformat.hpp
-        NtUserCallHook.hpp
-        path.hpp
-        Performance.psess
+        CLI11.hpp                  <-- Header-only CLI library (no build required)
+        CommandLineParser.cpp
+        CommandLineParser.hpp
         Project.props
-        resource.h
-        Search Drive.ico
-        ShellItemIDList.hpp
-        stdafx.cpp
-        stdafx.h
-        string_matcher.cpp
-        string_matcher.hpp
-        targetver.h
-        The Manual.md
-        UltraFastFileSearch.aps
         UltraFastFileSearch.cpp
-        UltraFastFileSearch.js
-        UltraFastFileSearch.rc
         UltraFastFileSearch.sln
         UltraFastFileSearch.vcxproj
-        UltraFastFileSearch.vcxproj.filters
-        UltraFastFileSearch.vcxproj.user
-        WinDDKFixes.hpp
+        (other source files...)
 
 ```
 </pre>
