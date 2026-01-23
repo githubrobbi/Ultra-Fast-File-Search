@@ -12798,14 +12798,8 @@ int benchmark_index_build(char drive_letter, llvm::raw_ostream& OS)
     IoCompletionPort iocp;
     Handle closing_event;
 
-    // Check if volume opened successfully
-    if (!index->volume()) {
-        OS << "ERROR: Failed to open volume " << static_cast<char>(drive_letter) << ":\n";
-        OS << "Make sure you are running as Administrator and the volume is NTFS.\n";
-        return ERROR_OPEN_FAILED;
-    }
-
     // Post the read payload to start async indexing
+    // Note: Volume is opened by the payload's operator() when IOCP processes it
     typedef OverlappedNtfsMftReadPayload T;
     intrusive_ptr<T> payload(new T(iocp, index, closing_event));
     iocp.post(0, 0, payload);
@@ -12829,7 +12823,12 @@ int benchmark_index_build(char drive_letter, llvm::raw_ostream& OS)
     // Check for indexing errors
     unsigned int task_result = index->get_finished();
     if (task_result != 0) {
-        OS << "ERROR: Indexing failed with error " << task_result << "\n";
+        OS << "ERROR: Indexing failed with error code " << task_result << "\n";
+        if (task_result == ERROR_ACCESS_DENIED) {
+            OS << "Make sure you are running as Administrator.\n";
+        } else if (task_result == ERROR_UNRECOGNIZED_VOLUME) {
+            OS << "The volume is not NTFS formatted.\n";
+        }
         return static_cast<int>(task_result);
     }
 
