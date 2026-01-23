@@ -239,6 +239,9 @@
     <ClInclude Include="src\core\ntfs_types.hpp" />
     <ClInclude Include="src\util\handle.hpp" />
     <ClInclude Include="src\util\intrusive_ptr.hpp" />
+    <ClInclude Include="src\io\winnt_types.hpp" />
+    <ClInclude Include="src\io\io_priority.hpp" />
+    <ClInclude Include="src\io\overlapped.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
