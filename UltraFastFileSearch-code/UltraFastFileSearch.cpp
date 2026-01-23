@@ -117,6 +117,11 @@
 #include "ShellItemIDList.hpp"
 #include "string_matcher.hpp"
 #include "src/core/ntfs_types.hpp"
+#include "src/util/handle.hpp"
+// Note: intrusive_ptr.hpp not included - conflicts with existing RefCounted ADL functions
+#include "src/io/winnt_types.hpp"
+#include "src/io/io_priority.hpp"
+// Note: overlapped.hpp is documentation only - class not extracted yet
 
 namespace WTL
 {

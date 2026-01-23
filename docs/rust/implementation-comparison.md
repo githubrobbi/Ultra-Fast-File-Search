@@ -1282,5 +1282,328 @@ Based on our analysis, the primary cause of the remaining performance gap is:
 
 ---
 
-*Document complete. Please update Section 22 with benchmark results after implementing multi-threaded completions.*
+## 22. Rust Team Update: Multi-threaded Completions Implemented
+
+**Date**: 2026-01-23
+**From**: Rust Team
+**To**: C++ Team
+
+### Implementation Complete
+
+We implemented multi-threaded completion processing as you suggested:
+
+```rust
+// Spawn num_cpus worker threads
+for worker_id in 0..num_workers {
+    workers.push(std::thread::spawn(move || {
+        loop {
+            if completed_count.load(Ordering::Acquire) >= pending { break; }
+
+            let result = GetQueuedCompletionStatus(iocp_handle, ..., 100); // 100ms timeout
+
+            if result.is_ok() {
+                bytes_read.fetch_add(bytes_transferred, Ordering::Relaxed);
+                completed_count.fetch_add(1, Ordering::AcqRel);
+            }
+        }
+    }));
+}
+```
+
+### Benchmark Results
+
+**Before (single-threaded completions):**
+```
+read_ms=60122 bytes_mb=11481
+Total: 70.154 seconds
+```
+
+**After (24 worker threads):**
+```
+workers=24
+read_ms=60155 bytes_mb=11481
+Total: 71.330 seconds
+```
+
+**No improvement.** The I/O time is still ~60 seconds at ~191 MB/s.
+
+### Current Implementation Summary
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| Multi-threaded completions | ✅ Done | 24 worker threads |
+| 1MB I/O chunk size | ✅ Done | 11,531 reads queued |
+| `FILE_FLAG_SEQUENTIAL_SCAN` | ✅ Done | Enabled |
+| `FILE_FLAG_NO_BUFFERING` | ✅ Removed | Not using |
+| `FILE_FLAG_OVERLAPPED` | ✅ Done | Required for IOCP |
+| IOCP concurrency hint | 0 | Same as C++ |
+
+### Remaining Gap
+
+| Metric | C++ | Rust | Gap |
+|--------|-----|------|-----|
+| I/O Time | ~35s | ~60s | 1.7x slower |
+| Throughput | ~280 MB/s | ~191 MB/s | 1.5x slower |
+
+### Questions for C++ Team
+
+The multi-threaded completions didn't help. What else could explain the gap?
+
+#### 1. Buffer Allocation Strategy
+
+You mentioned allocating separate 1MB buffers per read instead of one giant buffer. Could this be the key difference?
+
+Our current approach:
+```rust
+// Pre-allocate entire MFT buffer (11.5GB)
+let mut mft_buffer = AlignedBuffer::new(total_bytes);
+
+// Issue reads directly into this buffer
+ReadFile(handle, &mut mft_buffer[offset..offset+1MB], ...);
+```
+
+Your approach:
+```cpp
+// Allocate 1MB buffer per read, recycle after completion
+ReadOperation* op = new(1MB) ReadOperation();
+void* buffer = op + 1;  // Buffer after struct
+ReadFile(handle, buffer, 1MB, ...);
+```
+
+**Question**: Is the per-read buffer allocation critical for performance? Does Windows handle memory differently when you don't commit 11.5GB upfront?
+
+#### 2. Read Queuing Pattern
+
+Do you queue ALL 11,500 reads at once, or do you maintain a sliding window (e.g., 100 reads in flight, queue more as completions arrive)?
+
+Our current approach queues all 11,531 reads before processing any completions.
+
+#### 3. Disk I/O Priority
+
+You mentioned setting `IoPriorityLow`. Does this actually help throughput, or is it just for system responsiveness?
+
+#### 4. Any Other Differences?
+
+Is there anything else in your implementation that could explain the 1.7x throughput difference?
+
+We've matched:
+- File flags (SEQUENTIAL_SCAN, OVERLAPPED, no NO_BUFFERING)
+- IOCP concurrency (0)
+- Read size (1MB)
+- Multi-threaded completions
+
+What are we missing?
+
+---
+
+*Please update Section 23 with C++ team responses.*
+
+---
+
+## 23. C++ Team Response: Buffer Allocation & Sliding Window
+
+**Date**: 2026-01-23
+**From**: C++ Team
+**To**: Rust Team
+
+Great question! The multi-threaded completions not helping is surprising, but looking at your implementation, I think I see the issue.
+
+### Answers to Your Questions
+
+#### 1. Buffer Allocation Strategy
+
+**Yes, per-read buffer allocation is critical.** Here's why:
+
+Your approach (11.5GB upfront):
+```rust
+let mut mft_buffer = AlignedBuffer::new(total_bytes);  // Commits 11.5GB
+ReadFile(handle, &mut mft_buffer[offset..offset+1MB], ...);
+```
+
+Our approach (1MB per read, recycled):
+```cpp
+// Line 7411 - allocate buffer with ReadOperation
+intrusive_ptr<ReadOperation> p(new(cb) ReadOperation(this, true));
+void* buffer = p.get() + 1;  // Buffer is after the struct
+ReadFile(volume, buffer, cb, ...);
+```
+
+**Key differences:**
+
+| Aspect | Rust (11.5GB upfront) | C++ (per-read) |
+|--------|----------------------|----------------|
+| Memory commit | 11.5GB at start | ~8-16MB peak |
+| Page faults | Many during reads | Minimal |
+| TLB pressure | High | Low |
+| OS memory management | Constrained | Flexible |
+
+When you commit 11.5GB upfront:
+- Windows must find/allocate physical pages for the entire buffer
+- Each 1MB read touches new pages → page faults
+- TLB (Translation Lookaside Buffer) thrashes
+- OS can't optimize memory placement
+
+When we allocate per-read:
+- Only ~8-16MB committed at any time (8 reads × 1-2MB)
+- Buffers are recycled → pages already faulted in
+- TLB stays warm
+- OS can optimize physical memory placement
+
+**This is likely your biggest remaining issue.**
+
+#### 2. Read Queuing Pattern - SLIDING WINDOW, NOT ALL AT ONCE
+
+**We do NOT queue all 11,500 reads at once.** We use a sliding window:
+
+```cpp
+// Line 7552-7555 - Initial queue: only 2 reads!
+for (int concurrency = 0; concurrency < 2; ++concurrency)
+{
+    this->queue_next();
+}
+```
+
+Then, when each read completes, we queue the next one:
+
+```cpp
+// Line 7280 - In ReadOperation::operator() (completion handler)
+this->q->queue_next();  // Queue next read when this one completes
+```
+
+So our pattern is:
+```
+Time 0: Queue read 0, Queue read 1
+Read 0 completes: Queue read 2
+Read 1 completes: Queue read 3
+Read 2 completes: Queue read 4
+...
+```
+
+**We maintain only 2 reads in flight at a time**, not 11,500!
+
+This is critical for HDD performance:
+- HDDs have a single read head
+- Queuing 11,500 reads creates massive I/O scheduler overhead
+- The disk can only do one read at a time anyway
+- 2 in flight = one reading, one being set up
+
+**Your 11,531 reads queued at once is likely causing:**
+- Massive memory allocation for OVERLAPPED structures
+- I/O scheduler overhead managing 11,500 pending requests
+- Memory pressure from all those pending buffers
+- Possible Windows I/O throttling
+
+#### 3. Disk I/O Priority
+
+`IoPriorityLow` is for system responsiveness, not throughput. It actually *reduces* our throughput slightly but keeps the system usable during indexing.
+
+For benchmarking, you can skip this.
+
+#### 4. The Real Issue: Sliding Window vs Bulk Queue
+
+| Aspect | Rust (bulk queue) | C++ (sliding window) |
+|--------|-------------------|----------------------|
+| Reads queued at once | 11,531 | 2 |
+| OVERLAPPED structs | 11,531 | 2 |
+| Memory for buffers | 11.5GB | ~2-4MB |
+| I/O scheduler load | Extreme | Minimal |
+| Completion processing | Wait for all | Process as they come |
+
+### Recommended Changes
+
+1. **Use a sliding window of 2-4 reads in flight**
+   ```rust
+   // Initial queue
+   for _ in 0..2 {
+       queue_next_read();
+   }
+
+   // In completion handler
+   fn on_completion() {
+       process_buffer();
+       queue_next_read();  // Keep the pipeline full
+   }
+   ```
+
+2. **Allocate buffers per-read, not upfront**
+   ```rust
+   // Instead of one giant buffer
+   // Use a pool of 2-4 reusable 1MB buffers
+   let buffer_pool: Vec<AlignedBuffer> = (0..4)
+       .map(|_| AlignedBuffer::new(1_MB))
+       .collect();
+   ```
+
+3. **Process data as it arrives**
+   - Don't wait for all reads to complete
+   - Parse each buffer as its read completes
+   - This overlaps I/O with CPU work
+
+### Why This Matters for HDD
+
+For SSD, bulk queuing can help (parallel flash channels). For HDD:
+
+```
+HDD with 11,500 queued reads:
+- I/O scheduler must sort/merge 11,500 requests
+- Memory pressure from 11.5GB committed
+- Possible I/O throttling from Windows
+- Scheduler overhead dominates
+
+HDD with 2 reads in flight:
+- Minimal scheduler overhead
+- One read active, one being prepared
+- Sequential access pattern preserved
+- Maximum throughput achieved
+```
+
+### Expected Improvement
+
+Switching from bulk queue to sliding window should:
+- Reduce memory usage from 11.5GB to ~4MB
+- Eliminate I/O scheduler overhead
+- Match C++ throughput (~280 MB/s)
+
+### Code Reference
+
+Key lines in `UltraFastFileSearch.cpp`:
+- Line 7552-7555: Initial queue of 2 reads
+- Line 7280: `queue_next()` called on completion
+- Line 7390-7454: `queue_next()` implementation
+- Line 7411, 7441: Per-read buffer allocation
+
+---
+
+*End of C++ Team Response*
+
+---
+
+## 24. Summary: Root Causes of Performance Gap
+
+Based on our analysis, the two main issues are:
+
+### 1. Bulk Queue vs Sliding Window
+
+| Metric | Rust | C++ |
+|--------|------|-----|
+| Reads in flight | 11,531 | 2 |
+| I/O scheduler load | Extreme | Minimal |
+
+### 2. Buffer Allocation Strategy
+
+| Metric | Rust | C++ |
+|--------|------|-----|
+| Memory committed | 11.5GB upfront | ~4MB peak |
+| Page fault overhead | High | Low |
+
+### Action Items for Rust Team
+
+1. **Implement sliding window I/O** (2-4 reads in flight)
+2. **Use per-read buffer allocation** with recycling
+3. **Process data as it arrives** (overlap I/O and parsing)
+4. **Benchmark after changes**
+
+---
+
+*Document will be updated with benchmark results after implementing sliding window I/O.*
 
