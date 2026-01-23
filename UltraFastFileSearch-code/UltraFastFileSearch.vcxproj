@@ -191,58 +191,9 @@
     <PreLinkEvent />
     <PreBuildEvent />
   </ItemDefinitionGroup>
+  <!-- Boost.Regex source files removed - Boost 1.90.0 made Regex header-only -->
+  <!-- The project uses Boost.Xpressive (header-only) for regex functionality -->
   <ItemGroup>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\cpp_regex_traits.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\cregex.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\c_regex_traits.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\fileiter.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\icu.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\instances.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\posix_api.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\regex.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\regex_debug.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\regex_raw_buffer.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\regex_traits_defaults.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\static_mutex.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\usinstances.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\w32_regex_traits.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\wc_regex_traits.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\wide_posix_api.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
-    <ClCompile Include="$(BOOST_ROOT)libs\regex\src\winstances.cpp">
-      <DisableSpecificWarnings>4640;%(DisableSpecificWarnings)</DisableSpecificWarnings>
-    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">Create</PrecompiledHeader>
