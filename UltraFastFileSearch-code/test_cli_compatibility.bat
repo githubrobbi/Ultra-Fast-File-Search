@@ -4,7 +4,7 @@ REM Run this after building to verify command-line interface works correctly
 
 setlocal enabledelayedexpansion
 
-set EXE=x64\EXE\UltraFastFileSearch.exe
+set EXE=x64\COM\uffs.com
 set PASSED=0
 set FAILED=0
 
