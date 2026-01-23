@@ -1,0 +1,20 @@
+Boost binaries are not included in this repository.
+
+The Boost library archive is very large (~250 MB), which makes it
+impractical to distribute alongside the other binaries in this project.
+
+To obtain the required version of Boost, please download the official
+archive from the Boost website:
+
+https://www.boost.org/users/download/
+
+This project was tested with:
+  Boost version: 1.90.0
+
+If you already have the Boost archive locally, the original file used
+during development was:
+
+  boost_1_90_0.zip
+
+After downloading, extract Boost and configure your build or environment
+accordingly.
