@@ -12893,30 +12893,6 @@ int main(int argc, char* argv[])
 	{
 		std::ostream& OS = std::cout;
 
-		// ============================================================================
-		// HARDCODED: Benchmark S: drive only - no arguments needed
-		// ============================================================================
-		(void)argc;
-		(void)argv;
-
-		OS << "\n";
-		OS << "=== HARDCODED SINGLE-DRIVE BENCHMARK ===\n";
-		OS << "Benchmarking S: drive only (Storage - 7.4 TB)\n";
-		OS << "=========================================\n\n";
-
-		return benchmark_index_build('S', OS);
-	}
-
-#if 0
-	// ============================================================================
-	// ORIGINAL main() CODE BELOW (disabled for single-drive benchmark)
-	// ============================================================================
-	void DISABLED_original_main_code()
-	{
-		std::ostream& OS = std::cout;
-		int argc = 0;
-		char** argv = nullptr;
-
 		int new_argc = argc;
 		char** new_argv = argv;
 
@@ -12950,14 +12926,14 @@ int main(int argc, char* argv[])
 		CommandLineParser parser(diskdrives);
 		int parseResult = parser.parse(new_argc, new_argv);
 		if (parseResult != 0) {
-			return;
+			return parseResult;
 		}
 
 		const auto& opts = parser.options();
 
 		// If help or version was requested, exit successfully
 		if (opts.helpRequested || opts.versionRequested) {
-			return;
+			return 0;
 		}
 
 		// Map options to local variables for minimal code changes
@@ -14066,7 +14042,6 @@ int main(int argc, char* argv[])
 
 	//return result;
 }
-#endif  // #if 0 - ORIGINAL main() CODE DISABLED
 
 #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
