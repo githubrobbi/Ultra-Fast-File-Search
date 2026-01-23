@@ -13,14 +13,44 @@ echo CLI11 Migration Compatibility Tests
 echo ============================================
 echo.
 
+echo === Diagnostics ===
+echo Current directory: %CD%
+echo Binary path: %EXE%
+echo Full path: %CD%\%EXE%
+echo.
+
+if exist "%EXE%" (
+    echo Binary EXISTS
+    echo File size:
+    for %%A in ("%EXE%") do echo   %%~zA bytes
+) else (
+    echo ERROR: Binary NOT FOUND at %EXE%
+    echo.
+    echo Looking for alternatives...
+    if exist "x64\EXE\UltraFastFileSearch.exe" echo   Found: x64\EXE\UltraFastFileSearch.exe
+    if exist "x64\COM\UltraFastFileSearch.com" echo   Found: x64\COM\UltraFastFileSearch.com
+    if exist "x64\Release\uffs.com" echo   Found: x64\Release\uffs.com
+    if exist "x64\Debug\uffs.com" echo   Found: x64\Debug\uffs.com
+    dir /s /b *.com *.exe 2>nul | findstr /i "uffs\|ultrafast"
+    echo.
+    echo Please update EXE variable in this script to point to the correct binary.
+    exit /b 1
+)
+echo.
+echo ============================================
+echo.
+
 REM Test 1: Version flag
 echo [TEST 1] --version flag
-%EXE% --version >nul 2>&1
-if %ERRORLEVEL% EQU 0 (
+echo   Command: %EXE% --version
+%EXE% --version
+set RESULT=%ERRORLEVEL%
+echo   Exit code: %RESULT%
+if %RESULT% EQU 0 (
     echo   PASSED: --version works
     set /a PASSED+=1
 ) else (
-    echo   FAILED: --version returned error
+    echo   FAILED: --version returned error code %RESULT%
     set /a FAILED+=1
 )
 
