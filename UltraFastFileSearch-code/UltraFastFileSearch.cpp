@@ -12905,11 +12905,18 @@ int main(int argc, char* argv[])
 		OS << "=========================================\n\n";
 
 		return benchmark_index_build('S', OS);
+	}
 
-		// ============================================================================
-		// ORIGINAL CODE BELOW (commented out)
-		// ============================================================================
-		/*
+#if 0
+	// ============================================================================
+	// ORIGINAL main() CODE BELOW (disabled for single-drive benchmark)
+	// ============================================================================
+	void DISABLED_original_main_code()
+	{
+		std::ostream& OS = std::cout;
+		int argc = 0;
+		char** argv = nullptr;
+
 		int new_argc = argc;
 		char** new_argv = argv;
 
@@ -12943,16 +12950,15 @@ int main(int argc, char* argv[])
 		CommandLineParser parser(diskdrives);
 		int parseResult = parser.parse(new_argc, new_argv);
 		if (parseResult != 0) {
-			return parseResult;
+			return;
 		}
 
 		const auto& opts = parser.options();
 
 		// If help or version was requested, exit successfully
 		if (opts.helpRequested || opts.versionRequested) {
-			return 0;
+			return;
 		}
-		*/
 
 		// Map options to local variables for minimal code changes
 		std::string searchPathCopy = opts.searchPath;
@@ -14060,6 +14066,7 @@ int main(int argc, char* argv[])
 
 	//return result;
 }
+#endif  // #if 0 - ORIGINAL main() CODE DISABLED
 
 #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
