@@ -12923,7 +12923,7 @@ int main(int argc, char* argv[])
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		// CLI11 Command Line Parsing (replaces LLVM CommandLine)
 		////////////////////////////////////////////////////////////////////////////////////////////////
-		CommandLineParser parser(ws2s(diskdrives));
+		CommandLineParser parser(converter.to_bytes(diskdrives));
 		int parseResult = parser.parse(new_argc, new_argv);
 		if (parseResult != 0) {
 			return parseResult;
@@ -13230,60 +13230,60 @@ int main(int argc, char* argv[])
 
 		bool changed = false;
 
-		std::string t = separator.getValue().c_str();
-		std::string originalsep = t;
+		std::string originalsep = separator;
+		std::string t = separator;
 		std::transform(t.begin(), t.end(), t.begin(), ::toupper);
-		separator.setValue(t);
+		separator = t;
 
-		if (separator.compare("TAB")      == 0)
+		if (separator == "TAB")
 		{
-			separator.setValue("\t");
+			separator = "\t";
 			changed = true;
 		}
 
-		if (separator.compare("NEWLINE")  == 0)
+		if (separator == "NEWLINE")
 		{
-			separator.setValue("\n");
+			separator = "\n";
 			changed = true;
 		}
 
-		if (separator.compare("NEW LINE") == 0)
+		if (separator == "NEW LINE")
 		{
-			separator.setValue("\n");
+			separator = "\n";
 			changed = true;
 		}
 
-		if (separator.compare("SPACE")    == 0)
+		if (separator == "SPACE")
 		{
-			separator.setValue(" ");
+			separator = " ";
 			changed = true;
 		}
 
-		if (separator.compare("RETURN")   == 0)
+		if (separator == "RETURN")
 		{
-			separator.setValue("\r");
+			separator = "\r";
 			changed = true;
 		}
 
-		if (separator.compare("DOUBLE")   == 0)
+		if (separator == "DOUBLE")
 		{
-			separator.setValue("\"");
+			separator = "\"";
 			changed = true;
 		}
 
-		if (separator.compare("SINGLE")   == 0)
+		if (separator == "SINGLE")
 		{
-			separator.setValue("\'");
+			separator = "\'";
 			changed = true;
 		}
 
-		if (separator.compare("NULL")     == 0)
+		if (separator == "NULL")
 		{
-			separator.setValue("\0");
+			separator = std::string(1, '\0');
 			changed = true;
 		}
 
-		if (!changed) separator.setValue(originalsep);
+		if (!changed) separator = originalsep;
 
 		// << "\n Done PROCESSING arguments \n";
 
