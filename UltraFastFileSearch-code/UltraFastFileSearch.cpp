@@ -4308,49 +4308,9 @@ namespace std
 
 }
 
-class CoInit
-
-{
-	CoInit(CoInit
-		const&);
-	CoInit& operator=(CoInit
-		const&);
-
-public:
-
-	HRESULT hr;
-	CoInit(bool initialize = true) :
-		hr(initialize ? CoInitialize(nullptr) : S_FALSE) {}
-
-	~CoInit()
-	{
-		if (this->hr == S_OK)
-		{
-			CoUninitialize();
-		}
-	}
-};
-
+#include "src/util/com_init.hpp"
 #include "src/io/io_completion_port.hpp"
 #include "src/io/mft_reader.hpp"
-
-class OleInit
-{
-	OleInit(OleInit
-		const&);
-	OleInit& operator=(OleInit
-		const&);
-public:
-	HRESULT hr;
-	OleInit(bool initialize = true) : hr(initialize ? OleInitialize(nullptr) : S_FALSE) {}
-	~OleInit()
-	{
-		if (this->hr == S_OK)
-		{
-			OleUninitialize();
-		}
-	}
-};
 
 class CDisableListViewUnnecessaryMessages : hook_detail::thread_hook_swap < HOOK_TYPE(NtUserMessageCall) >
 {
