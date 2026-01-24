@@ -2669,11 +2669,11 @@ public: typedef key_type_internal key_type;
 						  if (is_primary_attribute)
 						  {
 							  bool
-								  const isdir = (ah->Type == ntfs::AttributeBitmap || ah->Type == ntfs::AttributeIndexRoot || ah->Type == ntfs::AttributeIndexAllocation) && ah->NameLength == 4 && memcmp(ah->name(), _T("$I30"), sizeof(*ah->name()) * 4) == 0;
+								  const isdir = (ah->Type == ntfs::AttributeTypeCode::AttributeBitmap || ah->Type == ntfs::AttributeTypeCode::AttributeIndexRoot || ah->Type == ntfs::AttributeTypeCode::AttributeIndexAllocation) && ah->NameLength == 4 && memcmp(ah->name(), _T("$I30"), sizeof(*ah->name()) * 4) == 0;
 							  unsigned char
 								  const name_length = isdir ? static_cast<unsigned char> (0) : ah->NameLength;
 							  unsigned char
-								  const type_name_id = static_cast<unsigned char> (isdir ? 0 : ah->Type >> (CHAR_BIT / 2));
+								  const type_name_id = static_cast<unsigned char> (isdir ? 0 : static_cast<int>(ah->Type) >> (CHAR_BIT / 2));
 							  StreamInfo* info = nullptr;
 							  if (StreamInfos::value_type* const si = this->streaminfo(&*base_record))
 							  {
