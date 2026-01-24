@@ -214,7 +214,7 @@
 | 7.1 | Replace NULL with nullptr | ✅ | All NULL pointer literals replaced |
 | 7.2 | Use auto for complex types | ✅ | Applied to high-impact iterator and map types (7 usages) |
 | 7.3 | Use range-based for loops | ✅ | 4 loops converted (path chars, name chars, sizes, indices) |
-| 7.4 | Use enum class | ⬜ | Replace plain enums |
+| 7.4 | Use enum class | ✅ | `AttributeTypeCode`, `ReparseTypeFlags` → enum class; `FILE_RECORD_HEADER_FLAGS` kept as plain enum (bitwise ops) |
 | 7.5 | Add [[nodiscard]] | ✅ | Added to 5 safety-critical functions |
 | 7.6 | Verify build | ✅ | Build verified on Windows (all green) |
 | 7.7 | Commit and push | ✅ | Changes committed and pushed to main |
@@ -324,6 +324,7 @@ Record these BEFORE starting any refactoring:
 | 2026-01-24 | 7 | Fix compilation: add const overload of `basic_vector_based_string::c_str()` (commit 8f3c9a39) | AI Assistant |
 | 2026-01-24 | - | Monolith reduced from 11,932 to 11,373 lines (~2,800 lines extracted in total) | AI Assistant |
 | 2026-01-24 | 7 | Phase 7.3: Convert 4 traditional for loops to range-based for loops (commit 83941137) | AI Assistant |
+| 2026-01-24 | 7 | Phase 7.4: Convert `AttributeTypeCode` and `ReparseTypeFlags` to enum class for type safety | AI Assistant |
 
 ---
 

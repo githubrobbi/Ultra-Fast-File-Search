@@ -72,6 +72,7 @@ This document outlines a comprehensive plan to modernize the UFFS C++ codebase w
   - Added namespace alias `namespace winnt = uffs::winnt;` for backward compatibility.
   - Fixed const-correctness for `basic_vector_based_string::c_str()` method.
   - Converted 4 traditional for loops to range-based for loops (where index not needed).
+  - Converted `AttributeTypeCode` and `ReparseTypeFlags` to `enum class` for type safety; `FILE_RECORD_HEADER_FLAGS` kept as plain enum (used with bitwise ops).
 
 For detailed per-phase status and verification notes, see **`refactoring-milestones.md`**.
 

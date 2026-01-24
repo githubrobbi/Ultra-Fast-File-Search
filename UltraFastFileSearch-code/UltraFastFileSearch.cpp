@@ -1103,8 +1103,9 @@ namespace ntfs
 		}
 	};
 
-	enum AttributeTypeCode
+	enum class AttributeTypeCode : int
 	{
+		AttributeNone                = 0,      // For default-constructed comparison
 		AttributeStandardInformation = 0x10,
 		AttributeAttributeList       = 0x20,
 		AttributeFileName            = 0x30,
@@ -1196,6 +1197,8 @@ namespace ntfs
 		}
 	};
 
+	// Note: Kept as plain enum (not enum class) because these flags are used with
+	// bitwise operations on unsigned short Flags field in FILE_RECORD_SEGMENT_HEADER
 	enum FILE_RECORD_HEADER_FLAGS
 	{
 		FRH_IN_USE = 0x0001, /*Record is in use */
@@ -1302,7 +1305,7 @@ namespace ntfs
 		unsigned short AlignmentOrReserved[3];
 	};
 
-	enum ReparseTypeFlags
+	enum class ReparseTypeFlags : unsigned int
 	{
 		ReparseIsMicrosoft              = 0x80000000,
 		ReparseIsHighLatency            = 0x40000000,
@@ -2553,11 +2556,11 @@ public: typedef key_type_internal key_type;
 					  const* const frsh_end = frsh->end(mft_record_size);
 				  for (ntfs::ATTRIBUTE_RECORD_HEADER
 					  const*
-					  ah = frsh->begin(); ah < frsh_end && ah->Type != ntfs::AttributeTypeCode() && ah->Type != ntfs::AttributeEnd; ah = ah->next())
+					  ah = frsh->begin(); ah < frsh_end && ah->Type != ntfs::AttributeTypeCode::AttributeNone && ah->Type != ntfs::AttributeTypeCode::AttributeEnd; ah = ah->next())
 				  {
 					  switch (ah->Type)
 					  {
-					  case ntfs::AttributeStandardInformation:
+					  case ntfs::AttributeTypeCode::AttributeStandardInformation:
 						  if (ntfs::STANDARD_INFORMATION
 							  const* const fn = static_cast<ntfs::STANDARD_INFORMATION
 							  const*> (ah->Resident.GetValue()))
@@ -2569,7 +2572,7 @@ public: typedef key_type_internal key_type;
 						  }
 
 						  break;
-					  case ntfs::AttributeFileName:
+					  case ntfs::AttributeTypeCode::AttributeFileName:
 						  if (ntfs::FILENAME_INFORMATION
 							  const* const fn = static_cast<ntfs::FILENAME_INFORMATION
 							  const*> (ah->Resident.GetValue()))
@@ -2614,18 +2617,18 @@ public: typedef key_type_internal key_type;
 						  }
 
 						  break;
-					  // case ntfs::AttributeAttributeList:
-					  // case ntfs::AttributeLoggedUtilityStream:
-					  case ntfs::AttributeObjectId:
-					  // case ntfs::AttributeSecurityDescriptor:
-					  case ntfs::AttributePropertySet:
-					  case ntfs::AttributeBitmap:
-					  case ntfs::AttributeIndexAllocation:
-					  case ntfs::AttributeIndexRoot:
-					  case ntfs::AttributeData:
-					  case ntfs::AttributeReparsePoint:
-					  case ntfs::AttributeEA:
-					  case ntfs::AttributeEAInformation:
+					  // case ntfs::AttributeTypeCode::AttributeAttributeList:
+					  // case ntfs::AttributeTypeCode::AttributeLoggedUtilityStream:
+					  case ntfs::AttributeTypeCode::AttributeObjectId:
+					  // case ntfs::AttributeTypeCode::AttributeSecurityDescriptor:
+					  case ntfs::AttributeTypeCode::AttributePropertySet:
+					  case ntfs::AttributeTypeCode::AttributeBitmap:
+					  case ntfs::AttributeTypeCode::AttributeIndexAllocation:
+					  case ntfs::AttributeTypeCode::AttributeIndexRoot:
+					  case ntfs::AttributeTypeCode::AttributeData:
+					  case ntfs::AttributeTypeCode::AttributeReparsePoint:
+					  case ntfs::AttributeTypeCode::AttributeEA:
+					  case ntfs::AttributeTypeCode::AttributeEAInformation:
 					  default:
 					  {
 						  if (ah->IsNonResident)
@@ -2867,7 +2870,7 @@ public: typedef key_type_internal key_type;
 						  for (StreamInfos::value_type* k = me->streaminfo(fr); k; k = me->streaminfo(k->next_entry))
 						  {
 							  bool
-								  const is_data_attribute = (k->type_name_id << (CHAR_BIT / 2)) == ntfs::AttributeData;
+								  const is_data_attribute = (k->type_name_id << (CHAR_BIT / 2)) == static_cast<int>(ntfs::AttributeTypeCode::AttributeData);
 							  bool
 								  const is_default_stream = is_data_attribute && !k->name.length;
 							  unsigned long long
@@ -3053,7 +3056,7 @@ public: typedef key_type_internal key_type;
 
 		  bool is_attribute() const
 		  {
-			  return ptrs.stream->type_name_id && (ptrs.stream->type_name_id << (CHAR_BIT / 2)) != ntfs::AttributeData;
+			  return ptrs.stream->type_name_id && (ptrs.stream->type_name_id << (CHAR_BIT / 2)) != static_cast<int>(ntfs::AttributeTypeCode::AttributeData);
 		  }
 
 	  public:
@@ -3409,7 +3412,7 @@ private: template < class F>
 			{
 				assert(k->name.offset() <= me->names.size());
 				bool
-					const is_attribute = k->type_name_id && (k->type_name_id << (CHAR_BIT / 2)) != ntfs::AttributeData;
+					const is_attribute = k->type_name_id && (k->type_name_id << (CHAR_BIT / 2)) != static_cast<int>(ntfs::AttributeTypeCode::AttributeData);
 				if (!match_attributes && is_attribute)
 				{
 					continue;
