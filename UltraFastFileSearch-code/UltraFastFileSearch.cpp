@@ -1008,7 +1008,7 @@ long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo)
 }
 
 
-bool is_ascii(wchar_t
+[[nodiscard]] bool is_ascii(wchar_t
 	const* const s, size_t
 	const n)
 {
@@ -1211,7 +1211,7 @@ void CheckAndThrow(int
 	}
 }
 
-LPTSTR GetAnyErrorText(DWORD errorCode, va_list* pArgList = nullptr)
+[[nodiscard]] LPTSTR GetAnyErrorText(DWORD errorCode, va_list* pArgList = nullptr)
 {
 	static TCHAR buffer[1 << 15];
 	ZeroMemory(buffer, sizeof(buffer));
@@ -1389,14 +1389,14 @@ namespace winnt
 }
 
 
-bool isdevnull(int fd)
+[[nodiscard]] bool isdevnull(int fd)
 {
 	winnt::IO_STATUS_BLOCK iosb;
 	winnt::FILE_FS_DEVICE_INFORMATION fsinfo;
 	return winnt::NtQueryVolumeInformationFile((HANDLE)_get_osfhandle(fd), &iosb, &fsinfo, sizeof(fsinfo), 4) == 0 && fsinfo.DeviceType == 0x00000015;
 }
 
-bool isdevnull(FILE* f)
+[[nodiscard]] bool isdevnull(FILE* f)
 {
 	return isdevnull(
 
@@ -2235,7 +2235,7 @@ unsigned int get_cluster_size(void* const volume)
 	return info.BytesPerSector * info.SectorsPerAllocationUnit;
 }
 
-std::vector<std::pair < unsigned long long, long long >> get_retrieval_pointers(TCHAR
+[[nodiscard]] std::vector<std::pair < unsigned long long, long long >> get_retrieval_pointers(TCHAR
 	const path[], long long* const size, long long
 	const mft_start_lcn, unsigned int
 	const file_record_size)
