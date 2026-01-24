@@ -15,8 +15,8 @@
 | **Target Completion** | _TBD_ |
 | **Current Phase** | Phase 7 In Progress |
 | **Overall Progress** | 85% (6/7 phases) |
-| **Monolith Size** | 11,662 lines (down from 14,155) |
-| **Lines Extracted** | ~2,500 lines into new headers under src/ |
+| **Monolith Size** | 11,428 lines (down from 14,155) |
+| **Lines Extracted** | ~2,700 lines into new headers under src/ |
 
 ---
 
