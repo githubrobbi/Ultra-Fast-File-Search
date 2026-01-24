@@ -131,6 +131,16 @@ public:
     }
 };
 
+// Default allocator type alias for memheap_vector
+// Uses MemoryHeapAllocator when available, otherwise std::allocator
+template<class T>
+using default_memheap_alloc =
+#if defined(MEMORY_HEAP_HPP)
+    memheap::MemoryHeapAllocator<T>;
+#else
+    std::allocator<T>;
+#endif
+
 } // namespace uffs
 
 #endif // UFFS_MEMHEAP_VECTOR_HPP

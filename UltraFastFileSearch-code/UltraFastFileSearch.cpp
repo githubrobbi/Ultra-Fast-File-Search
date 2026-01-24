@@ -995,76 +995,12 @@ void CheckAndThrow(int
 
 // Wow64 and Wow64Disable classes extracted to src/util/wow64.hpp
 
-namespace winnt
-{
-	struct IO_STATUS_BLOCK
-	{
-		union
-		{
-			long Status;
-			void* Pointer;
-		};
+// Import winnt types from extracted header (uffs::winnt namespace)
+// This replaces the duplicate namespace that was previously defined here
+using namespace uffs::winnt;
 
-		uintptr_t Information;
-	};
-
-	enum IO_PRIORITY_HINT
-	{
-		IoPriorityVeryLow = 0, IoPriorityLow, IoPriorityNormal, IoPriorityHigh, IoPriorityCritical, MaxIoPriorityTypes
-	};
-
-	struct FILE_FS_SIZE_INFORMATION
-	{
-		long long TotalAllocationUnits, ActualAvailableAllocationUnits;
-		unsigned long SectorsPerAllocationUnit, BytesPerSector;
-	};
-
-	struct FILE_FS_ATTRIBUTE_INFORMATION
-	{
-		unsigned long FileSystemAttributes;
-		unsigned long MaximumComponentNameLength;
-		unsigned long FileSystemNameLength;
-		wchar_t FileSystemName[1];
-	};
-
-	struct FILE_FS_DEVICE_INFORMATION
-	{
-		unsigned long DeviceType, Characteristics;
-	}
-
-	fsinfo;
-	union FILE_IO_PRIORITY_HINT_INFORMATION
-	{
-		IO_PRIORITY_HINT PriorityHint;
-		unsigned long long _alignment;
-	};
-
-	struct TIME_FIELDS
-	{
-		short Year;
-		short Month;
-		short Day;
-		short Hour;
-		short Minute;
-		short Second;
-		short Milliseconds;
-		short Weekday;
-	};
-
-	template < class T > struct identity
-	{
-		typedef T type;
-	};
-
-	typedef long NTSTATUS;
-#define X(F, T) identity<T>::type &F = *reinterpret_cast<identity<T>::type *const &>(static_cast<FARPROC const &>(GetProcAddress(GetModuleHandle(_T("ntdll.dll")), #F)))
-	X(NtQueryVolumeInformationFile, NTSTATUS NTAPI(HANDLE FileHandle, IO_STATUS_BLOCK *IoStatusBlock, PVOID FsInformation, unsigned long Length, unsigned long FsInformationClass));
-	X(NtQueryInformationFile, NTSTATUS NTAPI(IN HANDLE FileHandle, OUT IO_STATUS_BLOCK *IoStatusBlock, OUT PVOID FileInformation, IN ULONG Length, IN unsigned long FileInformationClass));
-	X(NtSetInformationFile, NTSTATUS NTAPI(IN HANDLE FileHandle, OUT IO_STATUS_BLOCK *IoStatusBlock, IN PVOID FileInformation, IN ULONG Length, IN unsigned long FileInformationClass));
-	X(RtlNtStatusToDosError, unsigned long NTAPI(IN NTSTATUS NtStatus));
-	X(RtlTimeToTimeFields, VOID NTAPI(LARGE_INTEGER *Time, TIME_FIELDS *TimeFields));
-#undef  X
-}
+// Global fsinfo variable (preserved from original code)
+FILE_FS_DEVICE_INFORMATION fsinfo;
 
 
 [[nodiscard]] bool isdevnull(int fd)
