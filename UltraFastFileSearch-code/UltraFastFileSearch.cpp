@@ -374,6 +374,14 @@ public:
 		return p;
 	}
 
+	const_pointer c_str() const
+	{
+		// Delegate to non-const version via const_cast
+		// This is safe because the modification (push_back/pop_back) is temporary
+		// and leaves the object in the same logical state
+		return const_cast<this_type*>(this)->c_str();
+	}
+
 	const_pointer data() const
 	{
 		return this->empty() ? nullptr : &*this->begin();
