@@ -1957,12 +1957,12 @@ WTL::CString get_ui_locale_name()
 
 class Handle
 {
+public:
 	static bool valid(void* const value)
 	{
 		return value && value != reinterpret_cast<void*> (-1);
 	}
 
-public:
 	void* value;
 	Handle() : value() {}
 
