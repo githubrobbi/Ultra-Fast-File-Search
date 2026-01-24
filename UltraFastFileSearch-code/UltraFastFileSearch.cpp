@@ -1460,10 +1460,8 @@ std::tvstring NormalizePath(std::tvstring const& path)
 	std::tvstring result;
 	bool wasSep = false;
 	bool isCurrentlyOnPrefix = true;
-	for (size_t i = 0; i < path.size(); i++)
+	for (TCHAR const& c : path)
 	{
-		TCHAR
-			const& c = path[i];
 		isCurrentlyOnPrefix &= isdirsep(c);
 		if (isCurrentlyOnPrefix || !wasSep || !isdirsep(c))
 		{
@@ -2766,9 +2764,9 @@ public: typedef key_type_internal key_type;
 		  {
 			  TCHAR buf[2048];
 			  size_t names_wasted_chars = 0;
-			  for (size_t i = 0; i != this->names.size(); ++i)
+			  for (auto const& ch : this->names)
 			  {
-				  if ((this->names[i] | SCHAR_MAX) == SCHAR_MAX)
+				  if ((ch | SCHAR_MAX) == SCHAR_MAX)
 				  {
 					  ++names_wasted_chars;
 				  }
@@ -4364,14 +4362,14 @@ void autosize_columns(ListViewAdapter list)
 			}
 		}
 
-		for (size_t i = 0; i != sizes.size(); ++i)
+		for (auto const& entry : sizes)
 		{
 			size_t
-				const c = static_cast<size_t> (sizes[i].second);
-			if (sizes[i].first.first < SHRT_MAX)
+				const c = static_cast<size_t>(entry.second);
+			if (entry.first.first < SHRT_MAX)
 			{
 				using std::max;
-				max_column_widths[c] = max(max_column_widths[c], sizes[i].first.second);
+				max_column_widths[c] = max(max_column_widths[c], entry.first.second);
 			}
 		}
 
@@ -7406,10 +7404,8 @@ public:
 		{
 			SFGAOF sfgao = 0;
 			std::tvstring path;
-			for (size_t i = 0; i < indices.size(); ++i)
+			for (size_t const iresult : indices)
 			{
-				size_t
-					const iresult = indices[i];
 				NtfsIndex
 					const* const index = this->results.item_index(iresult)->unvolatile() /*we are allowed to do this because the indices are locked */;
 				path = index->root_path();
