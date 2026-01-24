@@ -45,7 +45,7 @@ This document outlines a comprehensive plan to modernize the UFFS C++ codebase w
 ## Implementation Status (as of 2026-01-24)
 
 - Phases 1–5 from this plan have been executed; Phase 6 is partially complete; Phase 7 (Modernize C++) is in progress.
-- The main monolithic source file `UltraFastFileSearch.cpp` has been reduced from 14,155 to 12,019 lines (≈2,100 lines migrated into headers under `src/`).
+- The main monolithic source file `UltraFastFileSearch.cpp` has been reduced from 14,155 to 11,932 lines (≈2,200 lines migrated into headers under `src/`).
 - Key utility and I/O abstractions now live in dedicated headers:
   - `src/util/atomic_compat.hpp` — atomic_namespace (spin locks, atomics, lightweight sync primitives)
   - `src/util/intrusive_ptr.hpp` — `RefCounted` + `intrusive_ptr`
@@ -57,6 +57,7 @@ This document outlines a comprehensive plan to modernize the UFFS C++ codebase w
   - `src/util/buffer.hpp` — resizable buffer abstraction used by the indexer
   - `src/util/com_init.hpp` — `CoInit` and `OleInit` RAII COM initialization helpers
   - `src/util/temp_swap.hpp` — `TempSwap<T>` RAII helper for temporary value swaps
+  - `src/util/wow64.hpp` — `Wow64` and `Wow64Disable` WOW64 file system redirection helpers
 - Phase 7 modernization work applied so far:
   - All `NULL` pointer literals have been replaced with `nullptr`.
   - `auto` is used for several complex iterator types where it improves readability.

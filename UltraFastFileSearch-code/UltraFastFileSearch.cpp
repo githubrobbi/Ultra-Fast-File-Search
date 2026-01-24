@@ -129,6 +129,7 @@
 // Note: intrusive_ptr.hpp not included - conflicts with existing RefCounted ADL functions
 #include "src/io/winnt_types.hpp"
 #include "src/io/io_priority.hpp"
+#include "src/util/wow64.hpp"
 // Note: overlapped.hpp is documentation only - class not extracted yet
 // Note: src/index/ntfs_index.hpp is documentation only - class not extracted yet
 // Note: src/cli/cli_main.hpp is documentation only - entry point not extracted yet
@@ -1226,96 +1227,7 @@ void CheckAndThrow(int
 	return buffer;
 }
 
-struct Wow64
-{
-	static HMODULE GetKernel32()
-	{
-		HMODULE kernel32 = nullptr;
-		return GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCTSTR> (&GetSystemInfo), &kernel32) ? kernel32 : nullptr;
-}
-
-	typedef BOOL WINAPI IsWow64Process_t(IN HANDLE hProcess, OUT PBOOL Wow64Process);
-	static IsWow64Process_t* IsWow64Process;
-	static bool is_wow64()
-	{
-		bool result = false; 
-#ifdef _M_IX86
-			BOOL isWOW64 = FALSE;
-		if (!IsWow64Process)
-		{
-			IsWow64Process = reinterpret_cast<IsWow64Process_t*> (GetProcAddress(GetKernel32(), _CRT_STRINGIZE(IsWow64Process)));
-		}
-
-		result = IsWow64Process && IsWow64Process(GetCurrentProcess(), & isWOW64) && isWOW64; 
-#endif
-			return result;
-	}
-
-	typedef BOOL WINAPI Wow64DisableWow64FsRedirection_t(PVOID* OldValue);
-	static Wow64DisableWow64FsRedirection_t* Wow64DisableWow64FsRedirection;
-	static void* disable()
-	{
-		void* old = nullptr;
-#ifdef _M_IX86
-			if (!Wow64DisableWow64FsRedirection)
-			{
-				Wow64DisableWow64FsRedirection = reinterpret_cast<Wow64DisableWow64FsRedirection_t*> (GetProcAddress(GetKernel32(), _CRT_STRINGIZE(Wow64DisableWow64FsRedirection)));
-			}
-
-		if (Wow64DisableWow64FsRedirection && !Wow64DisableWow64FsRedirection(&old))
-		{
-			old = nullptr;
-		}
-#endif
-			return old;
-	}
-
-	typedef BOOL WINAPI Wow64RevertWow64FsRedirection_t(PVOID OlValue);
-	static Wow64RevertWow64FsRedirection_t* Wow64RevertWow64FsRedirection;
-	static bool revert(PVOID old)
-	{
-		bool result = false; 
-#ifdef _M_IX86
-			if (!Wow64RevertWow64FsRedirection)
-			{
-				Wow64RevertWow64FsRedirection = reinterpret_cast<Wow64RevertWow64FsRedirection_t*> (GetProcAddress(GetKernel32(), _CRT_STRINGIZE(Wow64RevertWow64FsRedirection)));
-			}
-
-		result = Wow64RevertWow64FsRedirection && Wow64RevertWow64FsRedirection(old); 
-#endif
-			return result;
-	}
-
-	Wow64() {}
-};
-
-#ifdef _M_IX86
-Wow64
-const init_wow64;
-Wow64::IsWow64Process_t* Wow64::IsWow64Process = nullptr;
-Wow64::Wow64DisableWow64FsRedirection_t* Wow64::Wow64DisableWow64FsRedirection = nullptr;
-Wow64::Wow64RevertWow64FsRedirection_t* Wow64::Wow64RevertWow64FsRedirection = nullptr;
-#endif
-
-
-struct Wow64Disable
-{
-	bool disable;
-	void* cookie;
-	Wow64Disable(bool disable) : disable(disable)
-	{
-		if (this->disable)
-		{
-			this->cookie = Wow64::disable();
-		}
-	}~Wow64Disable()
-	{
-		if (this->disable)
-		{
-			Wow64::revert(this->cookie);
-		}
-	}
-};
+// Wow64 and Wow64Disable classes extracted to src/util/wow64.hpp
 
 namespace winnt
 {
