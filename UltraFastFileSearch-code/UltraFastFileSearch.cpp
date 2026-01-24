@@ -2006,131 +2006,10 @@ public:
 	}
 };
 
-template < class T, class Alloc = 
-#if defined(MEMORY_HEAP_HPP)
-	memheap::MemoryHeapAllocator
-#else
-	std::allocator
-#endif
-	<	T >
-	>
-	class memheap_vector : std::vector<T, Alloc>
-{
-	typedef std::vector<T, Alloc> base_type;
-	typedef memheap_vector this_type;
-protected: typename base_type::size_type _reserve(typename base_type::size_type extra_capacity)
-{
-	typename base_type::size_type extra_reserved = 0; 
-#if defined(MEMORY_HEAP_HPP) && defined(_CPPLIB_VER) && 600 <= _CPPLIB_VER && _CPPLIB_VER <= 699
-			typename base_type::size_type
-			const current_capacity = this->base_type::capacity();
-	if (current_capacity > 0 && extra_capacity > current_capacity - this->base_type::size())
-	{
-		extra_capacity = this->base_type::_Grow_to(current_capacity + extra_capacity) - current_capacity;
-		if (typename base_type::pointer
-			const ptr = this->base_type::get_allocator().allocate(extra_capacity, this->base_type::_Myend(), true))
-		{
-			if (ptr == this->base_type::_Myend())
-			{
-				this->base_type::_Myend() = ptr + static_cast<typename base_type::difference_type> (extra_capacity);
-				extra_reserved = extra_capacity;
-			}
-			else
-			{
-				this->base_type::get_allocator().deallocate(ptr, extra_capacity);
-			}
-		}
-	}
-#else
-		(void)extra_capacity; 
-#endif
-		return extra_reserved;
-}
+#include "src/util/memheap_vector.hpp"
 
-public: typedef typename base_type::allocator_type allocator_type;
-	  typedef typename base_type::value_type value_type;
-	  // typedef typename base_type::pointer pointer;
-	  // typedef typename base_type::const_pointer const_pointer;
-	  typedef typename base_type::reference reference;
-	  typedef typename base_type::const_reference const_reference;
-	  typedef typename base_type::iterator iterator;
-	  typedef typename base_type::const_iterator const_iterator;
-	  typedef typename base_type::reverse_iterator reverse_iterator;
-	  typedef typename base_type::const_reverse_iterator const_reverse_iterator;
-	  typedef typename base_type::size_type size_type;
-	  typedef typename base_type::difference_type difference_type;
-	  memheap_vector() : base_type() {}
-
-	  memheap_vector(base_type
-		  const& other) : base_type(other) {}
-
-	  explicit memheap_vector(allocator_type
-		  const& alloc) : base_type(alloc) {}
-
-	  using base_type::begin;
-	  using base_type::end;
-	  using base_type::rbegin;
-	  using base_type::rend;
-	  using base_type::size;
-	  using base_type::empty;
-	  using base_type::capacity;
-	  using base_type::clear;
-	  void swap(this_type & other)
-	  {
-		  this->base_type::swap(static_cast<this_type&> (other));
-	  }
-
-	  friend void swap(this_type & me, this_type & other)
-	  {
-		  return me.swap(other);
-	  }
-
-	  void reserve(size_type
-		  const size)
-	  {
-		  typename base_type::size_type
-			  const current_size = this->base_type::size(),
-			  size_difference = size > current_size ? size - current_size : 0;
-		  if (size_difference && this->_reserve(size_difference) < size_difference)
-		  {
-			  this->base_type::reserve(size);
-		  }
-	  }
-
-	  void push_back(value_type
-		  const& value)
-	  {
-		  this->_reserve(1);
-		  return this->base_type::push_back(value);
-	  }
-
-	  void resize(size_type
-		  const size, value_type
-		  const& fill)
-	  {
-		  typename base_type::size_type
-			  const current_size = this->base_type::size();
-		  if (size > current_size)
-		  {
-			  this->_reserve(size - current_size);
-		  }
-
-		  return this->base_type::resize(size, fill);
-	  }
-
-	  void resize(size_type
-		  const size)
-	  {
-		  typename base_type::size_type
-			  const current_size = this->base_type::size();
-		  if (size > current_size)
-		  {
-			  this->_reserve(size - current_size);
-		  }
-
-		  return this->base_type::resize(size);
-	  }
-};
+template < class T, class Alloc = uffs::default_memheap_alloc<T> >
+using memheap_vector = uffs::memheap_vector<T, Alloc>;
 
 
 unsigned int get_cluster_size(void* const volume)
@@ -4926,9 +4805,9 @@ void autosize_columns(ListViewAdapter list)
 			remaining -= min(remaining, 0);
 		}
 
-		for (size_t i = 0; i != column_widths.size(); ++i)
+		for (const auto& width : column_widths)
 		{
-			remaining -= column_widths[i];
+			remaining -= width;
 		}
 
 		std::sort(sizes.begin(), sizes.end());
@@ -6275,9 +6154,9 @@ public:
 					}
 				}
 
-				for (auto i = this->cache.begin(); i != this->cache.end(); ++i)
+				for (const auto& [key, info] : this->cache)
 				{
-					assert(i->second.counter < this->cache.size());
+					assert(info.counter < this->cache.size());
 				}
 			}
 
@@ -6674,9 +6553,9 @@ public:
 		std::vector<std::tvstring > path_names = get_volume_path_names();
 
 		this->cmbDrive.SetCurSel(this->cmbDrive.AddString(this->LoadString(IDS_SEARCH_VOLUME_ALL)));
-		for (size_t j = 0; j != path_names.size(); ++j)
+		for (const auto& path_name : path_names)
 		{
-			this->cmbDrive.AddString(path_names[j].c_str());
+			this->cmbDrive.AddString(path_name.c_str());
 		}
 
 		if (!this->ShouldWaitForWindowVisibleOnStartup())
@@ -7509,15 +7388,11 @@ public:
 					ss << this->LoadString(IDS_TEXT_READING_FILE_TABLES) << this->LoadString(IDS_TEXT_SPACE);
 					bool any = false;
 					unsigned long long temp_overall_progress_numerator = overall_progress_numerator;
-					for (size_t i = 0; i != wait_indices.size(); ++i)
+					for (const auto& j : wait_indices)
 					{
-						index_pointer
-							const j = wait_indices[i];
-						size_t
-							const records_so_far = j->records_so_far();
+						size_t const records_so_far = j->records_so_far();
 						temp_overall_progress_numerator += records_so_far;
-						unsigned int
-							const mft_capacity = j->mft_capacity;
+						unsigned int const mft_capacity = j->mft_capacity;
 						if (records_so_far != mft_capacity)
 						{
 							if (any)
@@ -7541,19 +7416,14 @@ public:
 					bool
 						const initial_speed = !initial_average_amount;
 					Speed recent_speed, average_speed;
-					for (size_t i = 0; i != initial_wait_indices.size(); ++i)
+					for (const auto& idx : initial_wait_indices)
 					{
-						index_pointer
-							const j = initial_wait_indices[i];
+						Speed const speed = idx->speed();
+						average_speed.first += speed.first;
+						average_speed.second += speed.second;
+						if (initial_speed)
 						{
-							Speed
-								const speed = j->speed();
-							average_speed.first += speed.first;
-							average_speed.second += speed.second;
-							if (initial_speed)
-							{
-								initial_average_amount += speed.first;
-							}
+							initial_average_amount += speed.first;
 						}
 					}
 
@@ -7627,13 +7497,9 @@ public:
 									size_t temp_overall_progress_numerator = overall_progress_numerator;
 									if (any_io_pending)
 									{
-										for (size_t k = 0; k != wait_indices.size(); ++k)
+										for (const auto& idx : wait_indices)
 										{
-											index_pointer
-												const j = wait_indices[k];
-											size_t
-												const records_so_far = j->records_so_far();
-											temp_overall_progress_numerator += records_so_far;
+											temp_overall_progress_numerator += idx->records_so_far();
 										}
 									}
 
@@ -7726,9 +7592,9 @@ public:
 		{
 
 			size_t size_to_reserve = 0;
-			for (size_t j = 0; j != results_at_depths.size(); ++j)
+			for (const auto& results_at_depth : results_at_depths)
 			{
-				size_to_reserve += results_at_depths[j].size();
+				size_to_reserve += results_at_depth.size();
 			}
 
 			this->results.reserve(this->results.size() + size_to_reserve);
@@ -7922,9 +7788,9 @@ public:
 		{
 			atomic_namespace::recursive_mutex* const m = &me->results.item_index(index)->get_mutex();
 			bool found_lock = false;
-			for (size_t j = 0; j != indices_locks.size(); ++j)
+			for (const auto& lock : indices_locks)
 			{
-				if (indices_locks[j].mutex() == m)
+				if (lock.mutex() == m)
 				{
 					found_lock = true;
 					break;
@@ -11154,12 +11020,12 @@ int main(int argc, char* argv[])
 					get_volume_path_names().swap(path_names);
 				}
 
-				// Fill the que with all the MFT to read 
-				for (size_t i = 0; i != path_names.size(); ++i)
+				// Fill the queue with all the MFT to read
+				for (const auto& path_name : path_names)
 				{
-					if (matchop.prematch(path_names[i]))
+					if (matchop.prematch(path_name))
 					{
-						indices.push_back(static_cast<intrusive_ptr < NtfsIndex>> (new NtfsIndex(path_names[i])));
+						indices.push_back(static_cast<intrusive_ptr<NtfsIndex>>(new NtfsIndex(path_name)));
 					}
 				}
 			}
