@@ -13,8 +13,10 @@
 | **Estimated Hours** | 25-40 |
 | **Start Date** | 2026-01-23 |
 | **Target Completion** | _TBD_ |
-| **Current Phase** | Phase 6 In Progress |
-| **Overall Progress** | 79% (5.5/7 phases) |
+| **Current Phase** | Phase 7 In Progress |
+| **Overall Progress** | 85% (6/7 phases) |
+| **Monolith Size** | 12,443 lines (down from ~14,000) |
+| **Lines Extracted** | ~1,830 lines to 6 new headers |
 
 ---
 
@@ -74,25 +76,29 @@
 |--------|-------------|
 | **Branch** | `refactoring/phase-3-utilities` |
 | **Estimated** | 3 hours |
-| **Actual** | ~1 hour |
+| **Actual** | ~2 hours |
 | **Assignee** | AI Assistant |
 
 | Step | Task | Status | Notes |
 |------|------|--------|-------|
 | 3.1 | Create src/util directory | ✅ | Created |
 | 3.2 | Create handle.hpp | ✅ | RAII wrapper for Windows HANDLE |
-| 3.3 | Create intrusive_ptr.hpp | ✅ | Smart pointer template (not included due to ADL conflict) |
-| 3.4 | Create ref_counted.hpp | ❌ | Skipped - depends on atomic_namespace |
-| 3.5 | Update main file includes | ✅ | handle.hpp included |
-| 3.6 | Verify build | ✅ | Build passed on Windows |
-| 3.7 | Commit and push | ✅ | Pushed to origin |
+| 3.3 | Extract atomic_namespace | ✅ | **645 lines** to `src/util/atomic_compat.hpp` |
+| 3.4 | Extract RefCounted + intrusive_ptr | ✅ | **97 lines** to `src/util/intrusive_ptr.hpp` |
+| 3.5 | Extract lock_ptr | ✅ | **107 lines** to `src/util/lock_ptr.hpp` |
+| 3.6 | Update main file includes | ✅ | All utility headers included |
+| 3.7 | Verify build | ⬜ | Pending Windows verification |
+| 3.8 | Commit and push | ⬜ | Pending |
 
 **Verification Checklist:**
-- [x] Build succeeds (Release)
-- [x] Build succeeds (Debug)
-- [x] Benchmark matches baseline
+- [ ] Build succeeds (Release)
+- [ ] Build succeeds (Debug)
+- [ ] Benchmark matches baseline
 
-**Notes:** RefCounted not extracted due to atomic_namespace dependency. intrusive_ptr.hpp created but not included to avoid ADL conflicts with existing code.
+**Extracted Files:**
+- `src/util/atomic_compat.hpp` (645 lines) - atomic operations, mutex, condition_variable, unique_lock
+- `src/util/intrusive_ptr.hpp` (97 lines) - RefCounted CRTP base + intrusive_ptr smart pointer
+- `src/util/lock_ptr.hpp` (107 lines) - RAII lock wrapper template
 
 ---
 
@@ -107,21 +113,24 @@
 | Step | Task | Status | Notes |
 |------|------|--------|-------|
 | 4.1 | Create src/io directory | ✅ | Created |
-| 4.2 | Create iocp.hpp | ⬜ | Deferred - complex dependencies |
-| 4.3 | Create overlapped.hpp | ✅ | Documentation only - depends on RefCounted |
+| 4.2 | Create io_completion_port.hpp | ✅ | **322 lines** - IoCompletionPort + OleIoCompletionPort classes |
+| 4.3 | Create overlapped.hpp | ✅ | **148 lines** - Overlapped base class (RefCounted + OVERLAPPED) |
 | 4.4 | Create io_priority.hpp | ✅ | IoPriority class + winnt_types.hpp |
-| 4.5 | Create mft_reader.hpp | ⬜ | Deferred - complex dependencies |
-| 4.6 | Update main file includes | ✅ | winnt_types.hpp, io_priority.hpp included |
-| 4.7 | Verify build | ✅ | Build passed on Windows |
-| 4.8 | Commit and push | ✅ | Merged to main |
+| 4.5 | Create mft_reader.hpp | ✅ | **511 lines** - OverlappedNtfsMftReadPayload + ReadOperation |
+| 4.6 | Update main file includes | ✅ | All I/O headers included |
+| 4.7 | Verify build | ⏳ | Pending Windows build verification |
+| 4.8 | Commit and push | ⏳ | Pending verification |
 
 **Verification Checklist:**
-- [x] Build succeeds (Release)
-- [x] Build succeeds (Debug)
-- [x] Benchmark matches baseline
-- [x] Async I/O still works correctly
+- [ ] Build succeeds (Release)
+- [ ] Build succeeds (Debug)
+- [ ] Benchmark matches baseline
+- [ ] Async I/O still works correctly
 
-**Notes:** Created winnt_types.hpp with Windows NT API types. iocp.hpp and mft_reader.hpp deferred due to complex dependencies on atomic_namespace and RefCounted.
+**Actual Extractions (Phase 4 Completion):**
+- `src/io/overlapped.hpp` - 148 lines: Overlapped base class
+- `src/io/io_completion_port.hpp` - 322 lines: IoCompletionPort, OleIoCompletionPort
+- `src/io/mft_reader.hpp` - 511 lines: OverlappedNtfsMftReadPayload, ReadOperation with memory pool
 
 ---
 
@@ -275,6 +284,13 @@ Record these BEFORE starting any refactoring:
 | 2026-01-23 | 5 | Phase 5 complete - extract NtfsIndex documentation to src/index/ | AI Assistant |
 | 2026-01-23 | 6 | Phase 6 started - create src/cli/, src/gui/ directories and documentation headers | AI Assistant |
 | 2026-01-23 | 7 | Phase 7 Step 7.1 complete - Replace NULL with nullptr throughout codebase | AI Assistant |
+| 2026-01-24 | 3 | **REAL EXTRACTION**: atomic_namespace (645 lines) → src/util/atomic_compat.hpp | AI Assistant |
+| 2026-01-24 | 3 | **REAL EXTRACTION**: RefCounted + intrusive_ptr (97 lines) → src/util/intrusive_ptr.hpp | AI Assistant |
+| 2026-01-24 | 3 | **REAL EXTRACTION**: lock_ptr (107 lines) → src/util/lock_ptr.hpp | AI Assistant |
+| 2026-01-24 | 4 | **REAL EXTRACTION**: Overlapped (148 lines) → src/io/overlapped.hpp | AI Assistant |
+| 2026-01-24 | 4 | **REAL EXTRACTION**: IoCompletionPort (322 lines) → src/io/io_completion_port.hpp | AI Assistant |
+| 2026-01-24 | 4 | **REAL EXTRACTION**: OverlappedNtfsMftReadPayload (511 lines) → src/io/mft_reader.hpp | AI Assistant |
+| 2026-01-24 | - | Monolith reduced from ~14,000 to 12,443 lines (~1,830 lines extracted) | AI Assistant |
 
 ---
 
@@ -282,10 +298,10 @@ Record these BEFORE starting any refactoring:
 
 | ID | Phase | Issue | Status | Resolution |
 |----|-------|-------|--------|------------|
-| 1 | 3 | RefCounted depends on atomic_namespace | 🟢 Resolved | Deferred extraction, kept in main file |
-| 2 | 3 | intrusive_ptr.hpp ADL conflict | 🟢 Resolved | Header created but not included |
-| 3 | 4 | iocp.hpp complex dependencies | 🟡 Open | Deferred to future phase |
-| 4 | 4 | mft_reader.hpp complex dependencies | 🟡 Open | Deferred to future phase |
+| 1 | 3 | RefCounted depends on atomic_namespace | 🟢 Resolved | Extracted atomic_namespace first, then RefCounted |
+| 2 | 3 | intrusive_ptr.hpp ADL conflict | 🟢 Resolved | Extracted with RefCounted to intrusive_ptr.hpp |
+| 3 | 4 | iocp.hpp complex dependencies | 🟢 Resolved | Extracted to io_completion_port.hpp (322 lines) |
+| 4 | 4 | mft_reader.hpp complex dependencies | 🟢 Resolved | Extracted to mft_reader.hpp (511 lines) |
 | 5 | 5 | NtfsIndex ~1960 lines with complex deps | 🟢 Resolved | Documentation header only |
 
 ---

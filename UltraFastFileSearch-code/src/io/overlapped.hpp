@@ -1,74 +1,164 @@
 #pragma once
 
 // ============================================================================
-// Overlapped I/O Base Class
+// Overlapped I/O Base Class and Related Utilities
 // ============================================================================
-// This file documents the Overlapped base class used for async I/O operations.
+// Extracted from UltraFastFileSearch.cpp
 // 
-// NOTE: The actual Overlapped class is NOT extracted yet because it depends on:
-//   - RefCounted (which depends on atomic_namespace)
-//   - The intrusive_ptr infrastructure
-//
-// The class remains in UltraFastFileSearch.cpp until the atomic_namespace
-// and RefCounted dependencies are resolved.
-//
-// This header is provided for documentation and future extraction.
+// Contains:
+//   - Overlapped: Base class for async I/O operations using IOCP
+//   - negative_one: Helper struct for sentinel values
+//   - value_initialized: Template wrapper ensuring value initialization
+//   - constant: Template class for compile-time constant multiplication
 // ============================================================================
 
 #include <Windows.h>
-
-namespace uffs {
+#include <climits>
+#include "../util/intrusive_ptr.hpp"
 
 // ============================================================================
-// Overlapped Class Documentation
+// Overlapped Base Class
 // ============================================================================
-// The Overlapped class is a base class for async I/O operations using IOCP.
-// It inherits from both Windows OVERLAPPED and RefCounted for reference counting.
-//
-// Key features:
-// - Inherits from OVERLAPPED for use with Windows async I/O APIs
-// - Reference counted via RefCounted<Overlapped> for safe memory management
-// - Pure virtual operator() for completion callback
-// - Helper methods for 64-bit offset management
-//
-// Usage pattern:
-//   class MyOperation : public Overlapped {
-//   public:
-//       int operator()(size_t size, uintptr_t key) override {
-//           // Handle completion
-//           // Return > 0 to re-queue, 0 to keep alive, < 0 to destroy
-//           return -1;
-//       }
-//   };
-//
-//   intrusive_ptr<MyOperation> op(new MyOperation());
-//   op->offset(file_offset);
-//   ReadFile(handle, buffer, size, nullptr, op.get());
-//
-// The operator() return value semantics:
-//   > 0: Re-queue the operation (for chained reads)
-//   = 0: Keep the object alive but don't re-queue
-//   < 0: Destroy the object (normal completion)
-//
-// Location in UltraFastFileSearch.cpp: Lines 3107-3131
+// Inherits from both Windows OVERLAPPED and RefCounted for reference counting.
+// Pure virtual operator() serves as completion callback.
 // ============================================================================
 
-// Forward declaration for documentation
-// class Overlapped : public OVERLAPPED, public RefCounted<Overlapped>
-// {
-// public:
-//     virtual ~Overlapped() {}
-//     Overlapped() : OVERLAPPED() {}
-//
-//     // Completion callback - pure virtual
-//     virtual int operator()(size_t size, uintptr_t key) = 0;
-//
-//     // Get 64-bit file offset
-//     long long offset() const;
-//
-//     // Set 64-bit file offset
-//     void offset(long long value);
-// };
+class Overlapped : public OVERLAPPED, public RefCounted<Overlapped>
+{
+	Overlapped(Overlapped const&);
+	Overlapped& operator=(Overlapped const&);
+public:
+	virtual ~Overlapped() {}
 
-} // namespace uffs
+	Overlapped() : OVERLAPPED() {}
+
+	virtual int /*> 0 if re-queue requested, = 0 if no re-queue but no destruction, < 0 if destruction requested */ operator()(size_t const size, uintptr_t const /*key*/) = 0;
+
+	long long offset() const
+	{
+		return (static_cast<long long>(this->OVERLAPPED::OffsetHigh) << (CHAR_BIT * sizeof(this->OVERLAPPED::Offset))) | this->OVERLAPPED::Offset;
+	}
+
+	void offset(long long const value)
+	{
+		this->OVERLAPPED::Offset = static_cast<unsigned long>(value);
+		this->OVERLAPPED::OffsetHigh = static_cast<unsigned long>(value >> (CHAR_BIT * sizeof(this->OVERLAPPED::Offset)));
+	}
+};
+
+// ============================================================================
+// negative_one Helper
+// ============================================================================
+// Converts to any type T as ~T() - useful for sentinel values like
+// INVALID_HANDLE_VALUE
+// ============================================================================
+
+static struct negative_one
+{
+	template <class T>
+	operator T() const
+	{
+		return static_cast<T>(~T());
+	}
+}
+const negative_one;
+
+// ============================================================================
+// value_initialized Template
+// ============================================================================
+// Wrapper ensuring value initialization for any type T
+// ============================================================================
+
+template <class T>
+struct value_initialized
+{
+	typedef value_initialized this_type, type;
+	T value;
+	value_initialized() : value() {}
+
+	value_initialized(T const& value) : value(value) {}
+
+	operator T& ()
+	{
+		return this->value;
+	}
+
+	operator T const& () const
+	{
+		return this->value;
+	}
+
+	operator T volatile& () volatile
+	{
+		return this->value;
+	}
+
+	operator T const volatile& () const volatile
+	{
+		return this->value;
+	}
+
+	T* operator&()
+	{
+		return &this->value;
+	}
+
+	T const* operator&() const
+	{
+		return &this->value;
+	}
+
+	T volatile* operator&() volatile
+	{
+		return &this->value;
+	}
+
+	T const volatile* operator&() const volatile
+	{
+		return &this->value;
+	}
+};
+
+// ============================================================================
+// constant Template Class
+// ============================================================================
+// Compile-time constant multiplication optimization
+// ============================================================================
+
+template <size_t V>
+class constant
+{
+	template <size_t I, size_t N>
+	struct impl;
+public:
+	friend size_t operator*(size_t const m, constant<V> const)
+	{
+		return impl<0, sizeof(V) * CHAR_BIT>::multiply(m);
+	}
+};
+
+template <size_t V> template <size_t I, size_t N> struct constant<V>::impl
+{
+	static size_t multiply(size_t const m)
+	{
+		return impl<I, N / 2>::multiply(m) + impl<I + N / 2, N - N / 2>::multiply(m);
+	}
+};
+
+template <size_t V> template <size_t I> struct constant<V>::impl<I, 1>
+{
+	static size_t multiply(size_t const m)
+	{
+		return (V & static_cast<size_t>(static_cast<size_t>(1) << I)) ? static_cast<size_t>(m << I) : size_t();
+	}
+};
+
+template <> class constant<0xD>
+{
+public:
+	friend size_t operator*(size_t const m, constant<0xD> const)
+	{
+		return (m << 4) - (m << 1) - m;
+	}
+};
 
