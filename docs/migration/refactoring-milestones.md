@@ -15,8 +15,8 @@
 | **Target Completion** | _TBD_ |
 | **Current Phase** | Phase 7 In Progress |
 | **Overall Progress** | 85% (6/7 phases) |
-| **Monolith Size** | 11,428 lines (down from 14,155) |
-| **Lines Extracted** | ~2,700 lines into new headers under src/ |
+| **Monolith Size** | 11,373 lines (down from 14,155) |
+| **Lines Extracted** | ~2,800 lines into new headers under src/ |
 
 ---
 
@@ -104,6 +104,10 @@
 - `src/util/com_init.hpp` (~43 lines) - `CoInit` / `OleInit` COM initialization helpers
 - `src/util/temp_swap.hpp` (~40 lines) - `TempSwap<T>` RAII helper for temporary value swaps
 - `src/util/wow64.hpp` (~130 lines) - `Wow64` / `Wow64Disable` WOW64 file system redirection helpers
+- `src/util/handle.hpp` (~60 lines) - `Handle` RAII wrapper for Windows HANDLE
+- `src/util/allocators.hpp` (~120 lines) - `dynamic_allocator<T>`, `memheap_allocator<T>` custom allocators
+- `src/util/memheap_vector.hpp` (~50 lines) - `memheap_vector<T>` using memheap allocator
+- `src/io/io_priority.hpp` (~80 lines) - `IoPriority` RAII class for I/O priority management
 
 ---
 
@@ -214,6 +218,11 @@
 | 7.5 | Add [[nodiscard]] | ✅ | Added to 5 safety-critical functions |
 | 7.6 | Verify build | ✅ | Build verified on Windows (all green) |
 | 7.7 | Commit and push | ✅ | Changes committed and pushed to main |
+| 7.8 | Extract allocator classes | ✅ | `dynamic_allocator`, `memheap_allocator` → `src/util/allocators.hpp` |
+| 7.9 | Extract memheap_vector | ✅ | `memheap_vector<T>` → `src/util/memheap_vector.hpp` |
+| 7.10 | Remove duplicate Handle/IoPriority | ✅ | Use extracted headers, remove duplicates from monolith |
+| 7.11 | Fix namespace alias issues | ✅ | Add `namespace winnt = uffs::winnt;` for backward compat |
+| 7.12 | Fix c_str() const-correctness | ✅ | Add const overload to `basic_vector_based_string::c_str()` |
 
 **Verification Checklist:**
 - [ ] Build succeeds (Release)
@@ -233,8 +242,8 @@
 | 4 | Extract I/O Layer | 6 | 🟢 Complete | 8/8 |
 | 5 | Extract NtfsIndex | 6 | 🟢 Complete | 5/6 |
 | 6 | Separate GUI/CLI | 8 | 🟡 In Progress | 5/8 |
-| 7 | Modernize C++ | 6 | 🟡 In Progress | 5/7 |
-| **Total** | | **34** | | **43/49** |
+| 7 | Modernize C++ | 6 | 🟡 In Progress | 10/12 |
+| **Total** | | **34** | | **48/54** |
 
 ### Status Legend
 
@@ -304,6 +313,16 @@ Record these BEFORE starting any refactoring:
 | 2026-01-24 | - | Monolith further reduced from 12,443 to 12,019 lines (~2,100 lines extracted in total) | AI Assistant |
 | 2026-01-24 | 3 | **REAL EXTRACTION**: Wow64 + Wow64Disable (~90 lines) → src/util/wow64.hpp | AI Assistant |
 | 2026-01-24 | - | Monolith further reduced from 12,019 to 11,932 lines (~2,200 lines extracted in total) | AI Assistant |
+| 2026-01-24 | 7 | **REAL EXTRACTION**: dynamic_allocator + memheap_allocator → src/util/allocators.hpp | AI Assistant |
+| 2026-01-24 | 7 | **REAL EXTRACTION**: memheap_vector<T> → src/util/memheap_vector.hpp | AI Assistant |
+| 2026-01-24 | 7 | Remove duplicate Handle class from monolith (use src/util/handle.hpp) | AI Assistant |
+| 2026-01-24 | 7 | Remove duplicate IoPriority class from monolith (use src/io/io_priority.hpp) | AI Assistant |
+| 2026-01-24 | 7 | Fix compilation: `Handle::valid` access → make public (commit 42870746) | AI Assistant |
+| 2026-01-24 | 7 | Fix compilation: add `default_memheap_alloc` type alias (commit 42870746) | AI Assistant |
+| 2026-01-24 | 7 | Fix compilation: replace duplicate `winnt` namespace with `using namespace uffs::winnt;` (commit 42870746) | AI Assistant |
+| 2026-01-24 | 7 | Fix compilation: add `namespace winnt = uffs::winnt;` alias for backward compatibility (commit 57ca09f2) | AI Assistant |
+| 2026-01-24 | 7 | Fix compilation: add const overload of `basic_vector_based_string::c_str()` (commit 8f3c9a39) | AI Assistant |
+| 2026-01-24 | - | Monolith reduced from 11,932 to 11,373 lines (~2,800 lines extracted in total) | AI Assistant |
 
 ---
 
