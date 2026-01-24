@@ -42,6 +42,30 @@ This document outlines a comprehensive plan to modernize the UFFS C++ codebase w
 
 ---
 
+## Implementation Status (as of 2026-01-24)
+
+- Phases 1–5 from this plan have been executed; Phase 6 is partially complete; Phase 7 (Modernize C++) is in progress.
+- The main monolithic source file `UltraFastFileSearch.cpp` has been reduced from 14,155 to 12,019 lines (≈2,100 lines migrated into headers under `src/`).
+- Key utility and I/O abstractions now live in dedicated headers:
+  - `src/util/atomic_compat.hpp` — atomic_namespace (spin locks, atomics, lightweight sync primitives)
+  - `src/util/intrusive_ptr.hpp` — `RefCounted` + `intrusive_ptr`
+  - `src/util/lock_ptr.hpp` — `lock_ptr` RAII lock wrapper
+  - `src/io/overlapped.hpp` — `Overlapped` base class for async I/O
+  - `src/io/io_completion_port.hpp` — `IoCompletionPort` / `OleIoCompletionPort`
+  - `src/io/mft_reader.hpp` — `OverlappedNtfsMftReadPayload` and related MFT read operations
+  - `src/util/containers.hpp` — `vector_with_fast_size` and `Speed` helper
+  - `src/util/buffer.hpp` — resizable buffer abstraction used by the indexer
+  - `src/util/com_init.hpp` — `CoInit` and `OleInit` RAII COM initialization helpers
+  - `src/util/temp_swap.hpp` — `TempSwap<T>` RAII helper for temporary value swaps
+- Phase 7 modernization work applied so far:
+  - All `NULL` pointer literals have been replaced with `nullptr`.
+  - `auto` is used for several complex iterator types where it improves readability.
+  - `[[nodiscard]]` has been added to 5 functions where ignoring the return value would likely be a bug.
+
+For detailed per-phase status and verification notes, see **`refactoring-milestones.md`**.
+
+---
+
 ## Current State Analysis
 
 ### File Size Issues

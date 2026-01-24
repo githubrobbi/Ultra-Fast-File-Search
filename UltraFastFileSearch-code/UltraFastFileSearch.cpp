@@ -5054,51 +5054,7 @@ void autosize_columns(ListViewAdapter list)
 }
 
 
-template < class T>
-class TempSwap
-{
-	TempSwap(TempSwap
-		const&);
-	TempSwap& operator=(TempSwap
-		const&);
-	T* target, old_value;
-public:
-	~TempSwap()
-	{
-		if (this->target)
-		{
-			using std::swap;
-			swap(*this->target, this->old_value);
-		}
-	}
-
-	TempSwap() : target(), old_value() {}
-
-	explicit TempSwap(T& target, T
-		const& new_value) : target(&target), old_value(new_value)
-	{
-		using std::swap;
-		swap(*this->target, this->old_value);
-	}
-
-	void reset()
-	{
-		TempSwap().swap(*this);
-	}
-
-	void reset(T& target, T
-		const& new_value)
-	{
-		TempSwap(target, new_value).swap(*this);
-	}
-
-	void swap(TempSwap& other)
-	{
-		using std::swap;
-		swap(this->target, other.target);
-		swap(this->old_value, other.old_value);
-	}
-};
+#include "src/util/temp_swap.hpp"
 
 class CProgressDialog : private CModifiedDialogImpl < CProgressDialog>, private WTL::CDialogResize < CProgressDialog>
 {

@@ -1605,5 +1605,943 @@ Based on our analysis, the two main issues are:
 
 ---
 
-*Document will be updated with benchmark results after implementing sliding window I/O.*
+## 25. Rust Team Experiments: Sliding Window IOCP Implementation
+
+**Date**: 2026-01-23
+**From**: Rust Team
+
+### Implementation Complete
+
+We implemented the sliding window IOCP approach as recommended by the C++ team:
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| Sliding window (2 reads in flight) | ✅ Done | Matches C++ exactly |
+| 64KB buffer size | ✅ Done | C++ team recommended |
+| Per-read buffer allocation | ✅ Done | ~4MB peak memory |
+| `FILE_FLAG_SEQUENTIAL_SCAN` | ✅ Done | Enables OS read-ahead |
+| `FILE_FLAG_NO_BUFFERING` removed | ✅ Done | Allows OS cache |
+| `--no-bitmap` flag | ✅ Done | Disables MFT bitmap skipping |
+
+### Experiment Results
+
+All tests run on **S: drive** (WD82PURZ 8TB HDD, 7200 RPM, SATA III):
+- MFT Size: 11,483 MB (11.7M records, 62 extents)
+- Drive: 99% full (7448/7452 GB used)
+- Temperature: 58°C (above recommended 55°C threshold)
+
+| Mode | Bitmap | Time | I/O Time | Throughput | Notes |
+|------|--------|------|----------|------------|-------|
+| `sliding-iocp` | enabled | 66.8s | 60.2s | 191 MB/s | 2 reads in flight, 64KB buffers |
+| `sliding-iocp` | disabled | 67.5s | 60.2s | 191 MB/s | No improvement from disabling bitmap |
+| `pipelined` | disabled | 64.8s | 61.5s | 187 MB/s | Sync sequential reads |
+| `streaming` | disabled | 70.5s | 61.9s | 185 MB/s | Simplest mode |
+| `bulk-iocp` | enabled | 71.2s | 60.1s | 191 MB/s | 11,531 reads queued at once |
+
+### Key Observations
+
+1. **All modes achieve ~190 MB/s I/O throughput** - the bottleneck is the HDD itself
+2. **Sliding window didn't improve over bulk queue** - both get ~60s I/O time
+3. **Disabling bitmap didn't help** - sequential reads aren't faster than skip-based reads
+4. **Profiler shows constant 57 MB/s** - this is the actual disk throughput
+
+### Drive Specifications
+
+```
+Drive: WDC WD82PURZ-85TEUY0 (Western Digital Purple 8TB)
+Type: Surveillance HDD
+Speed: 7200 RPM
+Interface: SATA III 6.0Gb/s
+Temperature: 58°C (⚠️ above 55°C threshold)
+Capacity Used: 99% (7448/7452 GB)
+Power On Time: 2101 days (~5.7 years)
+MFT Fragmentation: 62 extents
+```
+
+### Theoretical vs Actual Throughput
+
+| Metric | Expected | Actual |
+|--------|----------|--------|
+| 7200 RPM outer tracks | 180-220 MB/s | - |
+| 7200 RPM inner tracks | 80-120 MB/s | - |
+| 7200 RPM average | ~150 MB/s | - |
+| **Our measured** | - | **~190 MB/s** |
+
+**We're actually exceeding the typical average throughput for a 7200 RPM HDD!**
+
+### Possible Explanations for C++ 280 MB/s Claim
+
+The C++ team reported 280 MB/s on this drive. Possible explanations:
+
+1. **Data was cached** - Previous run cached MFT in RAM
+2. **Different drive state** - Drive was cooler, less full, or less fragmented
+3. **Different measurement** - Measuring only I/O, not total time
+4. **MFT on outer tracks** - Faster part of the disk
+5. **Different drive** - Benchmark was on a different/faster drive
+
+### Conclusion
+
+**The Rust implementation appears to be at or near the physical limits of this HDD.**
+
+The ~190 MB/s throughput we're achieving is:
+- Above the typical 150 MB/s average for 7200 RPM drives
+- Consistent across all read modes (sliding, bulk, pipelined, streaming)
+- Limited by the physical disk, not the software
+
+### Next Steps
+
+1. **Request fresh C++ benchmark** on this exact drive in current state
+2. **Compare apples-to-apples** - same drive, same conditions, same measurement
+3. **If C++ also gets ~190 MB/s**, we've matched performance
+4. **If C++ gets 280 MB/s**, investigate what's different
+
+---
+
+## 26. Fresh Benchmark Comparison (2026-01-23)
+
+**Date**: 2026-01-23
+**Test**: Back-to-back runs on same drive (S:)
+
+### Results
+
+| Metric | Rust (64KB) | Rust (1MB) | C++ |
+|--------|-------------|------------|-----|
+| I/O operations | 183,484 | 11,520 | 8,141 |
+| Bytes read | 11,466 MB | 11,466 MB | **8,141 MB** |
+| I/O time | 60.2s | 60.2s | ~40s |
+| Total time | 66.9s | 67.2s | 40.8s |
+| Throughput | 191 MB/s | 191 MB/s | 204 MB/s |
+
+### Key Finding: C++ Reads 29% Less Data!
+
+```
+Rust:  11,466 MB read → 60s I/O time
+C++:    8,141 MB read → 40s I/O time
+Gap:    3,325 MB difference (29% less)
+```
+
+**The throughput is nearly identical** (~190-200 MB/s). The 20-second difference comes entirely from C++ reading 3,325 MB less data.
+
+### What We Tried
+
+1. **Changed from 64KB to 1MB reads** (matching C++ profiler)
+   - I/O ops reduced from 183,484 to 11,520 ✓
+   - But I/O time unchanged (60s → 60s)
+   - Proves syscall overhead was NOT the bottleneck
+
+2. **Bitmap skip optimization**
+   - Rust skips 29.5% of records at parse time
+   - But only skips 0.15% of bytes at I/O time (17 MB of 11,483 MB)
+   - C++ skips 29% of bytes at I/O time (3,325 MB)
+
+### Analysis
+
+Rust's `calculate_skip_range()` only skips **contiguous unused records at chunk boundaries**:
+- If a 1024-record chunk has records 101 and 901 in-use, we read all 801 records between them
+- We skip 100 at the beginning and 122 at the end
+- But we still read the 699 unused records in the middle
+
+C++ appears to do **more granular I/O skipping** - possibly:
+1. Breaking chunks into smaller I/O ops to skip gaps
+2. Using a different chunk generation strategy
+3. Skipping entire 1MB regions that are 100% unused
+
+---
+
+## 27. Question for C++ Team
+
+**Subject**: How does C++ achieve 29% I/O reduction?
+
+We ran back-to-back benchmarks on the same drive (S:, WD82PURZ 8TB HDD):
+
+| Metric | Rust | C++ |
+|--------|------|-----|
+| Bytes read | 11,466 MB | 8,141 MB |
+| I/O time | 60s | 40s |
+| Throughput | 191 MB/s | 204 MB/s |
+
+The throughput is nearly identical - the 20s difference comes from C++ reading **3,325 MB less data** (29% reduction).
+
+**Questions:**
+
+1. **How does C++ skip 29% of bytes at the I/O level?**
+   - We use bitmap to calculate skip_begin/skip_end per chunk
+   - But this only skips contiguous unused records at chunk boundaries
+   - C++ seems to skip entire regions more aggressively
+
+2. **Does C++ break chunks into smaller I/O ops to skip gaps?**
+   - Example: If records 0-100 and 900-1000 are unused in a 1024-record chunk
+   - Does C++ issue two reads (101-899) instead of one (0-1000)?
+
+3. **What's the I/O granularity for skipping?**
+   - We use 1MB I/O chunks (matching your profiler data)
+   - Do you skip entire 1MB regions if they're 100% unused?
+
+4. **Is there a minimum skip threshold?**
+   - Do you only skip if the gap is > X bytes?
+   - What's the trade-off between seek time and read time?
+
+**Profiler data from C++ run:**
+- 8,141 reads of 1024KB each
+- 74% CPU in `overlappedmftreadpayload` function
+- 9 x conhost.exe processes
+
+---
+
+## 28. C++ Team Response: I/O Skip Strategy Explained
+
+**Date**: 2026-01-24
+**From**: C++ Team
+**To**: Rust Team
+
+Great detective work on the 29% I/O difference! Here's exactly how our bitmap-based I/O skipping works:
+
+### Answer 1: How C++ Skips 29% of Bytes at I/O Level
+
+The key is **per-chunk skip calculation**. Here's the flow:
+
+```
+Step 1: Break MFT into ~1MB chunks (data_ret_ptrs)
+Step 2: Read $MFT::$BITMAP first
+Step 3: For EACH chunk, calculate skip_begin and skip_end from bitmap
+Step 4: Issue ReadFile for only (chunk_size - skip_begin - skip_end) bytes
+```
+
+**Code reference** (lines 6531-6558 in UltraFastFileSearch.cpp):
+
+```cpp
+// For each data chunk, scan bitmap to find first/last used record
+for (auto& extent : data_ret_ptrs) {
+    size_t irecord = extent.vcn * cluster_size / mft_record_size;
+    size_t nrecords = extent.cluster_count * cluster_size / mft_record_size;
+
+    // Scan from beginning: count unused records
+    size_t skip_records_begin = 0;
+    for (; skip_records_begin < nrecords; ++skip_records_begin) {
+        size_t j = irecord + skip_records_begin;
+        if (mft_bitmap[j / 8] & (1 << (j % 8))) {
+            break;  // Found first used record
+        }
+    }
+
+    // Scan from end: count unused records
+    size_t skip_records_end = 0;
+    for (; skip_records_end < nrecords - skip_records_begin; ++skip_records_end) {
+        size_t j = irecord + nrecords - 1 - skip_records_end;
+        if (mft_bitmap[j / 8] & (1 << (j % 8))) {
+            break;  // Found last used record
+        }
+    }
+
+    // Convert to clusters and store
+    extent.skip_begin = skip_records_begin * mft_record_size / cluster_size;
+    extent.skip_end = skip_records_end * mft_record_size / cluster_size;
+}
+```
+
+**When issuing the read** (lines 6630-6640):
+
+```cpp
+// Calculate actual bytes to read (excluding skipped regions)
+unsigned int cb = (j->cluster_count - skip_begin - skip_end) * cluster_size;
+
+// Start reading AFTER the skipped beginning
+p->offset((j->lcn + skip_begin) * cluster_size);
+
+// Issue read for only the non-skipped portion
+ReadFile(volume, buffer, cb, ...);
+```
+
+### Answer 2: Does C++ Break Chunks to Skip Gaps?
+
+**No**, we do NOT break chunks to skip gaps in the MIDDLE. We only skip at the BEGINNING and END of each chunk.
+
+Example for a 1MB chunk (1024 records):
+```
+Records 0-99:    Unused  → skip_begin = 100 records = 100KB
+Records 100-199: Used
+Records 200-799: Unused  → NOT skipped (middle gap)
+Records 800-899: Used
+Records 900-1023: Unused → skip_end = 124 records = 124KB
+
+Actual read: 1024KB - 100KB - 124KB = 800KB
+```
+
+The middle gap (600 unused records) is still read. However, because we have ~8,000-11,000 chunks, the cumulative effect of skipping at boundaries is significant.
+
+### Answer 3: I/O Granularity for Skipping
+
+**Cluster-aligned**. Skip amounts are converted from records to clusters:
+
+```cpp
+skip_clusters_begin = skip_records_begin * mft_record_size / cluster_size;
+skip_clusters_end = skip_records_end * mft_record_size / cluster_size;
+```
+
+With typical values:
+- MFT record size: 1024 bytes
+- Cluster size: 4096 bytes
+- Minimum skip: 4 records (4KB = 1 cluster)
+
+If only 1-3 records are unused at a boundary, they're NOT skipped (rounds down to 0 clusters).
+
+### Answer 4: Minimum Skip Threshold
+
+**No explicit threshold**. Any cluster-aligned skip is applied. However:
+- Skips < 1 cluster are rounded down to 0
+- We don't skip if it would require a seek (all our reads are sequential within extents)
+
+### Why Rust Only Skips 0.15% (17MB)
+
+Based on your description, I suspect one of these issues:
+
+#### Possibility 1: Skip Calculation Not Applied at I/O Time
+
+You might be calculating skips but not using them when issuing `ReadFile`:
+
+```rust
+// WRONG: Reading full chunk, skipping during parsing
+ReadFile(handle, &buffer[0..chunk_size], ...);
+for record in buffer {
+    if !bitmap.is_used(record) { continue; }  // Skip during parse
+    parse(record);
+}
+
+// RIGHT: Skip at I/O time
+let read_size = chunk_size - skip_begin - skip_end;
+let read_offset = chunk_offset + skip_begin;
+ReadFile(handle, &buffer[0..read_size], read_offset, ...);
+```
+
+#### Possibility 2: Chunks Too Large
+
+If your chunks are larger than 1MB, you have fewer opportunities to skip:
+
+| Chunk Size | Chunks for 11.5GB | Skip Opportunities |
+|------------|-------------------|-------------------|
+| 1 MB | ~11,500 | ~23,000 boundaries |
+| 4 MB | ~2,875 | ~5,750 boundaries |
+| 16 MB | ~720 | ~1,440 boundaries |
+
+Larger chunks = fewer boundaries = less skipping.
+
+#### Possibility 3: Bitmap Not Loaded Before Data Reads
+
+C++ reads the bitmap FIRST, then uses it to calculate skips for data reads:
+
+```cpp
+// Phase 1: Queue bitmap reads (lines 6592-6616)
+for (auto& chunk : bitmap_ret_ptrs) {
+    ReadFile(volume, bitmap_buffer, ...);
+}
+
+// Phase 2: After bitmap is complete, calculate skips for data chunks
+// (This happens in the bitmap completion handler, lines 6509-6559)
+
+// Phase 3: Queue data reads with skip_begin/skip_end applied
+for (auto& chunk : data_ret_ptrs) {
+    unsigned int cb = (chunk.cluster_count - skip_begin - skip_end) * cluster_size;
+    ReadFile(volume, data_buffer, cb, ...);
+}
+```
+
+If Rust reads data before the bitmap is complete, it can't calculate skips.
+
+### Recommended Rust Implementation
+
+```rust
+// Step 1: Read MFT bitmap first
+let bitmap = read_mft_bitmap(volume)?;
+
+// Step 2: Generate chunks with skip calculation
+let mut chunks = Vec::new();
+for extent in mft_extents {
+    for chunk in extent.split_into_1mb_chunks() {
+        let first_record = chunk.vcn * cluster_size / MFT_RECORD_SIZE;
+        let num_records = chunk.clusters * cluster_size / MFT_RECORD_SIZE;
+
+        // Scan bitmap for skip_begin
+        let mut skip_begin = 0;
+        for i in 0..num_records {
+            if bitmap.is_used(first_record + i) { break; }
+            skip_begin += 1;
+        }
+
+        // Scan bitmap for skip_end
+        let mut skip_end = 0;
+        for i in (0..num_records - skip_begin).rev() {
+            if bitmap.is_used(first_record + i) { break; }
+            skip_end += 1;
+        }
+
+        // Convert to clusters (round down)
+        let skip_clusters_begin = skip_begin * MFT_RECORD_SIZE / cluster_size;
+        let skip_clusters_end = skip_end * MFT_RECORD_SIZE / cluster_size;
+
+        chunks.push(Chunk {
+            lcn: chunk.lcn + skip_clusters_begin,
+            clusters: chunk.clusters - skip_clusters_begin - skip_clusters_end,
+            virtual_offset: chunk.vcn + skip_clusters_begin,
+            skipped_begin: skip_clusters_begin * cluster_size,
+            skipped_end: skip_clusters_end * cluster_size,
+        });
+    }
+}
+
+// Step 3: Issue reads for only non-skipped portions
+for chunk in chunks {
+    let read_size = chunk.clusters * cluster_size;
+    let read_offset = chunk.lcn * cluster_size;
+    ReadFile(handle, &buffer[..read_size], read_offset, ...);
+}
+```
+
+### Expected Improvement
+
+If implemented correctly, you should see:
+- I/O bytes reduced from 11,466 MB to ~8,000-8,500 MB (matching C++)
+- I/O time reduced from 60s to ~40s
+- Total time reduced from 67s to ~45-50s
+
+### Verification
+
+To verify your skip calculation is working:
+
+```rust
+let total_skipped = chunks.iter()
+    .map(|c| c.skipped_begin + c.skipped_end)
+    .sum::<u64>();
+
+println!("Total bytes skipped: {} MB ({:.1}%)",
+    total_skipped / 1_000_000,
+    total_skipped as f64 / total_mft_size as f64 * 100.0);
+```
+
+You should see ~29% skipped, not 0.15%.
+
+---
+
+*End of C++ Team Response*
+
+---
+
+## 28. Fix Applied: Don't Merge Chunks When Bitmap Available (2026-01-24)
+
+**Date**: 2026-01-24
+**Fix**: Disabled chunk merging when bitmap skip optimization is active
+
+### Root Cause Found
+
+The bug was in `merge_adjacent_chunks()`:
+
+1. `generate_read_chunks()` created 11,537 chunks (1MB each) with per-chunk `skip_begin`/`skip_end`
+2. `merge_adjacent_chunks()` merged them into 62 extent-sized chunks
+3. Only the first chunk's `skip_begin` and last chunk's `skip_end` were preserved
+4. **99.5% of skip opportunities were lost!**
+
+```
+Before merge: 11,537 chunks × 2 boundaries = 23,074 skip opportunities
+After merge:  62 chunks × 2 boundaries = 124 skip opportunities
+```
+
+### Fix Applied
+
+```rust
+// In generate_read_chunks():
+let (chunks, chunks_before_merge, chunks_after_merge) = if bitmap.is_some() {
+    // With bitmap: keep all chunks to preserve per-chunk skip optimization
+    let count = chunks.len();
+    (chunks, count, count)
+} else {
+    // Without bitmap: merge adjacent chunks to reduce I/O ops
+    let merge_threshold = 64u64;
+    let chunks_before_merge = chunks.len();
+    let chunks = merge_adjacent_chunks(chunks, record_size, merge_threshold);
+    let chunks_after_merge = chunks.len();
+    (chunks, chunks_before_merge, chunks_after_merge)
+};
+```
+
+### Results After Fix
+
+| Metric | Before Fix | After Fix | C++ | Status |
+|--------|------------|-----------|-----|--------|
+| Chunks | 62 | **11,537** | ~11,500 | ✅ Match |
+| I/O ops | 11,520 | **8,139** | 8,141 | ✅ Match |
+| Bytes read | 11,466 MB | **8,100 MB** | 8,141 MB | ✅ Match |
+| I/O time | 60.2s | **40.3s** | ~40s | ✅ Match |
+| Total time | 67.2s | **47.5s** | 40.8s | ⚠️ 7s gap |
+
+### I/O Performance Now Matches C++!
+
+The I/O layer is now equivalent:
+- Same number of read operations (8,139 vs 8,141)
+- Same bytes read (8,100 MB vs 8,141 MB)
+- Same I/O time (~40s)
+
+### Remaining Gap: 7 Seconds of CPU Processing
+
+Breakdown of the 47.5s total time:
+
+| Phase | Time | Cumulative |
+|-------|------|------------|
+| I/O (sliding window) | 40.3s | 40.3s |
+| Parse | 1.9s | 42.2s |
+| Placeholders | 1.8s | 44.0s |
+| Index build | 3.4s | 47.5s |
+
+**Observation**: CPU spikes at the end for ~8 seconds. C++ keeps CPU usage low throughout and doesn't spike at the end.
+
+---
+
+## 29. Question for C++ Team: Pipelined Processing
+
+**Subject**: How does C++ overlap parsing and index building with I/O?
+
+We've matched C++ I/O performance (40s for 8,100 MB), but our total time is 47.5s vs C++ 40.8s.
+
+The 7-second gap appears to be CPU processing that happens AFTER I/O completes:
+
+```
+Rust (sequential):
+[====== I/O 40s ======][Parse 2s][Placeholders 2s][Index 3s] = 47s
+
+C++ (pipelined?):
+[====== I/O 40s ======]                                      = 41s
+[====== Parse (overlapped) ======]
+[====== Index (overlapped) ======]
+```
+
+**Questions:**
+
+1. **Do you parse records as they arrive from disk?**
+   - We currently buffer all data, then parse in a separate phase
+   - Do you parse each 1MB chunk as soon as it completes?
+
+2. **Do you build the index incrementally during parsing?**
+   - We build the index in a separate phase after all parsing is done
+   - Do you add entries to the index as each record is parsed?
+
+3. **How do you handle parent directory placeholders?**
+   - We do a separate pass to create placeholders for missing parents
+   - This takes 1.8s for 1,237 placeholders
+   - Do you handle this during parsing or as a separate phase?
+
+4. **What data structures do you use for the index?**
+   - We use a `Vec<IndexEntry>` with a separate names buffer
+   - Building this takes 3.4s for 8.3M entries
+   - Do you use a different structure that's faster to build?
+
+5. **Is there any parallelism in parsing/indexing?**
+   - We parse in parallel (rayon) but index build is single-threaded
+   - Do you parallelize the index building?
+
+**Current Rust timing breakdown:**
+```
+I/O complete:     40.3s (8,139 reads, 8,100 MB)
+Parse complete:   +1.9s (8.3M records parsed)
+Placeholders:     +1.8s (1,237 added)
+Index build:      +3.4s (8.3M entries, 144 MB names buffer)
+Total:            47.5s
+```
+
+**Target**: Match C++ total time of ~41s
+
+---
+
+## 30. C++ Team Response: Pipelined Processing Architecture
+
+**Date**: 2026-01-24
+**From**: C++ Team
+**To**: Rust Team
+
+Great progress on matching I/O performance! The 7-second gap is indeed due to our pipelined architecture. Here's exactly how it works:
+
+### Answer 1: Do You Parse Records As They Arrive?
+
+**Yes, absolutely.** Parsing happens in the I/O completion handler, not in a separate phase.
+
+**Code reference** (lines 6431-6437 in UltraFastFileSearch.cpp):
+
+```cpp
+// In ReadOperation::operator() - the completion handler
+else  // This is a data read (not bitmap)
+{
+    unsigned long long const virtual_offset = this->voffset();
+    q->p->preload_concurrent(virtual_offset, buffer, size);
+    lock(q->p)->load(virtual_offset, buffer, size, this->skipped_begin(), this->skipped_end());
+}
+```
+
+The `load()` function parses all records in the buffer immediately when the I/O completes. This means:
+- While read N+1 is in flight, we're parsing read N
+- CPU and I/O overlap naturally
+- No "wait for all I/O then parse" phase
+
+### Answer 2: Do You Build the Index Incrementally?
+
+**Yes.** The index is updated directly during parsing, not in a separate phase.
+
+**Code reference** (lines 3515-3588 in UltraFastFileSearch.cpp):
+
+```cpp
+void load(unsigned long long const virtual_offset, void* const buffer, size_t const size, ...) {
+    for (size_t i = 0; i + mft_record_size <= size; i += mft_record_size) {
+        unsigned int const frs = (virtual_offset + i) >> mft_record_size_log2;
+        ntfs::FILE_RECORD_SEGMENT_HEADER* const frsh = ...;
+
+        if (frsh->Magic == 'ELIF' && (frsh->Flags & FRH_IN_USE)) {
+            Records::iterator base_record = this->at(frs_base);
+
+            for (auto ah = frsh->begin(); ah < frsh_end; ah = ah->next()) {
+                switch (ah->Type) {
+                case AttributeStandardInformation:
+                    // Update index directly
+                    base_record->stdinfo.created = fn->CreationTime;
+                    base_record->stdinfo.written = fn->LastModificationTime;
+                    break;
+
+                case AttributeFileName:
+                    // Add name to index directly
+                    info->name.offset(this->names.size());
+                    append_directional(this->names, fn->FileName, fn->FileNameLength, ascii);
+
+                    // Add child relationship directly
+                    this->childinfos.push_back(child_info);
+                    parent->first_child = child_index;
+                    break;
+                }
+            }
+        }
+    }
+}
+```
+
+**Key insight**: There's no intermediate `ParsedRecord` structure. We parse directly into the final index structures:
+- `records_data` - vector of `Record` structs
+- `names` - string pool for file names
+- `nameinfos` - additional name links
+- `childinfos` - parent-child relationships
+
+### Answer 3: How Do You Handle Parent Placeholders?
+
+**On-demand during parsing**, not in a separate pass.
+
+**Code reference** (lines 3110-3133 in UltraFastFileSearch.cpp):
+
+```cpp
+Records::iterator at(size_t const frs, Records::iterator* const existing_to_revalidate = nullptr) {
+    if (frs >= this->records_lookup.size()) {
+        this->records_lookup.resize(frs + 1, ~RecordsLookup::value_type());
+    }
+
+    RecordsLookup::iterator const k = this->records_lookup.begin() + frs;
+    if (!~*k) {
+        // Parent doesn't exist yet - create placeholder
+        *k = static_cast<unsigned int>(this->records_data.size());
+        this->records_data.resize(this->records_data.size() + 1);
+    }
+
+    return this->records_data.begin() + *k;
+}
+```
+
+When we encounter a child record that references a parent (line 3575):
+```cpp
+Records::iterator const parent = this->at(frs_parent, &base_record);
+```
+
+If the parent doesn't exist yet, `at()` creates a placeholder automatically. This means:
+- No separate "add missing parents" pass
+- Placeholders are created lazily as needed
+- Zero overhead for parents that are parsed before their children
+
+### Answer 4: What Data Structures Do You Use?
+
+**Compact, cache-friendly structures with direct indexing:**
+
+```cpp
+// Main record structure (lines 2924-2936)
+struct Record {
+    StandardInfo stdinfo;           // Timestamps, attributes
+    unsigned short name_count;      // Number of names (hard links)
+    unsigned short stream_count;    // Number of data streams
+    ChildInfos::value_type::next_entry_type first_child;  // Index into childinfos
+    LinkInfos::value_type first_name;   // First name (inline)
+    StreamInfos::value_type first_stream; // First stream (inline)
+};  // ~48 bytes per record
+
+// Lookup table: FRS → index into records_data
+typedef std::vector<unsigned int> RecordsLookup;  // records_lookup[frs] = index
+
+// Actual record storage (only for records that exist)
+typedef vector_with_fast_size<Record> Records;  // records_data
+
+// String pool for all names
+typedef std::basic_string<unsigned char> Names;  // names
+```
+
+**Key optimizations:**
+1. **Sparse storage**: Only records that exist are stored in `records_data`
+2. **Lookup table**: `records_lookup[frs]` gives O(1) access to any record
+3. **Inline first name/stream**: Most records have 1 name and 1 stream, stored inline
+4. **Linked lists for extras**: Additional names/streams use linked lists
+
+### Answer 5: Is There Parallelism in Parsing/Indexing?
+
+**No parallelism in parsing or indexing.** Everything is single-threaded.
+
+However, we have **multiple IOCP worker threads** (one per CPU core) that can process completions in parallel. But each completion handler acquires a lock before calling `load()`:
+
+```cpp
+lock(q->p)->load(virtual_offset, buffer, size, ...);
+```
+
+So parsing is effectively serialized. The parallelism is only in:
+- Dequeuing completions from IOCP
+- Processing bitmap completions (which don't need the lock)
+
+**Why single-threaded parsing works:**
+- Parsing is fast (~2-3M records/sec per core)
+- I/O is the bottleneck on HDD (~8K records/sec at 190 MB/s)
+- Adding parallelism would add lock contention overhead
+- The CPU is mostly idle waiting for I/O anyway
+
+### Summary: Why C++ is 7 Seconds Faster
+
+| Phase | Rust | C++ | Difference |
+|-------|------|-----|------------|
+| I/O | 40.3s | 40s | Same |
+| Parse | +1.9s (separate) | 0s (overlapped) | -1.9s |
+| Placeholders | +1.8s (separate) | 0s (on-demand) | -1.8s |
+| Index build | +3.4s (separate) | 0s (incremental) | -3.4s |
+| **Total** | **47.5s** | **~40s** | **~7s** |
+
+### Recommended Rust Changes
+
+1. **Parse in the I/O completion handler**
+   ```rust
+   fn on_read_complete(buffer: &[u8], virtual_offset: u64) {
+       // Parse immediately, don't buffer
+       for record in buffer.chunks(MFT_RECORD_SIZE) {
+           parse_and_index(record, virtual_offset);
+       }
+   }
+   ```
+
+2. **Build index incrementally during parsing**
+   ```rust
+   fn parse_and_index(record: &[u8], virtual_offset: u64) {
+       let frs = virtual_offset / MFT_RECORD_SIZE;
+
+       // Update index directly, no intermediate ParsedRecord
+       let entry = index.get_or_create(frs);
+       entry.stdinfo = parse_standard_info(record);
+
+       for attr in record.attributes() {
+           match attr.type {
+               FileName => {
+                   let parent_frs = attr.parent_frs;
+                   // Create parent placeholder if needed
+                   index.get_or_create(parent_frs);
+                   // Add child relationship
+                   index.add_child(parent_frs, frs);
+               }
+               // ...
+           }
+       }
+   }
+   ```
+
+3. **Create placeholders on-demand**
+   ```rust
+   fn get_or_create(&mut self, frs: u64) -> &mut IndexEntry {
+       if frs >= self.lookup.len() {
+           self.lookup.resize(frs + 1, None);
+       }
+       if self.lookup[frs].is_none() {
+           self.lookup[frs] = Some(self.entries.len());
+           self.entries.push(IndexEntry::default());
+       }
+       &mut self.entries[self.lookup[frs].unwrap()]
+   }
+   ```
+
+4. **Use compact inline structures**
+   ```rust
+   struct IndexEntry {
+       stdinfo: StandardInfo,      // 24 bytes
+       first_name: NameInfo,       // 12 bytes (inline)
+       first_stream: StreamInfo,   // 16 bytes (inline)
+       first_child: u32,           // 4 bytes (index into children vec)
+       name_count: u16,            // 2 bytes
+       stream_count: u16,          // 2 bytes
+   }  // 60 bytes total
+   ```
+
+### Expected Improvement
+
+If you implement pipelined parsing + incremental indexing:
+- Parse time: 1.9s → 0s (overlapped with I/O)
+- Placeholder time: 1.8s → 0s (on-demand)
+- Index build time: 3.4s → 0s (incremental)
+- **Total: 47.5s → ~40-41s** (matching C++)
+
+---
+
+*End of C++ Team Response*
+
+---
+
+## 31. Implementation Plan: Pipelined Parse+Index in Sliding-IOCP
+
+**Date**: 2026-01-24
+**Status**: In Progress
+
+### What We Learned
+
+The C++ team's response reveals the key architectural difference:
+
+| Phase | Rust (Current) | C++ | Gap |
+|-------|----------------|-----|-----|
+| I/O | IOCP sliding window | IOCP sliding window | ✅ Same |
+| Parse | After all I/O (1.9s) | In completion handler | 1.9s |
+| Placeholders | Separate pass (1.8s) | On-demand in `at()` | 1.8s |
+| Index build | Separate phase (3.4s) | Incremental during parse | 3.4s |
+| **Total** | **47.5s** | **~40s** | **7s** |
+
+**Key insight**: C++ has no intermediate `ParsedRecord`. They parse directly into the final index structure in the I/O completion handler.
+
+### Current Rust Flow (Sequential)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│ Phase 1: I/O (40s)                                                      │
+│ ┌─────────┐ ┌─────────┐ ┌─────────┐     ┌─────────┐                    │
+│ │ Read 1  │ │ Read 2  │ │ Read 3  │ ... │ Read N  │ → mft_buffer       │
+│ └─────────┘ └─────────┘ └─────────┘     └─────────┘                    │
+└─────────────────────────────────────────────────────────────────────────┘
+                                                          ↓
+┌─────────────────────────────────────────────────────────────────────────┐
+│ Phase 2: Parse (1.9s)                                                   │
+│ mft_buffer → Rayon parallel → Vec<ParsedRecord>                         │
+└─────────────────────────────────────────────────────────────────────────┘
+                                                          ↓
+┌─────────────────────────────────────────────────────────────────────────┐
+│ Phase 3: Placeholders (1.8s)                                            │
+│ Scan for missing parents → Add placeholder records                      │
+└─────────────────────────────────────────────────────────────────────────┘
+                                                          ↓
+┌─────────────────────────────────────────────────────────────────────────┐
+│ Phase 4: Index Build (3.4s)                                             │
+│ Vec<ParsedRecord> → MftIndex (entries + names buffer)                   │
+└─────────────────────────────────────────────────────────────────────────┘
+
+Total: 40 + 1.9 + 1.8 + 3.4 = 47.1s
+```
+
+### Target Rust Flow (Pipelined)
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│ I/O + Parse + Index (overlapped, ~40s total)                            │
+│                                                                         │
+│ ┌─────────┐                                                             │
+│ │ Read 1  │ ──complete──→ parse_and_index(buffer, offset)              │
+│ └─────────┘               ├─ parse records                              │
+│     ↓                     ├─ update index entries                       │
+│ ┌─────────┐               └─ create parent placeholders on-demand       │
+│ │ Read 2  │ ──complete──→ parse_and_index(buffer, offset)              │
+│ └─────────┘                                                             │
+│     ↓                                                                   │
+│    ...                                                                  │
+│     ↓                                                                   │
+│ ┌─────────┐                                                             │
+│ │ Read N  │ ──complete──→ parse_and_index(buffer, offset)              │
+│ └─────────┘                                                             │
+│                                                                         │
+│ While Read N+1 is in flight, we're parsing Read N                       │
+└─────────────────────────────────────────────────────────────────────────┘
+
+Total: ~40s (I/O bound, CPU work hidden)
+```
+
+### Implementation Steps
+
+1. **Create `IncrementalMftIndex`** - New index structure that supports:
+   - `get_or_create(frs)` - Returns entry, creating placeholder if needed
+   - `add_name(frs, name, parent_frs)` - Adds name and parent relationship
+   - `set_stdinfo(frs, stdinfo)` - Sets standard info
+   - Sparse storage with lookup table (like C++)
+
+2. **Create `parse_and_index_buffer()`** - Function that:
+   - Takes raw buffer + virtual offset
+   - Parses each record in the buffer
+   - Updates index directly (no intermediate ParsedRecord)
+   - Creates parent placeholders on-demand
+
+3. **Modify `read_all_sliding_window_iocp()`** - Change completion handler to:
+   - Call `parse_and_index_buffer()` instead of copying to mft_buffer
+   - Pass the incremental index by reference
+   - Return completed index instead of Vec<ParsedRecord>
+
+4. **Add new mode `sliding-iocp-inline`** - For A/B testing:
+   - Keep existing `sliding-iocp` for comparison
+   - New mode uses pipelined parse+index
+
+### Data Structure Design
+
+```rust
+/// Incremental MFT index that builds during I/O.
+/// Matches C++ architecture for maximum performance.
+pub struct IncrementalMftIndex {
+    /// Lookup table: FRS → index into entries (u32::MAX = not present)
+    lookup: Vec<u32>,
+
+    /// Actual entries (sparse - only records that exist)
+    entries: Vec<IndexEntry>,
+
+    /// String pool for all file names
+    names: Vec<u8>,
+
+    /// Child relationships (parent_idx, child_idx, name_offset, name_len)
+    children: Vec<ChildInfo>,
+}
+
+impl IncrementalMftIndex {
+    /// Get or create an entry for the given FRS.
+    /// Creates a placeholder if the entry doesn't exist.
+    #[inline]
+    pub fn get_or_create(&mut self, frs: u64) -> &mut IndexEntry {
+        let frs = frs as usize;
+        if frs >= self.lookup.len() {
+            self.lookup.resize(frs + 1, u32::MAX);
+        }
+        if self.lookup[frs] == u32::MAX {
+            self.lookup[frs] = self.entries.len() as u32;
+            self.entries.push(IndexEntry::default());
+        }
+        &mut self.entries[self.lookup[frs] as usize]
+    }
+}
+```
+
+### Expected Results
+
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| I/O time | 40.3s | 40.3s | Same |
+| Parse time | 1.9s | 0s (overlapped) | -1.9s |
+| Placeholder time | 1.8s | 0s (on-demand) | -1.8s |
+| Index build time | 3.4s | 0s (incremental) | -3.4s |
+| **Total** | **47.5s** | **~40-41s** | **~7s faster** |
+
+### Risk Mitigation
+
+- Keep existing `sliding-iocp` mode unchanged for fallback
+- New `sliding-iocp-inline` mode for testing
+- Benchmark both modes to verify improvement
+- If inline parsing is slower (unlikely), we can revert
+
+---
 

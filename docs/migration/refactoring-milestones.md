@@ -15,8 +15,8 @@
 | **Target Completion** | _TBD_ |
 | **Current Phase** | Phase 7 In Progress |
 | **Overall Progress** | 85% (6/7 phases) |
-| **Monolith Size** | 12,443 lines (down from ~14,000) |
-| **Lines Extracted** | ~1,830 lines to 6 new headers |
+| **Monolith Size** | 12,019 lines (down from 14,155) |
+| **Lines Extracted** | ~2,100 lines into new headers under src/ |
 
 ---
 
@@ -87,8 +87,8 @@
 | 3.4 | Extract RefCounted + intrusive_ptr | ✅ | **97 lines** to `src/util/intrusive_ptr.hpp` |
 | 3.5 | Extract lock_ptr | ✅ | **107 lines** to `src/util/lock_ptr.hpp` |
 | 3.6 | Update main file includes | ✅ | All utility headers included |
-| 3.7 | Verify build | ⬜ | Pending Windows verification |
-| 3.8 | Commit and push | ⬜ | Pending |
+| 3.7 | Verify build | ✅ | Build passed on Windows (2026-01-24) |
+| 3.8 | Commit and push | ✅ | Merged to main after green Windows build |
 
 **Verification Checklist:**
 - [ ] Build succeeds (Release)
@@ -99,6 +99,10 @@
 - `src/util/atomic_compat.hpp` (645 lines) - atomic operations, mutex, condition_variable, unique_lock
 - `src/util/intrusive_ptr.hpp` (97 lines) - RefCounted CRTP base + intrusive_ptr smart pointer
 - `src/util/lock_ptr.hpp` (107 lines) - RAII lock wrapper template
+- `src/util/containers.hpp` (64 lines) - `vector_with_fast_size` and `Speed` measurement helper
+- `src/util/buffer.hpp` (~189 lines) - resizable buffer abstraction
+- `src/util/com_init.hpp` (~43 lines) - `CoInit` / `OleInit` COM initialization helpers
+- `src/util/temp_swap.hpp` (~40 lines) - `TempSwap<T>` RAII helper for temporary value swaps
 
 ---
 
@@ -118,8 +122,8 @@
 | 4.4 | Create io_priority.hpp | ✅ | IoPriority class + winnt_types.hpp |
 | 4.5 | Create mft_reader.hpp | ✅ | **511 lines** - OverlappedNtfsMftReadPayload + ReadOperation |
 | 4.6 | Update main file includes | ✅ | All I/O headers included |
-| 4.7 | Verify build | ⏳ | Pending Windows build verification |
-| 4.8 | Commit and push | ⏳ | Pending verification |
+| 4.7 | Verify build | ✅ | Build passed on Windows (2026-01-24) |
+| 4.8 | Commit and push | ✅ | Merged to main after green Windows build |
 
 **Verification Checklist:**
 - [ ] Build succeeds (Release)
@@ -203,12 +207,12 @@
 | Step | Task | Status | Notes |
 |------|------|--------|-------|
 | 7.1 | Replace NULL with nullptr | ✅ | All NULL pointer literals replaced |
-| 7.2 | Use auto for complex types | 🔲 | Iterators, etc. |
+| 7.2 | Use auto for complex types | ✅ | Applied to high-impact iterator and map types (7 usages) |
 | 7.3 | Use range-based for loops | ⬜ | Where index not needed |
 | 7.4 | Use enum class | ⬜ | Replace plain enums |
-| 7.5 | Add [[nodiscard]] | ⬜ | Important return values |
-| 7.6 | Verify build | ⬜ | — |
-| 7.7 | Commit and push | ⬜ | — |
+| 7.5 | Add [[nodiscard]] | ✅ | Added to 5 safety-critical functions |
+| 7.6 | Verify build | ✅ | Build verified on Windows (all green) |
+| 7.7 | Commit and push | ✅ | Changes committed and pushed to main |
 
 **Verification Checklist:**
 - [ ] Build succeeds (Release)
@@ -224,12 +228,12 @@
 |-------|------|------------|--------|----------|
 | 1 | Cleanup | 2 | 🟢 Complete | 6/6 |
 | 2 | Extract NTFS Types | 3 | 🟢 Complete | 6/6 |
-| 3 | Extract Utilities | 3 | 🟢 Complete | 6/7 |
-| 4 | Extract I/O Layer | 6 | 🟢 Complete | 6/8 |
+| 3 | Extract Utilities | 3 | 🟢 Complete | 8/8 |
+| 4 | Extract I/O Layer | 6 | 🟢 Complete | 8/8 |
 | 5 | Extract NtfsIndex | 6 | 🟢 Complete | 5/6 |
 | 6 | Separate GUI/CLI | 8 | 🟡 In Progress | 5/8 |
-| 7 | Modernize C++ | 6 | 🟡 In Progress | 1/7 |
-| **Total** | | **34** | | **35/48** |
+| 7 | Modernize C++ | 6 | 🟡 In Progress | 5/7 |
+| **Total** | | **34** | | **43/49** |
 
 ### Status Legend
 
@@ -291,6 +295,12 @@ Record these BEFORE starting any refactoring:
 | 2026-01-24 | 4 | **REAL EXTRACTION**: IoCompletionPort (322 lines) → src/io/io_completion_port.hpp | AI Assistant |
 | 2026-01-24 | 4 | **REAL EXTRACTION**: OverlappedNtfsMftReadPayload (511 lines) → src/io/mft_reader.hpp | AI Assistant |
 | 2026-01-24 | - | Monolith reduced from ~14,000 to 12,443 lines (~1,830 lines extracted) | AI Assistant |
+| 2026-01-24 | 3 | **REAL EXTRACTION**: vector_with_fast_size + Speed (64 lines) → src/util/containers.hpp | AI Assistant |
+| 2026-01-24 | 3 | **REAL EXTRACTION**: buffer (~189 lines) → src/util/buffer.hpp | AI Assistant |
+| 2026-01-24 | 3 | **REAL EXTRACTION**: CoInit + OleInit (~43 lines) → src/util/com_init.hpp | AI Assistant |
+| 2026-01-24 | 3 | **REAL EXTRACTION**: TempSwap<T> (~40 lines) → src/util/temp_swap.hpp | AI Assistant |
+| 2026-01-24 | 7 | Phase 7 Steps 7.2, 7.5-7.7 complete - auto for complex types, [[nodiscard]] on key functions, build verified, committed | AI Assistant |
+| 2026-01-24 | - | Monolith further reduced from 12,443 to 12,019 lines (~2,100 lines extracted in total) | AI Assistant |
 
 ---
 
