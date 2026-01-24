@@ -998,6 +998,7 @@ void CheckAndThrow(int
 // Import winnt types from extracted header (uffs::winnt namespace)
 // This replaces the duplicate namespace that was previously defined here
 using namespace uffs::winnt;
+namespace winnt = uffs::winnt;  // Alias for code that uses winnt:: prefix
 
 // Global fsinfo variable (preserved from original code)
 FILE_FS_DEVICE_INFORMATION fsinfo;

@@ -26,6 +26,9 @@
 #include "../util/atomic_compat.hpp"
 #include "../util/lock_ptr.hpp"
 #include "overlapped.hpp"
+#include "winnt_types.hpp"
+
+namespace winnt = uffs::winnt;  // Alias for winnt:: prefix usage
 
 class IoCompletionPort
 {
