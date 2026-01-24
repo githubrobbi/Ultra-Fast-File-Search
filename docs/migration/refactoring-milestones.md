@@ -15,7 +15,7 @@
 | **Target Completion** | _TBD_ |
 | **Current Phase** | Phase 7 In Progress |
 | **Overall Progress** | 85% (6/7 phases) |
-| **Monolith Size** | 11,373 lines (down from 14,155) |
+| **Monolith Size** | 11,370 lines (down from 14,155) |
 | **Lines Extracted** | ~2,800 lines into new headers under src/ |
 
 ---
@@ -213,7 +213,7 @@
 |------|------|--------|-------|
 | 7.1 | Replace NULL with nullptr | ✅ | All NULL pointer literals replaced |
 | 7.2 | Use auto for complex types | ✅ | Applied to high-impact iterator and map types (7 usages) |
-| 7.3 | Use range-based for loops | ⬜ | Where index not needed |
+| 7.3 | Use range-based for loops | ✅ | 4 loops converted (path chars, name chars, sizes, indices) |
 | 7.4 | Use enum class | ⬜ | Replace plain enums |
 | 7.5 | Add [[nodiscard]] | ✅ | Added to 5 safety-critical functions |
 | 7.6 | Verify build | ✅ | Build verified on Windows (all green) |
@@ -242,8 +242,8 @@
 | 4 | Extract I/O Layer | 6 | 🟢 Complete | 8/8 |
 | 5 | Extract NtfsIndex | 6 | 🟢 Complete | 5/6 |
 | 6 | Separate GUI/CLI | 8 | 🟡 In Progress | 5/8 |
-| 7 | Modernize C++ | 6 | 🟡 In Progress | 10/12 |
-| **Total** | | **34** | | **48/54** |
+| 7 | Modernize C++ | 6 | 🟡 In Progress | 11/12 |
+| **Total** | | **34** | | **49/54** |
 
 ### Status Legend
 
@@ -323,6 +323,7 @@ Record these BEFORE starting any refactoring:
 | 2026-01-24 | 7 | Fix compilation: add `namespace winnt = uffs::winnt;` alias for backward compatibility (commit 57ca09f2) | AI Assistant |
 | 2026-01-24 | 7 | Fix compilation: add const overload of `basic_vector_based_string::c_str()` (commit 8f3c9a39) | AI Assistant |
 | 2026-01-24 | - | Monolith reduced from 11,932 to 11,373 lines (~2,800 lines extracted in total) | AI Assistant |
+| 2026-01-24 | 7 | Phase 7.3: Convert 4 traditional for loops to range-based for loops (commit 83941137) | AI Assistant |
 
 ---
 

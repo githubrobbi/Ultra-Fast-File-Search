@@ -45,7 +45,7 @@ This document outlines a comprehensive plan to modernize the UFFS C++ codebase w
 ## Implementation Status (as of 2026-01-24)
 
 - Phases 1–5 from this plan have been executed; Phase 6 is partially complete; Phase 7 (Modernize C++) is in progress.
-- The main monolithic source file `UltraFastFileSearch.cpp` has been reduced from 14,155 to **11,373 lines** (≈**2,800 lines** migrated into headers under `src/`).
+- The main monolithic source file `UltraFastFileSearch.cpp` has been reduced from 14,155 to **11,370 lines** (≈**2,800 lines** migrated into headers under `src/`).
 - Key utility and I/O abstractions now live in dedicated headers:
   - `src/util/atomic_compat.hpp` — atomic_namespace (spin locks, atomics, lightweight sync primitives)
   - `src/util/intrusive_ptr.hpp` — `RefCounted` + `intrusive_ptr`
@@ -71,6 +71,7 @@ This document outlines a comprehensive plan to modernize the UFFS C++ codebase w
   - Duplicate `Handle` and `IoPriority` classes removed from monolith (now using extracted headers).
   - Added namespace alias `namespace winnt = uffs::winnt;` for backward compatibility.
   - Fixed const-correctness for `basic_vector_based_string::c_str()` method.
+  - Converted 4 traditional for loops to range-based for loops (where index not needed).
 
 For detailed per-phase status and verification notes, see **`refactoring-milestones.md`**.
 
