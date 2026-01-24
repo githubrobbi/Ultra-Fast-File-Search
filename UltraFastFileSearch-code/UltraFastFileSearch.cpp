@@ -3434,7 +3434,7 @@ public: typedef key_type_internal key_type;
 			  {
 				  unsigned int
 					  const frs_base = frsh->BaseFileRecordSegment ? static_cast<unsigned int> (frsh->BaseFileRecordSegment) : frs;
-				  Records::iterator base_record = this->at(frs_base);
+				  auto base_record = this->at(frs_base);
 				  void
 					  const* const frsh_end = frsh->end(mft_record_size);
 				  for (ntfs::ATTRIBUTE_RECORD_HEADER
@@ -3711,7 +3711,7 @@ public: typedef key_type_internal key_type;
 						  unsigned long long
 							  const threshold = children_size.allocated / 100;
 						  // Algorithm: All files whose sizes are<X% of the current folder's size are assumed to contribute to the folder's bulkiness.
-						  for (Scratch::iterator i = scratch.end(); i != scratch.begin() + static_cast<ptrdiff_t> (old_scratch_size);)
+						  for (auto i = scratch.end(); i != scratch.begin() + static_cast<ptrdiff_t> (old_scratch_size);)
 						  {
 							  std::pop_heap(scratch.begin() + static_cast<ptrdiff_t> (old_scratch_size), i);
 							  --i;
@@ -5846,7 +5846,7 @@ public: typedef base_type::allocator_type allocator_type;
 
 	  SearchResult::index_type save_index(Indexes::value_type::element_type* const index)
 	  {
-		  IndicesInUse::iterator j = std::lower_bound(this->indices_in_use.begin(), this->indices_in_use.end(), std::make_pair(index, IndicesInUse::value_type::second_type()));
+		  auto j = std::lower_bound(this->indices_in_use.begin(), this->indices_in_use.end(), std::make_pair(index, IndicesInUse::value_type::second_type()));
 		  if (j == this->indices_in_use.end() || j->first != index)
 		  {
 			  this->indexes.push_back(index);
@@ -6524,7 +6524,7 @@ public:
 			{
 				WTL::CWaitCursor wait(true, IDC_APPSTARTING);
 				std::reverse(path.begin(), path.end());
-				ShellInfoCache::iterator cached = this_->cache.find(path);
+				auto cached = this_->cache.find(path);
 				std::reverse(path.begin(), path.end());
 				if (!success && cached != this_->cache.end())
 				{
@@ -6669,7 +6669,7 @@ public:
 		const timestamp)
 	{
 		std::reverse(path.begin(), path.end());
-		ShellInfoCache::const_iterator entry = this->cache.find(path);
+		auto entry = this->cache.find(path);
 		bool
 			const already_in_cache = entry != this->cache.end();
 		if (!already_in_cache)
@@ -6685,7 +6685,7 @@ public:
 
 			if (current_cache_size >= 2 * max_cache_size)
 			{
-				for (ShellInfoCache::iterator i = this->cache.begin(); i != this->cache.end();)
+				for (auto i = this->cache.begin(); i != this->cache.end();)
 				{
 					if (i->second.counter + max_cache_size < current_cache_size)
 					{
@@ -6698,7 +6698,7 @@ public:
 					}
 				}
 
-				for (ShellInfoCache::iterator i = this->cache.begin(); i != this->cache.end(); ++i)
+				for (auto i = this->cache.begin(); i != this->cache.end(); ++i)
 				{
 					assert(i->second.counter < this->cache.size());
 				}
