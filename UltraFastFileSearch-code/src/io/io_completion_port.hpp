@@ -47,7 +47,7 @@ protected:
 		Handle handle;
 		~WorkerThread()
 		{
-			if (this->handle.valid())
+			if (Handle::valid(this->handle))
 			{
 				WaitForSingleObject(this->handle, INFINITE);
 			}
