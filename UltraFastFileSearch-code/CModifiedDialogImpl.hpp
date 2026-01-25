@@ -67,6 +67,11 @@ public:
 #ifdef _DEBUG
 			m_bModal = false;
 #endif //_DEBUG
+			if (pTemplate == NULL)
+			{
+				SetLastError(ERROR_INVALID_PARAMETER);
+				return NULL;
+			}
 			return ::CreateDialogIndirectParam(_Module.GetResourceInstance(), pTemplate, hWndParent, T::StartDialogProc, dwInitParam);
 		}
 		else { return this->CDialogImpl<T, TBase>::Create(hWndParent, dwInitParam); }

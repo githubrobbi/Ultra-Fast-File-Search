@@ -37,7 +37,13 @@ private:
 	virtual void add(Thunk *pThunk, long const insert_before_timestamp) = 0;
 
 public:
-	BackgroundWorker() : refs() { InitializeCriticalSection(&this->criticalSection); }
+	BackgroundWorker() : refs()
+	{
+		if (!InitializeCriticalSectionAndSpinCount(&this->criticalSection, 0))
+		{
+			throw std::runtime_error("Failed to initialize critical section");
+		}
+	}
 	virtual ~BackgroundWorker() noexcept(false) { DeleteCriticalSection(&this->criticalSection); }
 
 	virtual void clear() = 0;
@@ -98,7 +104,10 @@ public:
 	{
 		this->hThread = (HANDLE)_beginthreadex(NULL, 0, entry, this, CREATE_SUSPENDED, &tid);
 		this->hSemaphore = CreateSemaphore(NULL, 0, LONG_MAX, NULL);
-		ResumeThread(this->hThread);
+		if (this->hThread != NULL)
+		{
+			ResumeThread(this->hThread);
+		}
 	}
 
 	~BackgroundWorkerImpl() noexcept(false)

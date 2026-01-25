@@ -165,10 +165,18 @@ public:
 			}
 
 			using namespace std;
-			this->p = realloc(this->p, this->n);	// shrink first, to avoid copying memory beyond the block
-			this->c = this->n;
-			this->p = realloc(this->p, c);
-			this->c = c;
+			void* new_p = realloc(this->p, this->n);	// shrink first, to avoid copying memory beyond the block
+			if (new_p)
+			{
+				this->p = new_p;
+				this->c = this->n;
+			}
+			new_p = realloc(this->p, c);
+			if (new_p)
+			{
+				this->p = new_p;
+				this->c = c;
+			}
 		}
 	}
 

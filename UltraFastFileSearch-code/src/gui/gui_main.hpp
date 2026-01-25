@@ -8,8 +8,8 @@
 // dependencies (CMainDlg, extract_and_run_if_needed, etc.) are already defined.
 // ============================================================================
 
-int __stdcall _tWinMain(HINSTANCE
-	const hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*lpCmdLine*/, int nShowCmd)
+int WINAPI _tWinMain(_In_ HINSTANCE
+	const hInstance, _In_opt_ HINSTANCE /*hPrevInstance*/, _In_ LPTSTR /*lpCmdLine*/, _In_ int nShowCmd)
 {
 	(void)hInstance;
 	(void)nShowCmd;
@@ -53,7 +53,7 @@ __if_exists(_Module)
 
 {
 	RefCountedCString appname;
-	appname.LoadString(IDS_APPNAME);
+	(void)appname.LoadString(IDS_APPNAME);
 	HANDLE hEvent = CreateEvent(nullptr, FALSE, FALSE, _T("Local\\") + appname + _T(".") + get_app_guid());
 	if (hEvent != nullptr && GetLastError() != ERROR_ALREADY_EXISTS)
 	{
@@ -104,7 +104,10 @@ __if_exists(_Module)
 	else
 	{
 		AllowSetForegroundWindow(ASFW_ANY);
-		PulseEvent(hEvent);	// PulseThread() is normally unreliable, but we don't really care here...
+		if (hEvent != nullptr)
+		{
+			PulseEvent(hEvent);	// PulseThread() is normally unreliable, but we don't really care here...
+		}
 		result = GetLastError();
 	}
 }

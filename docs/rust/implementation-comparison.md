@@ -2545,3 +2545,352 @@ impl IncrementalMftIndex {
 
 ---
 
+## 32. Output Format & Data Parity Questions
+
+**Date**: 2026-01-25
+**From**: Rust Team
+**To**: C++ Team
+
+We're working on achieving exact output parity between the Rust and C++ implementations. We've identified several discrepancies and need clarification on the C++ behavior.
+
+### Test Setup
+
+**Test Drive**: G:\ (NTFS volume)
+**Test Command**: `uffs "*" --drive G` (search for all files)
+**Output Format**: CSV with default columns
+
+### Current Status
+
+We've implemented the following to match C++ output:
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| All 28+ output columns | ✅ Done | Path, Name, Size, timestamps, all attribute flags |
+| Tree metrics computation | ✅ Done | Descendants, TreeSize, TreeAllocated using TreeIndex |
+| Conditional size columns | ✅ Done | Directories show tree metrics, files show file size |
+| Attributes column (raw flags) | ✅ Fixed | Now uses `to_attributes()` for Windows format |
+
+### Remaining Discrepancies
+
+Comparing Rust vs C++ output on the same drive, we found three categories of differences:
+
+---
+
+### 1. File Count & Tree Size Differences
+
+**Observation**:
+
+| Entry | Rust Descendants | C++ Descendants | Rust TreeSize | C++ TreeSize |
+|-------|------------------|-----------------|---------------|--------------|
+| G:\ | 15,071 | 15,115 | 537,245,302 | 609,898,776 |
+| G:\MFT_TEST\ | 15,042 | 15,047 | 537,200,952 | 545,073,550 |
+| G:\MFT_TEST\Backup\ | 3 | 4 | 45 | 304 |
+
+**Analysis**:
+- C++ finds **44 more files** in G:\ than Rust
+- C++ tree size is **~72MB larger** for G:\
+- The pattern is consistent across all directories
+
+**Current Rust Behavior**:
+
+The Rust implementation filters out system metafiles by default:
+
+```rust
+// crates/uffs-core/src/index_search.rs, line 551
+include_system_metafiles: false, // C++ default: exclude $MFT, $Bitmap, etc.
+
+// crates/uffs-mft/src/index.rs, line 1163
+/// System metafiles are FRS 0-15 (except root at FRS 5).
+/// These are filtered out by default to match C++ behavior.
+const SYSTEM_METAFILE_MAX_FRS: u64 = 15;
+```
+
+The filtering logic:
+1. Marks FRS 0-15 (except root FRS 5) as invalid
+2. Propagates invalidity to all descendants of system metafiles
+3. Filters these records from search results
+
+**Questions for C++ Team**:
+
+1. **Does C++ include system metafiles (FRS 0-15) in the output?**
+   - Examples: `$MFT`, `$Bitmap`, `$LogFile`, `$Volume`, `$AttrDef`, `$Extend`, etc.
+   - If yes, which ones are included?
+   - If no, what filtering logic does C++ use?
+
+2. **Does C++ include descendants of system metafiles?**
+   - Example: Files under `$Extend\$RmMetadata\`, `$Extend\$UsnJrnl\`, etc.
+   - These are typically hidden system directories
+
+3. **What is the exact filtering criteria in C++?**
+   - Is it based on FRS number range?
+   - Is it based on file attributes (Hidden + System)?
+   - Is it based on path prefix (e.g., starts with `$`)?
+   - Some combination of the above?
+
+4. **Can you provide the exact list of FRS numbers that C++ outputs for G:\?**
+   - This would help us identify exactly which files are different
+   - We can compare FRS-by-FRS to find the discrepancy
+
+---
+
+### 2. Attributes Column Value Differences
+
+**Observation**:
+
+| Entry | Rust Attributes | C++ Attributes | Individual Flags Match? |
+|-------|-----------------|----------------|-------------------------|
+| G:\ | 1068 | 8214 | ✅ Yes (H=1, S=1, D=1, NI=1) |
+| G:\MFT_TEST\ | 1056 | 8208 | ✅ Yes (D=1, NI=1) |
+| backup1.bak | 8 | 2 | ❓ Need to verify |
+| doc1_hardlink.txt | 34 | 8224 | ❓ Need to verify |
+
+**Analysis**:
+
+The individual boolean flags (Hidden, System, Directory, etc.) match between Rust and C++, but the combined "Attributes" column (raw flags value) is different.
+
+**Current Rust Implementation**:
+
+```rust
+// crates/uffs-cli/src/commands.rs, line 1203
+flags_values.push(rec.stdinfo.to_attributes());
+
+// crates/uffs-mft/src/index.rs, lines 140-180
+pub const fn to_attributes(&self) -> u32 {
+    let mut attrs = 0_u32;
+    if self.is_readonly() { attrs |= 0x0001; }
+    if self.is_archive() { attrs |= 0x0020; }
+    if self.is_system() { attrs |= 0x0004; }
+    if self.is_hidden() { attrs |= 0x0002; }
+    if self.is_offline() { attrs |= 0x1000; }
+    if self.is_not_indexed() { attrs |= 0x2000; }
+    if self.is_directory() { attrs |= 0x0010; }
+    if self.is_compressed() { attrs |= 0x0800; }
+    if self.is_encrypted() { attrs |= 0x4000; }
+    if self.is_sparse() { attrs |= 0x0200; }
+    if self.is_reparse() { attrs |= 0x0400; }
+    if self.is_temporary() { attrs |= 0x0100; }
+    attrs
+}
+```
+
+This converts our internal bit-packed flags back to Windows `FILE_ATTRIBUTE_*` format.
+
+**Binary Analysis**:
+
+For G:\ directory:
+- Rust: 1068 = 0b010000101100 = bits 2,3,5,10 set
+- C++: 8214 = 0b10000000010110 = bits 1,2,4,13 set
+
+But the individual flags show: Hidden=1, System=1, Directory=1, Not Indexed=1
+
+Expected value: 0x0002 (Hidden) | 0x0004 (System) | 0x0010 (Directory) | 0x2000 (Not Indexed) = 0x2016 = 8214 ✅
+
+So C++ is correct at 8214. But why is Rust showing 1068?
+
+**Questions for C++ Team**:
+
+1. **What is the source of the Attributes column value in C++?**
+   - Is it the raw `file_attributes` field from `$STANDARD_INFORMATION`?
+   - Is it computed from individual flags?
+   - Is it from `$FILE_NAME` attribute instead?
+
+2. **Are there any additional flags included that we're missing?**
+   - We currently handle 12 standard flags
+   - Are there extended flags we should include?
+
+3. **For files with hard links, which attribute value do you use?**
+   - The `$STANDARD_INFORMATION` attributes?
+   - The `$FILE_NAME` attributes (which can differ per hard link)?
+   - Some combination?
+
+---
+
+### 3. Size on Disk Differences
+
+**Observation**:
+
+| Entry | Type | Rust Size | C++ Size | Rust Size on Disk | C++ Size on Disk |
+|-------|------|-----------|----------|-------------------|------------------|
+| G:\ | Dir | 537,245,302 | 609,898,776 | 537,245,302 | 613,838,848 |
+| G:\MFT_TEST\Backup\ | Dir | 45 | 304 | 45 | 0 |
+| backup1.bak | File | 15 | 15 | 15 | 0 |
+| doc1_hardlink.txt | File | 20 | 20 | 20 | 0 |
+
+**Analysis**:
+
+For directories, both implementations show tree metrics (sum of all files in subtree). But for files, there's a pattern:
+- Rust shows the same value for Size and Size on Disk
+- C++ shows 0 for Size on Disk for most files
+
+**Current Rust Implementation**:
+
+```rust
+// crates/uffs-cli/src/commands.rs, lines 1295-1310
+// Replace size and allocated_size columns with tree metrics for directories
+df = df
+    .lazy()
+    .with_column(
+        when(col("is_directory"))
+            .then(col("treesize"))
+            .otherwise(col("size"))
+            .alias("size"),
+    )
+    .with_column(
+        when(col("is_directory"))
+            .then(col("tree_allocated"))
+            .otherwise(col("allocated_size"))
+            .alias("allocated_size"),
+    )
+    .collect()?;
+```
+
+For files, we use `allocated_size` from the MFT record. For directories, we use `tree_allocated` (sum of all allocated sizes in subtree).
+
+**Questions for C++ Team**:
+
+1. **Why does C++ show 0 for "Size on Disk" for most files?**
+   - Is this intentional?
+   - Is it because the files are compressed/sparse?
+   - Is it because they're in alternate data streams?
+
+2. **What is the source of "Size on Disk" in C++?**
+   - Is it from `$DATA` attribute's allocated size?
+   - Is it from `$STANDARD_INFORMATION`?
+   - Is it computed from cluster allocation?
+
+3. **For directories, how is "Size on Disk" computed?**
+   - Is it the sum of allocated sizes for all files in the tree?
+   - Does it include directory metadata overhead?
+   - Does it include slack space?
+
+4. **For hard links, how is "Size on Disk" handled?**
+   - Is the allocated size counted once or multiple times?
+   - Example: If a file with 3 hard links uses 4KB on disk, is it counted as 4KB or 12KB?
+
+---
+
+### 4. Implementation Details We Need to Verify
+
+To ensure exact parity, we need to understand these implementation details:
+
+#### A. MFT Record Filtering
+
+**Rust approach**:
+```rust
+// Filter during search (not during indexing)
+if !path_cache.is_valid(record.frs) {
+    return false;  // Skip this record
+}
+
+// PathCache marks these as invalid:
+// - FRS 0-15 (except root FRS 5)
+// - All descendants of invalid records
+```
+
+**Questions**:
+1. Does C++ filter during indexing or during search?
+2. What records does C++ exclude from the index entirely?
+3. What records are in the index but filtered from search results?
+
+#### B. Hard Link Expansion
+
+**Rust approach**:
+```rust
+// Default: expand_links = true
+// Each hard link becomes a separate row in output
+// Example: File with 3 names → 3 output rows
+```
+
+**Questions**:
+1. Does C++ expand hard links to separate rows?
+2. If yes, are the attribute values the same for all hard link rows?
+3. How does this affect the Descendants count?
+
+#### C. Alternate Data Streams (ADS)
+
+**Observation**: We see entries like `doc1_hardlink.txt:comments` in the output.
+
+**Rust approach**:
+```rust
+// Default: expand_streams = true
+// Each ADS becomes a separate row
+// Stream name is appended to filename with ':'
+```
+
+**Questions**:
+1. Does C++ include ADS in the output?
+2. Are ADS counted in the Descendants count?
+3. What Size/Size on Disk values are shown for ADS?
+
+#### D. Tree Metrics Computation
+
+**Rust approach**:
+```rust
+// Build parent-child map from FRS and parent_frs
+// Recursively compute for each directory:
+// - descendants = count of all items in subtree
+// - treesize = sum of all file sizes in subtree
+// - tree_allocated = sum of all allocated sizes in subtree
+```
+
+**Questions**:
+1. Does C++ compute tree metrics the same way?
+2. Are directories themselves counted in descendants?
+3. Are ADS counted in tree size?
+4. Are hard links counted multiple times or once?
+
+---
+
+### 5. Suggested Approach to Resolve Discrepancies
+
+To efficiently resolve these differences, we propose:
+
+1. **Exchange sample data**:
+   - C++ team provides full output for G:\ (or a subset)
+   - Include FRS numbers, all columns
+   - We'll compare line-by-line to identify exact differences
+
+2. **Clarify filtering rules**:
+   - Provide exact logic for which records to include/exclude
+   - We'll implement the same filtering in Rust
+
+3. **Verify attribute sources**:
+   - Confirm which MFT attribute fields map to which output columns
+   - We'll ensure we're reading from the same sources
+
+4. **Document edge cases**:
+   - Hard links with multiple names
+   - Files with ADS
+   - Compressed/sparse files
+   - System metafiles
+
+---
+
+### 6. Summary of Questions
+
+**High Priority** (blocking exact parity):
+
+1. Does C++ include system metafiles (FRS 0-15) in output? Which ones?
+2. What is the exact filtering logic in C++?
+3. Why is the Attributes column value different (e.g., 1068 vs 8214)?
+4. Why does C++ show 0 for "Size on Disk" for files?
+
+**Medium Priority** (affects correctness):
+
+5. How are hard links handled in output (expanded or deduplicated)?
+6. How are ADS handled in output and tree metrics?
+7. What is the source of allocated_size (Size on Disk) in C++?
+
+**Low Priority** (documentation):
+
+8. Are directories counted in their own descendants count?
+9. How is tree_allocated computed for directories?
+10. Any other edge cases we should know about?
+
+---
+
+*Please update Section 27 with C++ team responses.*
+
+---
+
+*End of Document*

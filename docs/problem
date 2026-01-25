@@ -1,387 +1,672 @@
-Rebuild started at 21:49...
-1>------ Rebuild All started: Project: UltraFastFileSearch, Configuration: EXE x64 ------
-1>  stdafx.cpp
-1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\wtypesbase.h(367,6): warning C4865: 'tagCLSCTX': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\wtypesbase.h(398,9):
-1>      'CLSCTX_PS_DLL': this enumerator requires the type
-1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\objidlbase.h(7906,6): warning C4865: 'CO_MARSHALING_CONTEXT_ATTRIBUTES': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\objidlbase.h(7909,9):
-1>      'CO_MARSHALING_CONTEXT_ATTRIBUTE_RESERVED_1': this enumerator requires the type
-1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\urlmon.h(1362,6): warning C4865: '__MIDL_IBindStatusCallback_0003': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\urlmon.h(1388,9):
-1>      'BINDF_RESERVED_2': this enumerator requires the type
-1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\urlmon.h(1806,6): warning C4865: '__MIDL_IBindStatusCallbackEx_0001': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\urlmon.h(1838,9):
-1>      'BINDF2_RESERVED_1': this enumerator requires the type
-1>C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\atlmfc\include\atlwinverapi.h(668,26): warning C4388: '>=': signed/unsigned mismatch
-1>  (compiling source file 'stdafx.cpp')
-1>C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\atlmfc\include\atlwin.h(394,2): warning C4865: 'ATL::_DialogSplitHelper::<unnamed-enum-ATL_WM_OCC_LOADFROMSTREAM>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\atlmfc\include\atlwin.h(400,3):
-1>      'ATL::_DialogSplitHelper::ATL_DISPID_DATASOURCE': this enumerator requires the type
-1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\dxgicommon.h(27,14): warning C4865: 'DXGI_COLOR_SPACE_TYPE': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\dxgicommon.h(54,5):
-1>      'DXGI_COLOR_SPACE_CUSTOM': this enumerator requires the type
-1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\dxgiformat.h(11,14): warning C4865: 'DXGI_FORMAT': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\dxgiformat.h(141,5):
-1>      'DXGI_FORMAT_FORCE_UINT': this enumerator requires the type
-1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\MsHTML.h(13279,6): warning C4865: '_FINDTEXT_FLAGS': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\MsHTML.h(13288,9):
-1>      'FINDTEXT_MATCHALEFHAMZA': this enumerator requires the type
-1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\ExDisp.h(397,6): warning C4865: 'BrowserNavConstants': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\ExDisp.h(430,9):
-1>      'navReserved7': this enumerator requires the type
-1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\propsys.h(1840,6): warning C4865: 'PROPDESC_TYPE_FLAGS': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\propsys.h(1856,9):
-1>      'PDTF_ISSYSTEMPROPERTY': this enumerator requires the type
-1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\shobjidl_core.h(5253,6): warning C4865: 'FOLDERFLAGS': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\shobjidl_core.h(5287,9):
-1>      'FWF_ALLOWRTLREADING': this enumerator requires the type
-1>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\shobjidl_core.h(5356,6): warning C4865: '_SVGIO': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\shobjidl_core.h(5363,9):
-1>      'SVGIO_FLAG_VIEWORDER': this enumerator requires the type
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlgdi.h(1150,3): warning C5267: definition of implicit copy constructor for 'WTL::CDCT<false>' is deprecated because it has a user-provided destructor
-1>  (compiling source file 'stdafx.cpp')
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h(2565,24):
-1>      implicit copy constructor for 'WTL::CDCT<false>' first required here
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h(2565,1):
-1>      the template instantiation context (the oldest one first) is
-1>          C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h(2818,31):
-1>          see reference to class template instantiation 'WTL::CPaneContainerImpl<WTL::CPaneContainer,ATL::CWindow,ATL::CControlWinTraits>' being compiled
-1>          C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h(2550,8):
-1>          while compiling class template member function 'DWORD WTL::CPaneContainerImpl<WTL::CPaneContainer,ATL::CWindow,ATL::CControlWinTraits>::OnItemPostPaint(int,LPNMCUSTOMDRAW)'
-1>              C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrls.h(9696,10):
-1>              see the first reference to 'WTL::CPaneContainerImpl<WTL::CPaneContainer,ATL::CWindow,ATL::CControlWinTraits>::OnItemPostPaint' in 'WTL::CCustomDraw<T>::OnCustomDraw'
-1>          with
-1>          [
-1>              T=WTL::CPaneContainer
-1>          ]
-1>              C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h(2517,9):
-1>              see the first reference to 'WTL::CCustomDraw<T>::OnCustomDraw' in 'WTL::CPaneContainerImpl<WTL::CPaneContainer,ATL::CWindow,ATL::CControlWinTraits>::OnNotify'
-1>          with
-1>          [
-1>              T=WTL::CPaneContainer
-1>          ]
-1>              C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h(2409,3):
-1>              see the first reference to 'WTL::CPaneContainerImpl<WTL::CPaneContainer,ATL::CWindow,ATL::CControlWinTraits>::OnNotify' in 'WTL::CPaneContainerImpl<WTL::CPaneContainer,ATL::CWindow,ATL::CControlWinTraits>::ProcessWindowMessage'
-1>  CommandLineParser.cpp
-1>  string_matcher.cpp
-1>  UltraFastFileSearch.cpp
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\overlapped.hpp(17,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp(66,10): warning C5267: definition of implicit copy constructor for 'boost::algorithm::boyer_moore_horspool<tracking_iterator<const wchar_t *>,boost::algorithm::detail::BM_traits<patIter>>' is deprecated because it has a user-provided destructor
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp(66,10): warning C5267:         with
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp(66,10): warning C5267:         [
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp(66,10): warning C5267:             patIter=tracking_iterator<const wchar_t *>
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp(66,10): warning C5267:         ]
-1>  (compiling source file '/string_matcher.cpp')
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\string_matcher.cpp(93,1):
-1>      implicit copy constructor for 'boost::algorithm::boyer_moore_horspool<tracking_iterator<const wchar_t *>,boost::algorithm::detail::BM_traits<patIter>>' first required here
-1>          with
-1>          [
-1>              patIter=tracking_iterator<const wchar_t *>
-1>          ]
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\string_matcher.cpp(93,1):
-1>      This diagnostic occurred in the compiler generated function 'copyable<boost::algorithm::boyer_moore_horspool<tracking_iterator<const wchar_t *>,boost::algorithm::detail::BM_traits<patIter>>>::copyable(const copyable<boost::algorithm::boyer_moore_horspool<patIter,boost::algorithm::detail::BM_traits<patIter>>> &)'
-1>          with
-1>          [
-1>              patIter=tracking_iterator<const wchar_t *>
-1>          ]
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\string_matcher.cpp(570,1):
-1>      see reference to function 'copyable<boost::algorithm::boyer_moore_horspool<tracking_iterator<const wchar_t *>,boost::algorithm::detail::BM_traits<patIter>>>::copyable(const copyable<boost::algorithm::boyer_moore_horspool<patIter,boost::algorithm::detail::BM_traits<patIter>>> &)'
-1>          with
-1>          [
-1>              patIter=tracking_iterator<const wchar_t *>
-1>          ]
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp(66,10): warning C5267: definition of implicit copy constructor for 'boost::algorithm::boyer_moore_horspool<tracking_iterator<case_insensitive_iterator<const wchar_t *>>,boost::algorithm::detail::BM_traits<patIter>>' is deprecated because it has a user-provided destructor
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp(66,10): warning C5267:         with
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp(66,10): warning C5267:         [
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp(66,10): warning C5267:             patIter=tracking_iterator<case_insensitive_iterator<const wchar_t *>>
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp(66,10): warning C5267:         ]
-1>  (compiling source file '/string_matcher.cpp')
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\string_matcher.cpp(93,1):
-1>      implicit copy constructor for 'boost::algorithm::boyer_moore_horspool<tracking_iterator<case_insensitive_iterator<const wchar_t *>>,boost::algorithm::detail::BM_traits<patIter>>' first required here
-1>          with
-1>          [
-1>              patIter=tracking_iterator<case_insensitive_iterator<const wchar_t *>>
-1>          ]
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\string_matcher.cpp(93,1):
-1>      This diagnostic occurred in the compiler generated function 'copyable<boost::algorithm::boyer_moore_horspool<tracking_iterator<case_insensitive_iterator<const wchar_t *>>,boost::algorithm::detail::BM_traits<patIter>>>::copyable(const copyable<boost::algorithm::boyer_moore_horspool<patIter,boost::algorithm::detail::BM_traits<patIter>>> &)'
-1>          with
-1>          [
-1>              patIter=tracking_iterator<case_insensitive_iterator<const wchar_t *>>
-1>          ]
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\string_matcher.cpp(570,1):
-1>      see reference to function 'copyable<boost::algorithm::boyer_moore_horspool<tracking_iterator<case_insensitive_iterator<const wchar_t *>>,boost::algorithm::detail::BM_traits<patIter>>>::copyable(const copyable<boost::algorithm::boyer_moore_horspool<patIter,boost::algorithm::detail::BM_traits<patIter>>> &)'
-1>          with
-1>          [
-1>              patIter=tracking_iterator<case_insensitive_iterator<const wchar_t *>>
-1>          ]
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\BackgroundWorker.hpp(41,41): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\BackgroundWorker.hpp(104,37): warning C5040: dynamic exception specifications are valid only in C++14 and earlier; treating as noexcept(false)
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CommandLineParser.cpp(110,38): warning C4101: 'e': unreferenced local variable
-1>  (compiling source file '/CommandLineParser.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CommandLineParser.cpp(115,41): warning C4101: 'e': unreferenced local variable
-1>  (compiling source file '/CommandLineParser.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\core\ntfs_types.hpp(135,6): warning C4865: 'uffs::ntfs::ReparseTypeFlags': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\core\ntfs_types.hpp(137,5):
-1>      'uffs::ntfs::ReparseIsMicrosoft': this enumerator requires the type
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp(12,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp(13,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp(14,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp(15,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp(16,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp(17,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp(18,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp(19,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp(26,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp(27,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\mft_reader.hpp(27,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\mft_reader.hpp(28,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\mft_reader.hpp(29,10): warning C4464: relative include path contains '..'
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrls.h(1866,3): warning C5267: definition of implicit copy constructor for 'WTL::CImageListT<false>' is deprecated because it has a user-provided destructor
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(2007,17):
-1>      implicit copy constructor for 'WTL::CImageListT<false>' first required here
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(2834,73): warning C5219: implicit conversion from '__int64' to 'double', possible loss of data
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(183,9): warning C5266: 'const' qualifier on return type has no effect
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrls.h(1866,3): warning C5267: definition of implicit assignment operator for 'WTL::CImageListT<false>' is deprecated because it has a user-provided destructor
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(714,27):
-1>      implicit assignment operator for 'WTL::CImageListT<false>' first required here
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(1535,162): warning C5219: implicit conversion from 'const ptrdiff_t' to 'double', possible loss of data
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(1947,61): warning C5219: implicit conversion from '_Ty1' to 'double', possible loss of data
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(1947,61): warning C5219:         with
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(1947,61): warning C5219:         [
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(1947,61): warning C5219:             _Ty1=unsigned __int64
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(1947,61): warning C5219:         ]
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(1947,178): warning C5219: implicit conversion from 'unsigned __int64' to 'double', possible loss of data
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(3271,28): warning C4310: cast truncates constant value
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(4134,36): warning C5219: implicit conversion from '_Rep' to 'double', possible loss of data
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(4134,36): warning C5219:         with
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(4134,36): warning C5219:         [
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(4134,36): warning C5219:             _Rep=__int64
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(4134,36): warning C5219:         ]
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(4135,42): warning C5219: implicit conversion from 'uint64_t' to 'double', possible loss of data
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(4250,36): warning C5219: implicit conversion from '_Rep' to 'double', possible loss of data
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(4250,36): warning C5219:         with
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(4250,36): warning C5219:         [
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(4250,36): warning C5219:             _Rep=__int64
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(4250,36): warning C5219:         ]
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp(4262,42): warning C5219: implicit conversion from 'unsigned __int64' to 'double', possible loss of data
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\cli_main.hpp(260,26): warning C4456: declaration of 'tempath' hides previous local declaration
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\cli_main.hpp(148,25):
-1>      see declaration of 'tempath'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\cli_main.hpp(192,18): warning C4189: 'zahl': local variable is initialized but not referenced
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\gui_main.hpp(35,185): warning C4388: '>=': signed/unsigned mismatch
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\algorithm(4073,24): warning C4242: '=': conversion from 'int' to 'char', possible loss of data
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>      C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\algorithm(4073,24):
-1>      the template instantiation context (the oldest one first) is
-1>          C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\cli_main.hpp(346,8):
-1>          see reference to function template instantiation '_OutIt std::transform<std::_String_iterator<std::_String_val<std::_Simple_types<_Elem>>>,std::_String_iterator<std::_String_val<std::_Simple_types<_Elem>>>,int(__cdecl *)(int)>(const _InIt,const _InIt,_OutIt,_Fn)' being compiled
-1>          with
-1>          [
-1>              _OutIt=std::_String_iterator<std::_String_val<std::_Simple_types<char>>>,
-1>              _Elem=char,
-1>              _InIt=std::_String_iterator<std::_String_val<std::_Simple_types<char>>>,
-1>              _Fn=int (__cdecl *)(int)
-1>          ]
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atluser.h(634,3): warning C5267: definition of implicit copy constructor for 'WTL::CIconT<true>' is deprecated because it has a user-provided destructor
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(533,3):
-1>      implicit copy constructor for 'WTL::CIconT<true>' first required here
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(533,3):
-1>      This diagnostic occurred in the compiler generated function 'CMainDlg::IconLoaderCallback::MainThreadCallback::MainThreadCallback(const CMainDlg::IconLoaderCallback::MainThreadCallback &)'
-1>      C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CModifiedDialogImpl.hpp(173,26):
-1>      see reference to function 'CMainDlg::IconLoaderCallback::MainThreadCallback::MainThreadCallback(const CMainDlg::IconLoaderCallback::MainThreadCallback &)'
-1>C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xutility(4924,18): warning C4244: '=': conversion from 'wchar_t' to 'char', possible loss of data
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>      C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xutility(4924,18):
-1>      the template instantiation context (the oldest one first) is
-1>          C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\cli_main.hpp(257,61):
-1>          see reference to function template instantiation 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string<std::_Vector_iterator<std::_Vector_val<std::_Simple_types<_Elem>>>,0>(_Iter,_Iter,const _Alloc &)' being compiled
-1>          with
-1>          [
-1>              _Elem=wchar_t,
-1>              _Iter=std::_Vector_iterator<std::_Vector_val<std::_Simple_types<wchar_t>>>,
-1>              _Alloc=std::allocator<char>
-1>          ]
-1>              C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\cli_main.hpp(257,48):
-1>              see the first reference to 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>::basic_string' in 'main'
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xstring(862,17):
-1>          see reference to function template instantiation 'void std::basic_string<char,std::char_traits<char>,std::allocator<char>>::_Construct_from_iter<wchar_t*,wchar_t*,_Size_type>(_Iter,const _Sent,_Size)' being compiled
-1>          with
-1>          [
-1>              _Size_type=unsigned __int64,
-1>              _Iter=wchar_t *,
-1>              _Sent=wchar_t *,
-1>              _Size=unsigned __int64
-1>          ]
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xstring(1018,18):
-1>          see reference to function template instantiation '_OutIt *std::_Copy_n_unchecked4<wchar_t*,_Size,char*>(_InIt,_SizeTy,_OutIt)' being compiled
-1>          with
-1>          [
-1>              _OutIt=char *,
-1>              _Size=unsigned __int64,
-1>              _InIt=wchar_t *,
-1>              _SizeTy=unsigned __int64
-1>          ]
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\ShellItemIDList.hpp(14,3): warning C5267: definition of implicit copy constructor for 'CShellItemIDList' is deprecated because it has a user-provided destructor
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>      C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xutility(522,61):
-1>      implicit copy constructor for 'CShellItemIDList' first required here
-1>      C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xutility(515,58):
-1>      the template instantiation context (the oldest one first) is
-1>          C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(302,48):
-1>          see reference to class template instantiation 'std::pair<std::pair<CShellItemIDList,ATL::CComPtr<IShellFolder>>,std::vector<CShellItemIDList,std::allocator<CShellItemIDList>>>' being compiled
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\utility(473,10):
-1>          see reference to class template instantiation 'std::vector<CShellItemIDList,std::allocator<CShellItemIDList>>' being compiled
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\vector(936,23):
-1>          while compiling class template member function 'void std::vector<CShellItemIDList,std::allocator<CShellItemIDList>>::push_back(_Ty &&)'
-1>          with
-1>          [
-1>              _Ty=CShellItemIDList
-1>          ]
-1>              C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp(2364,25):
-1>              see the first reference to 'std::vector<CShellItemIDList,std::allocator<CShellItemIDList>>::push_back' in 'CMainDlg::RightClick'
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\vector(938,9):
-1>          see reference to function template instantiation '_Ty &std::vector<_Ty,std::allocator<_Ty>>::_Emplace_one_at_back<CShellItemIDList>(CShellItemIDList &&)' being compiled
-1>          with
-1>          [
-1>              _Ty=CShellItemIDList
-1>          ]
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\vector(845,20):
-1>          see reference to function template instantiation '_Ty &std::vector<_Ty,std::allocator<_Ty>>::_Emplace_back_with_unused_capacity<_Ty>(_Ty &&)' being compiled
-1>          with
-1>          [
-1>              _Ty=CShellItemIDList
-1>          ]
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\vector(860,18):
-1>          see reference to function template instantiation 'void std::_Construct_in_place<CShellItemIDList,_Ty>(_Ty &,_Ty &&) noexcept' being compiled
-1>          with
-1>          [
-1>              _Ty=CShellItemIDList
-1>          ]
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp(51,4): warning C5267: definition of implicit copy constructor for 'IoCompletionPort::WorkerThread' is deprecated because it has a user-provided destructor
-1>  (compiling source file '/UltraFastFileSearch.cpp')
-1>      C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xmemory(736,82):
-1>      implicit copy constructor for 'IoCompletionPort::WorkerThread' first required here
-1>      C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xmemory(732,1):
-1>      the template instantiation context (the oldest one first) is
-1>          C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp(195,28):
-1>          see reference to class template instantiation 'std::vector<IoCompletionPort::WorkerThread,std::allocator<IoCompletionPort::WorkerThread>>' being compiled
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\vector(1628,23):
-1>          while compiling class template member function 'void std::vector<IoCompletionPort::WorkerThread,std::allocator<IoCompletionPort::WorkerThread>>::resize(const unsigned __int64)'
-1>              C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp(227,25):
-1>              see the first reference to 'std::vector<IoCompletionPort::WorkerThread,std::allocator<IoCompletionPort::WorkerThread>>::resize' in 'IoCompletionPort::ensure_initialized'
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\vector(1630,9):
-1>          see reference to function template instantiation 'void std::vector<IoCompletionPort::WorkerThread,std::allocator<IoCompletionPort::WorkerThread>>::_Resize<std::_Value_init_tag>(const unsigned __int64,const _Ty2 &)' being compiled
-1>          with
-1>          [
-1>              _Ty2=std::_Value_init_tag
-1>          ]
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\vector(1608,17):
-1>          see reference to function template instantiation 'void std::vector<IoCompletionPort::WorkerThread,std::allocator<IoCompletionPort::WorkerThread>>::_Resize_reallocate<_Ty2>(const unsigned __int64,const _Ty2 &)' being compiled
-1>          with
-1>          [
-1>              _Ty2=std::_Value_init_tag
-1>          ]
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\vector(1581,13):
-1>          see reference to function template instantiation 'IoCompletionPort::WorkerThread *std::_Uninitialized_copy<IoCompletionPort::WorkerThread*,IoCompletionPort::WorkerThread*,std::allocator<IoCompletionPort::WorkerThread>>(_InIt,_Se,IoCompletionPort::WorkerThread *,_Alloc &)' being compiled
-1>          with
-1>          [
-1>              _InIt=IoCompletionPort::WorkerThread *,
-1>              _Se=IoCompletionPort::WorkerThread *,
-1>              _Alloc=std::allocator<IoCompletionPort::WorkerThread>
-1>          ]
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xmemory(1922,18):
-1>          see reference to function template instantiation 'void std::_Uninitialized_backout_al<_Alloc>::_Emplace_back<IoCompletionPort::WorkerThread&>(IoCompletionPort::WorkerThread &)' being compiled
-1>          with
-1>          [
-1>              _Alloc=std::allocator<IoCompletionPort::WorkerThread>
-1>          ]
-1>          C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xmemory(1864,35):
-1>          see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,IoCompletionPort::WorkerThread&>(_Alloc &,_Objty *const ,IoCompletionPort::WorkerThread &)' being compiled
-1>          with
-1>          [
-1>              _Alloc=std::allocator<IoCompletionPort::WorkerThread>,
-1>              _Ty=IoCompletionPort::WorkerThread,
-1>              _Objty=IoCompletionPort::WorkerThread
-1>          ]
-1>  Generating code
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10903): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10755): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(785): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10799): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10799): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<std::char_traits<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10799): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<std::char_traits<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10799): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10807): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10807): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<std::char_traits<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10820): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10827): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10827): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<std::char_traits<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10861): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10956): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10965): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10968): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10968): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<std::char_traits<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10968): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10968): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<std::char_traits<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10970): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10970): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<std::char_traits<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10975): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10975): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<std::char_traits<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10580): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10580): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<std::char_traits<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10643): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10643): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<std::char_traits<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10675): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10704): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp(10706): warning C4866: compiler may not enforce left-to-right evaluation order for call to 'std::operator<<<char,std::char_traits<char>,std::allocator<char> >'
-1>  Finished generating code
-1>  UltraFastFileSearch.vcxproj -> C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\x64\EXE\uffs.exe
-1>  Generating MUI file...
-========== Rebuild All: 1 succeeded, 0 failed, 0 skipped ==========
-========== Rebuild completed at 21:49 and took 12.239 seconds ==========
+Severity
+Code
+Description
+Project
+File
+Line
+Suppression State
+Details
+Warning
+C6387
+'hTemplate' could be '0':  this does not adhere to the specification for the function 'FreeResource'. See line 205 for an earlier location where this can occur.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
+210
+
+
+Warning
+C28125
+The function 'InitializeCriticalSection' must be called from within a try/except block:  The requirement might be conditional.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\BackgroundWorker.hpp
+40
+
+
+Warning
+C28183
+'this->hThread' could be '0', and is a copy of the value found in '_beginthreadex()`99':  this does not adhere to the specification for the function 'ResumeThread'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\BackgroundWorker.hpp
+101
+
+
+Warning
+C6387
+'pNew' could be '0':  this does not adhere to the specification for the function 'memcpy'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
+178
+
+
+Warning
+C6387
+'pNew' could be '0':  this does not adhere to the specification for the function 'ATL::_DialogSizeHelper::HasFont'. See line 178 for an earlier location where this can occur.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
+180
+
+
+Warning
+C6387
+'hTemplate' could be '0':  this does not adhere to the specification for the function 'LockResource'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
+205
+
+
+Warning
+C6387
+'pTemplate' could be '0':  this does not adhere to the specification for the function 'ATL::_DialogSizeHelper::HasFont'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
+224
+
+
+Warning
+C6387
+'_Param_(1)' could be '0':  this does not adhere to the specification for the function 'std::basic_string<wchar_t,std::char_traits<wchar_t>,std::allocator<wchar_t> >::{ctor}'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
+306
+
+
+Warning
+C6387
+'pTemplate' could be '0':  this does not adhere to the specification for the function 'ATL::_DialogSizeHelper::HasFont'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
+345
+
+
+Warning
+C6011
+Dereferencing NULL pointer 'pTemplate'. See line 345 for an earlier location where this can occur.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
+351
+
+
+Warning
+C6011
+Dereferencing NULL pointer 'pTemplate'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
+442
+
+
+Warning
+C26827
+Did you forget to initialize an enum constant, or intend to use another type?.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp
+4423
+
+
+Warning
+C6387
+'pTemplate' could be '0':  this does not adhere to the specification for the function 'CreateDialogIndirectParamW'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CModifiedDialogImpl.hpp
+70
+
+
+Warning
+C6387
+'(line_buffer.empty())?(0):(&line_buffer[](0))' could be '0':  this does not adhere to the specification for the function 'WideCharToMultiByte'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\cli_main.hpp
+611
+
+
+Warning
+C6387
+'outHandle' could be '0':  this does not adhere to the specification for the function 'CloseHandle'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\cli_main.hpp
+1135
+
+
+Warning
+C28251
+Inconsistent annotation for 'wWinMain': this instance has no annotations. See c:\program files (x86)\windows kits\10\include\10.0.26100.0\um\winbase.h(1075). .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\gui_main.hpp
+11
+
+
+Warning
+C6031
+Return value ignored: 'ATL::CStringT<wchar_t,ATL::StrTraitATL<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::LoadStringW'.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\gui_main.hpp
+56
+
+
+Warning
+C6387
+'hEvent' could be '0':  this does not adhere to the specification for the function 'PulseEvent'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\gui_main.hpp
+107
+
+
+Warning
+C6001
+Using uninitialized memory 'tf'.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+431
+
+
+Warning
+C6031
+Return value ignored: 'UnregisterWait'.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+463
+
+
+Warning
+C28159
+Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+1155
+
+
+Warning
+C26437
+Do not slice (es.63).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+1514
+
+
+Warning
+C26437
+Do not slice (es.63).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+1788
+
+
+Warning
+C26437
+Do not slice (es.63).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+1978
+
+
+Warning
+C28159
+Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+1994
+
+
+Warning
+C6387
+'_Param_(1)' could be '0':  this does not adhere to the specification for the function 'ATL::CWindow::MapWindowPoints'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2255
+
+
+Warning
+C26115
+Failing to release lock '*m' in function 'CMainDlg::LockedResults::operator()'.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2311
+
+
+Warning
+C26437
+Do not slice (es.63).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2594
+
+
+Warning
+C28159
+Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2626
+
+
+Warning
+C28159
+Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2670
+
+
+Warning
+C28159
+Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2742
+
+
+Warning
+C26437
+Do not slice (es.63).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2743
+
+
+Warning
+C28159
+Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2744
+
+
+Warning
+C6387
+'GlobalHandle(line_buffer.c_str())' could be '0':  this does not adhere to the specification for the function 'GlobalReAlloc'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2782
+
+
+Warning
+C6387
+'path.c_str(), (path.empty())?(0):(&path[](0))' could be '0':  this does not adhere to the specification for the function 'SHParseDisplayName'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2841
+
+
+Warning
+C6001
+Using uninitialized memory 'shfi'.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2990
+
+
+Warning
+C26453
+Arithmetic overflow: Left shift of a negative signed number is undefined behavior (io.4).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+468
+
+
+Warning
+C26453
+Arithmetic overflow: Left shift of a negative signed number is undefined behavior (io.4).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+480
+
+
+Warning
+C6054
+String 'buf' might not be zero-terminated.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1150
+
+
+Warning
+C26819
+Unannotated fallthrough between switch labels (es.78).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1537
+
+
+Warning
+C26819
+Unannotated fallthrough between switch labels (es.78).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1552
+
+
+Warning
+C26819
+Unannotated fallthrough between switch labels (es.78).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1569
+
+
+Warning
+C26819
+Unannotated fallthrough between switch labels (es.78).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1579
+
+
+Warning
+C26819
+Unannotated fallthrough between switch labels (es.78).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1593
+
+
+Warning
+C26819
+Unannotated fallthrough between switch labels (es.78).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1607
+
+
+Warning
+C26819
+Unannotated fallthrough between switch labels (es.78).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1623
+
+
+Warning
+C26819
+Unannotated fallthrough between switch labels (es.78).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1641
+
+
+Warning
+C6308
+'realloc' might return null pointer: assigning null pointer to 'this->p', which is passed as an argument to 'realloc', will cause the original memory block to be leaked.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\buffer.hpp
+168
+
+
+Warning
+C6308
+'realloc' might return null pointer: assigning null pointer to 'this->p', which is passed as an argument to 'realloc', will cause the original memory block to be leaked.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\buffer.hpp
+170
+
+
+Warning
+C6054
+String 'buf' might not be zero-terminated.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+773
+
+
+Warning
+C28183
+'lpDisplayBuf' could be '0', and is a copy of the value found in 'LocalAlloc()`820':  this does not adhere to the specification for the function 'LocalSize'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+827
+
+
+Warning
+C6067
+_Param_(6) in call to 'StringCchPrintfW' must be the address of a string. Actual type: 'void *'.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+827
+
+
+Warning
+C6001
+Using uninitialized memory 'fsinfo'.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1019
+
+
+Warning
+C6387
+'(path.empty())?(0):(const_cast<WCHAR *>path.c_str())' could be '0':  this does not adhere to the specification for the function 'IShellFolder::ParseDisplayName'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1496
+
+
+Warning
+C6387
+'hKernel32' could be '0':  this does not adhere to the specification for the function 'GetProcAddress'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1514
+
+
+Warning
+C6031
+Return value ignored: 'ATL::CStringT<wchar_t,ATL::StrTraitATL<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::LoadStringW'.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1994
+
+
+Warning
+C6011
+Dereferencing NULL pointer 'col.pszText'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2165
+
+
+Warning
+C28159
+Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2709
+
+
+Warning
+C28159
+Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2731
+
+
+Warning
+C28159
+Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2786
+
+
+Warning
+C28159
+Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2826
+
+
+Warning
+C6387
+'(module_path.empty())?(0):(&module_path.begin()->*())' could be '0':  this does not adhere to the specification for the function 'GetModuleFileNameW'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+3231
+
+
+Warning
+C6387
+'LoadResource(0, hRsrs)' could be '0':  this does not adhere to the specification for the function 'LockResource'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+3247
+
+
+Warning
+C26110
+Caller failing to hold lock '(&this->m_cslock)->m_cs' before calling function 'ATL::CComCritSecLock<ATL::CComCriticalSection>::Unlock'.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlapp.h
+759
+
+
+Warning
+C6387
+'m_lpstrHyperLink' could be '0':  this does not adhere to the specification for the function 'ATL::_U_STRINGorID::{ctor}'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h
+1444
+
+
+Warning
+C26819
+Unannotated fallthrough between switch labels (es.78).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h
+3058
+
+
+Warning
+C26819
+Unannotated fallthrough between switch labels (es.78).
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h
+3061
+
+
+Warning
+C6387
+'_Param_(1)' could be '0':  this does not adhere to the specification for the function 'ATL::CWindow::SetFont'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h
+4441
+
+
+Warning
+C6387
+'_Param_(1)' could be '0':  this does not adhere to the specification for the function 'ATL::CWindow::SetFont'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h
+4475
+
+
+Warning
+C6387
+'hResource' could be '0':  this does not adhere to the specification for the function 'LoadResource'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlgdi.h
+67
+
+
+Warning
+C6387
+'hGlobal' could be '0':  this does not adhere to the specification for the function 'LockResource'. .
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlgdi.h
+69
+
+
+Warning
+VCR001
+Function definition for 'operator=' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1786
+
+
+Warning
+VCR001
+Function definition for 'HOOK_CONCAT' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1866
+
+
+Warning
+VCR001
+Function definition for 'HOOK_CONCAT' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1871
+
+
+Warning
+VCR001
+Function definition for 'operator<<' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1946
+
+
+Warning
+VCR001
+Function definition for 'operator=' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1957
+
+
+Warning
+VCR001
+Function definition for 'operator=' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2059
+
+
+Warning
+VCR001
+Function definition for 'ClientDC' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2107
+
+
+Warning
+VCR001
+Function definition for 'operator=' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2109
+
+
+Warning
+VCR001
+Function definition for 'HOOK_CONCAT' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+3149
+
+
+Warning
+VCR001
+Function definition for 'HOOK_CONCAT' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+3166
+
+
+Warning
+C4310
+cast truncates constant value
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+3270
+
+
+Warning
+C4244
+'=': conversion from 'wchar_t' to 'char', possible loss of data
+UltraFastFileSearch
+C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xutility
+4924
+
+

@@ -465,7 +465,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 				const lv = mapping_pairs[j++];
 			{
 				unsigned char v = static_cast<unsigned char> (lv & ((1U << (CHAR_BIT / 2)) - 1));
-				vcn_type delta = v && (mapping_pairs[j + v - 1] >> (CHAR_BIT - 1)) ? ~vcn_type() << (v * CHAR_BIT) : vcn_type();
+				vcn_type delta = v && (mapping_pairs[j + v - 1] >> (CHAR_BIT - 1)) ? static_cast<vcn_type>(~static_cast<unsigned long long>(0) << (v * CHAR_BIT)) : vcn_type();
 				for (unsigned char k = 0; k != v; ++k)
 				{
 					delta |= static_cast<vcn_type> (mapping_pairs[j++]) << (CHAR_BIT * k);
@@ -477,7 +477,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 			{
 
 				unsigned char l = static_cast<unsigned char> (lv >> (CHAR_BIT / 2));
-				lcn_type delta = l && (mapping_pairs[j + l - 1] >> (CHAR_BIT - 1)) ? ~lcn_type() << (l * CHAR_BIT) : lcn_type();
+				lcn_type delta = l && (mapping_pairs[j + l - 1] >> (CHAR_BIT - 1)) ? static_cast<lcn_type>(~static_cast<unsigned long long>(0) << (l * CHAR_BIT)) : lcn_type();
 				for (unsigned char k = 0; k != l; ++k)
 				{
 					delta |= static_cast<lcn_type> (mapping_pairs[j++]) << (CHAR_BIT * k);

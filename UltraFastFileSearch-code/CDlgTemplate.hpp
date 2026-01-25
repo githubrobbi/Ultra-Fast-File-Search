@@ -175,6 +175,12 @@ public:
 			return FALSE;
 		}
 		DLGTEMPLATE* pNew = (DLGTEMPLATE*)GlobalLock(m_hTemplate);
+		if (pNew == NULL)
+		{
+			GlobalFree(m_hTemplate);
+			m_hTemplate = NULL;
+			return FALSE;
+		}
 		memcpy((BYTE*)pNew, pTemplate, (size_t)m_dwTemplateSize);
 
 		m_bSystemFont = (ATL::_DialogSizeHelper::HasFont(pNew) == 0);
@@ -202,7 +208,16 @@ public:
 			return FALSE;
 		}
 		HGLOBAL hTemplate = LoadResource(hInst, hRsrc);
+		if (hTemplate == NULL)
+		{
+			return FALSE;
+		}
 		DLGTEMPLATE* pTemplate = (DLGTEMPLATE*)LockResource(hTemplate);
+		if (pTemplate == NULL)
+		{
+			FreeResource(hTemplate);
+			return FALSE;
+		}
 		BOOL bSet = SetTemplate(pTemplate, (UINT)SizeofResource(hInst, hRsrc));
 #ifndef UnlockResource  // macro generates warning on Clang
 		UnlockResource(hTemplate);  // just for documentation, but not necessary
@@ -221,6 +236,10 @@ public:
 	BOOL HasFont() const
 	{
 		DLGTEMPLATE* pTemplate = (DLGTEMPLATE*)GlobalLock(m_hTemplate);
+		if (pTemplate == NULL)
+		{
+			return FALSE;
+		}
 		BOOL bHasFont = ATL::_DialogSizeHelper::HasFont(pTemplate);
 		GlobalUnlock(m_hTemplate);
 		return bHasFont;
@@ -302,8 +321,8 @@ public:
 	{
 		ATLASSERT(pTemplate != NULL);
 
-		if (!ATL::_DialogSizeHelper::HasFont(pTemplate))
-			return FALSE;
+		if (pTemplate == NULL || !ATL::_DialogSizeHelper::HasFont(pTemplate))
+			return std::basic_string<TCHAR>();
 
 		BYTE* pb = GetFontSizeField(pTemplate);
 		nFontSize = *(WORD*)pb;
@@ -340,6 +359,8 @@ public:
 			return FALSE;
 
 		DLGTEMPLATE* pTemplate = (DLGTEMPLATE*)GlobalLock(m_hTemplate);
+		if (pTemplate == NULL)
+			return FALSE;
 
 		BOOL bDialogEx = IsDialogEx(pTemplate);
 		BOOL bHasFont = ATL::_DialogSizeHelper::HasFont(pTemplate);
@@ -431,6 +452,12 @@ public:
 		//ASSERT_POINTER(pSize, SIZE);
 
 		DLGTEMPLATE* pTemplate = (DLGTEMPLATE*)GlobalLock(m_hTemplate);
+		if (pTemplate == NULL)
+		{
+			pSize->cx = 0;
+			pSize->cy = 0;
+			return;
+		}
 
 		if (IsDialogEx(pTemplate))
 		{

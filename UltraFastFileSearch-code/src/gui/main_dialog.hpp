@@ -334,7 +334,7 @@ public:
 		const lcid)
 	{
 		long long local_time = system_time + time_zone_bias;
-		winnt::TIME_FIELDS tf;
+		winnt::TIME_FIELDS tf = {};
 		winnt::RtlTimeToTimeFields(&reinterpret_cast<LARGE_INTEGER&> (local_time), &tf);
 		if (sortable)
 		{
@@ -459,7 +459,7 @@ public:
 	void OnDestroy()
 	{
 		setTopmostWindow.reset();
-		UnregisterWait(this->hWait);
+		(void)UnregisterWait(this->hWait);
 		this->ExitBackground();
 		this->iconLoader->clear();
 		this->iocp.close();
@@ -1151,7 +1151,7 @@ public:
 			if (dlg)
 			{
 				unsigned long
-					const tnow = GetTickCount();
+					const tnow = static_cast<unsigned long>(GetTickCount64());
 				if (dlg->ShouldUpdate(tnow))
 				{
 					if (dlg->HasUserCancelled(tnow))
@@ -1510,7 +1510,7 @@ public:
 			{
 				WTL::CWaitCursor
 					const wait_cursor;
-				CProgressDialog dlg(*this);
+				CProgressDialog dlg(static_cast<ATL::CWindow>(*this));
 				TCHAR buf[0x100];
 				safe_stprintf(buf, this->LoadString(IDS_STATUS_SORTING_RESULTS), static_cast<std::tstring> (nformat_ui(this->results.size())).c_str());
 				dlg.SetProgressTitle(buf);
@@ -1784,7 +1784,7 @@ public:
 		this->clear(false, false);
 		WTL::CWaitCursor
 			const wait_cursor;
-		CProgressDialog dlg(*this);
+		CProgressDialog dlg(static_cast<ATL::CWindow>(*this));
 		dlg.SetProgressTitle(this->LoadString(IDS_SEARCHING_TITLE));
 		if (dlg.HasUserCancelled())
 		{
@@ -1974,7 +1974,7 @@ public:
 					{
 						if (selected != 0)
 						{
-							(dlg.IsWindow() ? ATL::CWindow(dlg.GetHWND()) : *this).MessageBox(GetAnyErrorText(task_result), this->LoadString(IDS_ERROR_TITLE), MB_OK | MB_ICONERROR);
+							(dlg.IsWindow() ? ATL::CWindow(dlg.GetHWND()) : static_cast<ATL::CWindow>(*this)).MessageBox(GetAnyErrorText(task_result), this->LoadString(IDS_ERROR_TITLE), MB_OK | MB_ICONERROR);
 						}
 					}
 
@@ -1990,7 +1990,7 @@ public:
 							const depth)
 							{
 								unsigned long
-									const now = GetTickCount();
+									const now = static_cast<unsigned long>(GetTickCount64());
 								if (dlg.ShouldUpdate(now) || current_progress_denominator - current_progress_numerator <= 1)
 								{
 									if (dlg.HasUserCancelled(now))
@@ -2590,7 +2590,7 @@ public:
 					EmptyClipboard();
 				}
 
-				CProgressDialog dlg(*this);
+				CProgressDialog dlg(static_cast<ATL::CWindow>(*this));
 				dlg.SetProgressTitle(this->LoadString(output ? IDS_DUMPING_TITLE : IDS_COPYING_TITLE));
 				if (locked_indices.size() > 1 && dlg.HasUserCancelled())
 				{
@@ -2622,7 +2622,7 @@ public:
 				std::vector<int> displayed_columns(ncolumns, -1);
 				this->lvFiles.GetColumnOrderArray(static_cast<int> (displayed_columns.size()), &*displayed_columns.begin());
 				unsigned long long nwritten_since_update = 0;
-				unsigned long prev_update_time = GetTickCount();
+				unsigned long prev_update_time = static_cast<unsigned long>(GetTickCount64());
 				try
 				{
 					bool warned_about_ads = false;
@@ -2666,7 +2666,7 @@ public:
 								// TODO: This is broken currently
 								is_ads = is_ads || (begin_offset <= last_colon_index && last_colon_index < line_buffer.size() && !(last_colon_index == begin_offset + 1 && ((_T('a') <= first_char && first_char <= _T('z')) || (_T('A') <= first_char && first_char <= _T('Z'))) && line_buffer.size() > last_colon_index + 1 && line_buffer.at(last_colon_index + 1) == _T('\\'))) /*TODO: This will fail if we later support paths like \\.\C: */;
 								unsigned long
-									const update_time = GetTickCount();
+									const update_time = static_cast<unsigned long>(GetTickCount64());
 								if (dlg.ShouldUpdate(update_time) || i + 1 == locked_indices.size())
 								{
 									if (dlg.HasUserCancelled(update_time))
@@ -2738,9 +2738,9 @@ public:
 							if (!warned_about_ads)
 							{
 								unsigned long
-									const tick_before = GetTickCount();
-								(dlg.IsWindow() ? ATL::CWindow(dlg.GetHWND()) : *this).MessageBox(this->LoadString(IDS_COPYING_ADS_PROBLEM_BODY), this->LoadString(IDS_WARNING_TITLE), MB_OK | MB_ICONWARNING);
-								prev_update_time += GetTickCount() - tick_before;
+									const tick_before = static_cast<unsigned long>(GetTickCount64());
+								(dlg.IsWindow() ? ATL::CWindow(dlg.GetHWND()) : static_cast<ATL::CWindow>(*this)).MessageBox(this->LoadString(IDS_COPYING_ADS_PROBLEM_BODY), this->LoadString(IDS_WARNING_TITLE), MB_OK | MB_ICONWARNING);
+								prev_update_time += static_cast<unsigned long>(GetTickCount64()) - tick_before;
 								warned_about_ads = true;
 							}
 
@@ -2983,7 +2983,7 @@ public:
 			TypeInfoCache::value_type::second_type& found = this->type_cache[this->type_cache_str];
 			if (found.empty() && !this->type_cache_str.empty())
 			{
-				SHFILEINFO shfi;
+				SHFILEINFO shfi = {};
 				Wow64Disable
 					const wow64disable(true);
 				if (SHGetFileInfo(this->type_cache_str.c_str(), usable_attributes, &shfi, sizeof(shfi), SHGFI_TYPENAME | SHGFI_USEFILEATTRIBUTES))

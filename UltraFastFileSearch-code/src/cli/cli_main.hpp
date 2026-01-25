@@ -605,11 +605,14 @@ int main(int argc, char* argv[])
 #if defined(_UNICODE) &&_UNICODE
 											using std::max;
 										line_buffer_utf8.resize(max(line_buffer_utf8.size(), (line_buffer.size() + 1) * 6), _T('\0'));
-										int
-											const cch = WideCharToMultiByte(CP_UTF8, 0, line_buffer.empty() ? nullptr : &line_buffer[0], static_cast<int> (line_buffer.size()), &line_buffer_utf8[0], static_cast<int> (line_buffer_utf8.size()), nullptr, nullptr);
-										if (cch > 0)
+										if (!line_buffer.empty() && !line_buffer_utf8.empty())
 										{
-											nwritten_since_update += WriteFile(output, line_buffer_utf8.data(), sizeof(*line_buffer_utf8.data()) * static_cast<size_t> (cch), &nwritten, nullptr);
+											int
+												const cch = WideCharToMultiByte(CP_UTF8, 0, line_buffer.data(), static_cast<int> (line_buffer.size()), &line_buffer_utf8[0], static_cast<int> (line_buffer_utf8.size()), nullptr, nullptr);
+											if (cch > 0)
+											{
+												nwritten_since_update += WriteFile(output, line_buffer_utf8.data(), sizeof(*line_buffer_utf8.data()) * static_cast<size_t> (cch), &nwritten, nullptr);
+											}
 										}
 #else
 											nwritten_since_update += WriteFile(output, line_buffer.data(), sizeof(*line_buffer.data()) * line_buffer.size(), & nwritten, nullptr);
@@ -1130,7 +1133,7 @@ int main(int argc, char* argv[])
 			const static unsigned int timelapsed = static_cast<unsigned int> ((tend - tbegin) / CLOCKS_PER_SEC);
 			if (timelapsed <= 1) OS << "MMMmmm that was FAST ... maybe your searchstring was wrong?\t" << searchPathCopy << "\nSearch path. E.g. 'C:/' or 'C:\\Prog**' \n";
 			_ftprintf(stderr, _T("\nFinished \tin %u s\n\n"), timelapsed);
-			if (!console) CloseHandle(outHandle);
+			if (!console && outHandle != NULL && outHandle != INVALID_HANDLE_VALUE) CloseHandle(outHandle);
 		}
 
 		catch (std::invalid_argument& ex)

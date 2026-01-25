@@ -824,7 +824,7 @@ void DisplayError(LPTSTR lpszFunction)
 			*
 			sizeof(TCHAR));
 
-	if (FAILED(StringCchPrintf((LPTSTR)lpDisplayBuf,
+	if (lpDisplayBuf && FAILED(StringCchPrintf((LPTSTR)lpDisplayBuf,
 		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
 		TEXT("%s failed with error code %d as follows:\n%s"),
 		lpszFunction,
@@ -1015,7 +1015,7 @@ FILE_FS_DEVICE_INFORMATION fsinfo;
 [[nodiscard]] bool isdevnull(int fd)
 {
 	winnt::IO_STATUS_BLOCK iosb;
-	winnt::FILE_FS_DEVICE_INFORMATION fsinfo;
+	winnt::FILE_FS_DEVICE_INFORMATION fsinfo = {};
 	return winnt::NtQueryVolumeInformationFile((HANDLE)_get_osfhandle(fd), &iosb, &fsinfo, sizeof(fsinfo), 4) == 0 && fsinfo.DeviceType == 0x00000015;
 }
 
@@ -2162,7 +2162,7 @@ public:
 			}
 
 			size_t n = 0;
-			while (static_cast<int> (n) < col.cchTextMax && col.pszText[n])
+			while (col.pszText && static_cast<int> (n) < col.cchTextMax && col.pszText[n])
 			{
 				++n;
 			}
@@ -2706,7 +2706,7 @@ public: using Base::IsWindow;
 		  UPDATE_INTERVAL = 1000 / 64
 	  };
 
-	  CProgressDialog(ATL::CWindow parent) : Base(true, !!(parent.GetExStyle()& WS_EX_LAYOUTRTL)), canceled(false), invalidated(false), creationTime(GetTickCount()), lastUpdateTime(0), parent(parent), windowCreated(false), windowCreateAttempted(false), windowShowAttempted(false), lastProgress(0), lastProgressTotal(1) {}
+	  CProgressDialog(ATL::CWindow parent) : Base(true, !!(parent.GetExStyle()& WS_EX_LAYOUTRTL)), canceled(false), invalidated(false), creationTime(static_cast<unsigned long>(GetTickCount64())), lastUpdateTime(0), parent(parent), windowCreated(false), windowCreateAttempted(false), windowShowAttempted(false), lastProgress(0), lastProgressTotal(1) {}
 
 	  ~CProgressDialog()
 	  {
@@ -2722,13 +2722,13 @@ public: using Base::IsWindow;
 	  }
 
 	  unsigned long Elapsed(unsigned long
-		  const now = GetTickCount()) const
+		  const now = static_cast<unsigned long>(GetTickCount64())) const
 	  {
 		  return now - this->lastUpdateTime;
 	  }
 
 	  bool ShouldUpdate(unsigned long
-		  const now = GetTickCount()) const
+		  const now = static_cast<unsigned long>(GetTickCount64())) const
 	  {
 		  return this->Elapsed(now) >= UPDATE_INTERVAL;
 	  }
@@ -2783,7 +2783,7 @@ public: using Base::IsWindow;
 	  }
 
 	  bool HasUserCancelled(unsigned long
-		  const now = GetTickCount())
+		  const now = static_cast<unsigned long>(GetTickCount64()))
 	  {
 		  bool justCreated = false;
 		  if (abs(static_cast<int> (now - this->creationTime)) >= static_cast<int> (this->GetMinDelay()))
@@ -2823,7 +2823,7 @@ public: using Base::IsWindow;
 				  this->UpdateWindow();
 			  }
 
-			  this->lastUpdateTime = GetTickCount();
+			  this->lastUpdateTime = static_cast<unsigned long>(GetTickCount64());
 			  }
 		  }
 
