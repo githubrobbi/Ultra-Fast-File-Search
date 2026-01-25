@@ -1,127 +1,118 @@
 #pragma once
 
 // ============================================================================
-// GUI Entry Point Documentation
+// GUI Entry Point - _tWinMain()
 // ============================================================================
-// This header documents the GUI entry point for UltraFastFileSearch.
-// The actual implementation remains in UltraFastFileSearch.cpp for now.
-//
-// Location in UltraFastFileSearch.cpp: Lines 14076-14183 (~107 lines)
-// ============================================================================
-
-// ============================================================================
-// OVERVIEW
-// ============================================================================
-// The GUI entry point (_tWinMain()) provides the Windows GUI interface.
-// It initializes WTL/ATL, handles localization, and creates the main dialog.
-//
-// Entry Point:
-//   int __stdcall _tWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR, int nShowCmd)
-//
-// Output:
-//   - Windows GUI application (uffs.exe)
-//   - Main dialog with search interface
-//   - ListView for results display
-//
-// ============================================================================
-// DEPENDENCIES
-// ============================================================================
-// The GUI main function depends on:
-//
-// 1. WTL/ATL Framework
-//    - CAppModule (_Module global)
-//    - CMessageLoop for message handling
-//    - Dialog and control classes
-//
-// 2. CMainDlg class (lines 7869-11960)
-//    - Main application dialog
-//    - Search interface
-//    - Results display
-//
-// 3. Helper functions:
-//    - extract_and_run_if_needed() - MUI extraction
-//    - get_app_guid() - Application GUID
-//    - get_ui_locale_name() - Localization
-//    - basename(), dirname() - Path utilities
-//    - getdirsep() - Directory separator
-//
-// 4. Resources:
-//    - IDS_APPNAME - Application name string
-//    - Dialog templates
-//    - Icons and bitmaps
-//
-// ============================================================================
-// MAIN FUNCTION STRUCTURE
-// ============================================================================
-// 1. Initialization (lines 14076-14092)
-//    - Get command-line arguments
-//    - Call extract_and_run_if_needed()
-//    - Check for early exit
-//
-// 2. RTL Layout Detection (lines 14097-14112)
-//    - Check LOCALE_IREADINGLAYOUT
-//    - Set process default layout if RTL
-//
-// 3. Module Initialization (lines 14114-14117)
-//    - Initialize _Module with hInstance
-//
-// 4. Single Instance Check (lines 14119-14174)
-//    - Create named event for single instance
-//    - If first instance:
-//      a. Create message loop
-//      b. Load MUI resources
-//      c. Create and show CMainDlg
-//      d. Run message loop
-//    - If second instance:
-//      a. Signal first instance
-//      b. Exit
-//
-// 5. Cleanup (lines 14177-14183)
-//    - Terminate _Module
-//    - Return result
-//
-// ============================================================================
-// MUI (Multilingual User Interface) SUPPORT
-// ============================================================================
-// The GUI supports localized resources through MUI:
-//
-// Search paths for .mui files:
-//   1. <module_dir>/<locale>/<module_name>.mui
-//   2. <module_dir>/<module_name>.<locale>.mui
-//   3. <module_dir>/<locale>/<module_name>.<locale>.mui
-//   4. <module_dir>/<module_name>.mui
-//
-// ============================================================================
-// SINGLE INSTANCE BEHAVIOR
-// ============================================================================
-// The application uses a named event to ensure single instance:
-//   - Event name: "Local\<AppName>.<GUID>"
-//   - First instance creates event and runs
-//   - Second instance pulses event and exits
-//   - First instance can respond to pulse (e.g., bring to front)
-//
-// ============================================================================
-// FUTURE EXTRACTION PLAN
-// ============================================================================
-// To fully extract the GUI entry point:
-//
-// 1. Create gui_main.cpp with _tWinMain() function
-// 2. Extract CMainDlg to src/gui/main_dialog.hpp/cpp
-// 3. Move helper functions to appropriate modules
-// 4. Update includes to use extracted headers
-// 5. Update project file to compile gui_main.cpp
-// 6. Verify build and test functionality
-//
-// Estimated effort: 2-3 hours (smaller than CLI)
-// Risk: Low (well-contained WTL code)
+// Extracted from UltraFastFileSearch.cpp as part of Phase 6 refactoring.
+// This header is included at the end of UltraFastFileSearch.cpp where all
+// dependencies (CMainDlg, extract_and_run_if_needed, etc.) are already defined.
 // ============================================================================
 
-namespace uffs {
-namespace gui {
+int __stdcall _tWinMain(HINSTANCE
+	const hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*lpCmdLine*/, int nShowCmd)
+{
+	(void)hInstance;
+	(void)nShowCmd;
+	int
+		const argc = __argc;
+	TCHAR** const argv = __targv;
+	std::pair<int, std::tstring > extraction_result = extract_and_run_if_needed(hInstance, argc, argv);
+	if (extraction_result.first != -1)
+	{
+		return extraction_result.first;
+	}
 
-// Forward declaration for future extraction
-// int run_gui(HINSTANCE hInstance, int nShowCmd);
+	std::tstring const& module_path = extraction_result.second;
+	(void)argc;
+	(void)argv;
+	//if (get_subsystem(&__ImageBase) != IMAGE_SUBSYSTEM_WINDOWS_GUI) { 	return _tmain(argc, argv);}
 
-} // namespace gui
-} // namespace uffs
+	//if (get_subsystem(&__ImageBase) != IMAGE_SUBSYSTEM_WINDOWS_GUI) { 	return main(argc, argv); }
 
+int result = 0;
+bool right_to_left = false;
+unsigned long reading_layout;
+if (GetLocaleInfo(LOCALE_USER_DEFAULT, 0x00000070 /*LOCALE_IREADINGLAYOUT*/ | LOCALE_RETURN_NUMBER, reinterpret_cast<LPTSTR> (&reading_layout), sizeof(reading_layout) / sizeof(TCHAR)) >= sizeof(reading_layout) / sizeof(TCHAR))
+{
+	right_to_left = reading_layout == 1;
+}
+else
+{
+	right_to_left = !!(GetWindowLongPtr(FindWindow(_T("Shell_TrayWnd"), nullptr), GWL_EXSTYLE) & WS_EX_LAYOUTRTL);
+}
+
+if (right_to_left)
+{
+	SetProcessDefaultLayout(LAYOUT_RTL);
+}
+
+__if_exists(_Module)
+{
+	_Module.Init(nullptr, hInstance);
+}
+
+{
+	RefCountedCString appname;
+	appname.LoadString(IDS_APPNAME);
+	HANDLE hEvent = CreateEvent(nullptr, FALSE, FALSE, _T("Local\\") + appname + _T(".") + get_app_guid());
+	if (hEvent != nullptr && GetLastError() != ERROR_ALREADY_EXISTS)
+	{
+		WTL::CMessageLoop msgLoop;
+		_Module.AddMessageLoop(&msgLoop);
+		if (!module_path.empty())
+		{
+			// https://blogs.msdn.microsoft.com/jsocha/2011/12/14/allowing-localizing-after-the-fact-using-mui/
+			std::tstring module_name = module_path;
+			module_name.erase(module_name.begin(), basename(module_name.begin(), module_name.end()));
+			std::tstring module_directory = module_path;
+			module_directory.erase(dirname(module_directory.begin(), module_directory.end()), module_directory.end());
+			if (!module_directory.empty())
+			{
+				module_directory += getdirsep();
+			}
+
+			std::tstring
+				const period = TEXT(".");
+			std::tstring
+				const mui_ext = TEXT("mui");
+			std::tstring
+				const locale_name = static_cast<LPCTSTR> (get_ui_locale_name());
+			std::tstring
+				const mui_paths[] = { module_directory + locale_name + getdirsep() + module_name + period + mui_ext,
+					module_directory + module_name + period + locale_name + period + mui_ext,
+					module_directory + locale_name + getdirsep() + module_name + period + locale_name + period + mui_ext,
+					module_directory + module_name + period + mui_ext,
+			};
+
+			for (size_t i = 0; i != sizeof(mui_paths) / sizeof(*mui_paths) && !mui_module; ++i)
+			{
+				unsigned int
+					const mui_load_flags = LOAD_LIBRARY_AS_DATAFILE;
+				for (int pass = 0; pass < 2 && !mui_module; ++pass)
+				{
+					mui_module = LoadLibraryEx(mui_paths[i].c_str(), nullptr, mui_load_flags | (!pass ? 0x00000020 /*LOAD_LIBRARY_AS_IMAGE_RESOURCE only works on Vista and later*/ : 0));
+				}
+			}
+		}
+
+		CMainDlg wnd(hEvent, right_to_left);
+		wnd.Create(reinterpret_cast<HWND> (nullptr), 0);
+		wnd.ShowWindow((wnd.GetStyle() & SW_MAXIMIZE) ? SW_SHOW : SW_SHOWDEFAULT);
+		msgLoop.Run();
+		_Module.RemoveMessageLoop();
+	}
+	else
+	{
+		AllowSetForegroundWindow(ASFW_ANY);
+		PulseEvent(hEvent);	// PulseThread() is normally unreliable, but we don't really care here...
+		result = GetLastError();
+	}
+}
+
+__if_exists(_Module)
+{
+	_Module.Term();
+}
+
+return result;
+}
