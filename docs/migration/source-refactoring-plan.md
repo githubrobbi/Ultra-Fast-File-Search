@@ -42,10 +42,10 @@ This document outlines a comprehensive plan to modernize the UFFS C++ codebase w
 
 ---
 
-## Implementation Status (as of 2026-01-24)
+## Implementation Status (as of 2026-01-25)
 
-- Phases 1–5 from this plan have been executed; Phase 6 is partially complete; Phase 7 (Modernize C++) is complete.
-- The main monolithic source file `UltraFastFileSearch.cpp` has been reduced from 14,155 to **11,370 lines** (≈**2,800 lines** migrated into headers under `src/`).
+- **All phases (1–7) are complete.**
+- The main monolithic source file `UltraFastFileSearch.cpp` has been reduced from 14,155 to **4,306 lines** (≈**9,849 lines** migrated into headers under `src/`).
 - Key utility and I/O abstractions now live in dedicated headers:
   - `src/util/atomic_compat.hpp` — atomic_namespace (spin locks, atomics, lightweight sync primitives)
   - `src/util/intrusive_ptr.hpp` — `RefCounted` + `intrusive_ptr`
@@ -63,7 +63,11 @@ This document outlines a comprehensive plan to modernize the UFFS C++ codebase w
   - `src/util/memheap_vector.hpp` — `memheap_vector<T>` using memheap allocator
   - `src/io/io_priority.hpp` — `IoPriority` RAII class for I/O priority management
   - `src/io/winnt_types.hpp` — Windows NT types (`IO_PRIORITY_HINT`, `IO_STATUS_BLOCK`, etc.)
-- Phase 7 modernization work applied so far:
+  - `src/index/ntfs_index.hpp` — `NtfsIndex` class (~1,860 lines)
+  - `src/gui/gui_main.hpp` — `_tWinMain()` GUI entry point (119 lines)
+  - `src/cli/cli_main.hpp` — `main()` CLI entry point (1,155 lines)
+  - `src/gui/main_dialog.hpp` — `CMainDlg` main dialog class (3,908 lines)
+- Phase 7 modernization work applied:
   - All `NULL` pointer literals have been replaced with `nullptr`.
   - `auto` is used for several complex iterator types where it improves readability.
   - `[[nodiscard]]` has been added to 5 functions where ignoring the return value would likely be a bug.

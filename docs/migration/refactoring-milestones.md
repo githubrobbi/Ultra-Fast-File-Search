@@ -15,8 +15,8 @@
 | **Target Completion** | _TBD_ |
 | **Current Phase** | All phases complete |
 | **Overall Progress** | 100% (Phases 1-7 complete) |
-| **Monolith Size** | ~9,470 lines (down from 14,155) |
-| **Lines Extracted** | ~4,685 lines into new headers under src/ |
+| **Monolith Size** | ~4,306 lines (down from 14,155) |
+| **Lines Extracted** | ~9,849 lines into new headers under src/ |
 
 ---
 
@@ -172,11 +172,11 @@
 
 
 ### Phase 6: Separate GUI from CLI
-| Status | 🟡 In Progress |
-|--------|----------------|
+| Status | 🟢 Complete |
+|--------|-------------|
 | **Branch** | `refactoring/phase-6-gui-cli-split` |
 | **Estimated** | 8 hours |
-| **Actual** | ~30 min (documentation), extraction in progress |
+| **Actual** | ~3 hours |
 | **Assignee** | AI Assistant |
 
 | Step | Task | Status | Notes |
@@ -186,25 +186,25 @@
 | 6.3 | Create cli_main.hpp | ✅ | Documentation header (~130 lines) |
 | 6.4 | Create gui_main.hpp | ✅ | Documentation header (~120 lines) |
 | 6.5 | Create main_dialog.hpp | ✅ | Documentation header (~130 lines) |
-| 6.6 | Extract _tWinMain() to gui_main.hpp | ⬜ | ~107 lines (9364-9471) - GUI entry point |
-| 6.7 | Extract main() to cli_main.hpp | ⬜ | ~1,152 lines (8207-9359) - CLI entry point |
-| 6.8 | Extract CMainDlg to main_dialog.hpp | ⬜ | ~3,905 lines (3172-7077) - Main dialog class |
+| 6.6 | Extract _tWinMain() to gui_main.hpp | ✅ | 119 lines - GUI entry point extracted |
+| 6.7 | Extract main() to cli_main.hpp | ✅ | 1,155 lines - CLI entry point extracted |
+| 6.8 | Extract CMainDlg to main_dialog.hpp | ✅ | 3,908 lines - Main dialog class extracted |
 
 **Verification Checklist:**
-- [ ] Build succeeds (Release)
-- [ ] Build succeeds (Debug)
-- [ ] CLI tool works (`uffs.com`)
-- [ ] GUI tool works (`uffs.exe`)
-- [ ] Both produce same search results
+- [x] Build succeeds (Release)
+- [x] Build succeeds (Debug)
+- [x] CLI tool works (`uffs.com`)
+- [x] GUI tool works (`uffs.exe`)
+- [x] Both produce same search results
 
-**Current Code Locations (in monolith):**
-| Component | Lines | Size | Destination |
-|-----------|-------|------|-------------|
-| `CMainDlg` class | 3172-7077 | ~3,905 lines | `src/gui/main_dialog.hpp` |
-| `main()` CLI entry | 8207-9359 | ~1,152 lines | `src/cli/cli_main.hpp` |
-| `_tWinMain()` GUI entry | 9364-9471 | ~107 lines | `src/gui/gui_main.hpp` |
+**Extracted Files:**
+| File | Content | Lines |
+|------|---------|-------|
+| `src/gui/gui_main.hpp` | `_tWinMain()` GUI entry point | 119 |
+| `src/cli/cli_main.hpp` | `main()` CLI entry point | 1,155 |
+| `src/gui/main_dialog.hpp` | `CMainDlg` main dialog class | 3,908 |
 
-**Notes:** Phase 6 initially created documentation headers only. Now proceeding with actual code extraction, starting with smallest component (_tWinMain) to establish pattern.
+**Notes:** Phase 6 complete. All GUI/CLI code extracted. Monolith reduced from 9,470 to 4,306 lines (54% reduction in this phase alone).
 
 ---
 
@@ -248,9 +248,9 @@
 | 3 | Extract Utilities | 3 | 🟢 Complete | 8/8 |
 | 4 | Extract I/O Layer | 6 | 🟢 Complete | 8/8 |
 | 5 | Extract NtfsIndex | 6 | 🟢 Complete | 6/6 |
-| 6 | Separate GUI/CLI | 8 | 🟡 In Progress | 5/8 |
+| 6 | Separate GUI/CLI | 8 | 🟢 Complete | 8/8 |
 | 7 | Modernize C++ | 6 | 🟢 Complete | 12/12 |
-| **Total** | | **34** | | **51/54** |
+| **Total** | | **34** | | **54/54** |
 
 ### Status Legend
 
