@@ -13,10 +13,10 @@
 | **Estimated Hours** | 25-40 |
 | **Start Date** | 2026-01-23 |
 | **Target Completion** | _TBD_ |
-| **Current Phase** | Phase 7 Complete |
-| **Overall Progress** | 100% (7/7 phases) |
-| **Monolith Size** | 11,370 lines (down from 14,155) |
-| **Lines Extracted** | ~2,800 lines into new headers under src/ |
+| **Current Phase** | Phase 5 NtfsIndex extraction complete, pending build verification |
+| **Overall Progress** | 95% (Phases 1-4, 7 complete; Phase 5-6 pending verification) |
+| **Monolith Size** | 9,514 lines (down from 14,155) |
+| **Lines Extracted** | ~4,640 lines into new headers under src/ |
 
 ---
 
@@ -148,25 +148,25 @@
 |--------|-------------|
 | **Branch** | `refactoring/phase-5-ntfs-index` |
 | **Estimated** | 6 hours |
-| **Actual** | ~30 min |
+| **Actual** | ~2 hours |
 | **Assignee** | AI Assistant |
 
 | Step | Task | Status | Notes |
 |------|------|--------|-------|
 | 5.1 | Create src/index directory | ✅ | Created |
 | 5.2 | Identify NtfsIndex dependencies | ✅ | RefCounted, atomic_namespace, intrusive_ptr |
-| 5.3 | Create ntfs_index.hpp | ✅ | Documentation only (~150 lines) |
-| 5.4 | Gradual migration | ⬜ | Deferred - complex dependencies |
-| 5.5 | Verify build | ✅ | Build passed on Windows |
-| 5.6 | Commit and push | ✅ | Merged to main |
+| 5.3 | Create ntfs_index.hpp | ✅ | **FULL EXTRACTION** (~1860 lines) |
+| 5.4 | Gradual migration | ✅ | Complete - all NtfsIndex code extracted |
+| 5.5 | Verify build | ⬜ | Pending Windows build verification |
+| 5.6 | Commit and push | ⬜ | Pending |
 
 **Verification Checklist:**
-- [x] Build succeeds (Release)
-- [x] Build succeeds (Debug)
-- [x] Benchmark matches baseline
-- [x] Index building works correctly
+- [ ] Build succeeds (Release)
+- [ ] Build succeeds (Debug)
+- [ ] Benchmark matches baseline
+- [ ] Index building works correctly
 
-**Notes:** NtfsIndex class (~1960 lines) not extracted due to complex dependencies. Created comprehensive documentation header for Rust team reference.
+**Notes:** NtfsIndex class (~1860 lines) fully extracted to `src/index/ntfs_index.hpp`. Monolith reduced from ~11,370 to ~9,514 lines.
 
 ---
 
@@ -325,6 +325,8 @@ Record these BEFORE starting any refactoring:
 | 2026-01-24 | - | Monolith reduced from 11,932 to 11,373 lines (~2,800 lines extracted in total) | AI Assistant |
 | 2026-01-24 | 7 | Phase 7.3: Convert 4 traditional for loops to range-based for loops (commit 83941137) | AI Assistant |
 | 2026-01-24 | 7 | Phase 7.4: Convert `AttributeTypeCode` and `ReparseTypeFlags` to enum class for type safety | AI Assistant |
+| 2026-01-24 | 5 | **REAL EXTRACTION**: NtfsIndex class (~1860 lines) → `src/index/ntfs_index.hpp` | AI Assistant |
+| 2026-01-24 | - | Monolith reduced from 11,373 to 9,514 lines (~4,640 lines extracted in total) | AI Assistant |
 
 ---
 
