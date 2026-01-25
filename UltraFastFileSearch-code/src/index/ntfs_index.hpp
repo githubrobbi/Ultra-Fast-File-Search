@@ -1145,6 +1145,7 @@ public: typedef key_type_internal key_type;
 					  this->_root_path.c_str(), static_cast<unsigned> (sizeof(*this->nameinfos.begin())), static_cast<unsigned long long> (this->nameinfos.size()), static_cast<unsigned long long> (this->nameinfos.capacity()),
 					  this->_root_path.c_str(), static_cast<unsigned> (sizeof(*this->streaminfos.begin())), static_cast<unsigned long long> (this->streaminfos.size()), static_cast<unsigned long long> (this->streaminfos.capacity()),
 					  this->_root_path.c_str(), static_cast<unsigned> (sizeof(*this->childinfos.begin())), static_cast<unsigned long long> (this->childinfos.size()), static_cast<unsigned long long> (this->childinfos.capacity()));
+			  buf[_countof(buf) - 1] = _T('\0');  // Ensure null termination for static analysis
 			  if (nbuf > 0)
 			  {
 				  OutputDebugString(buf);
@@ -1548,7 +1549,7 @@ public: typedef key_type_internal key_type;
 								state = 1;
 								break;
 							}
-
+							[[fallthrough]];
 				case 1:;
 						}
 					}
@@ -1565,7 +1566,7 @@ public: typedef key_type_internal key_type;
 								state = 2;
 								break;
 							}
-
+							[[fallthrough]];
 				case 2:;
 					result.first = _T(":");
 					result.second = 1;
@@ -1576,6 +1577,7 @@ public: typedef key_type_internal key_type;
 						break;
 					  }
 
+				  [[fallthrough]];
 				  case 3:;
 						  }
 
@@ -1590,6 +1592,7 @@ public: typedef key_type_internal key_type;
 								  break;
 							  }
 
+				  [[fallthrough]];
 				  case 4:;
 						  }
 
@@ -1604,6 +1607,7 @@ public: typedef key_type_internal key_type;
 								  break;
 							  }
 
+				  [[fallthrough]];
 				  case 5:;
 						  }
 					  }
@@ -1620,6 +1624,7 @@ public: typedef key_type_internal key_type;
 						  }
 					  }
 
+				  [[fallthrough]];
 				  case 6:;
 					  if (is_root())
 					  {

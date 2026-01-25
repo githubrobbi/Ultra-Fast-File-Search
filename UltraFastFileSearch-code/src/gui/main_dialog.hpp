@@ -1510,7 +1510,7 @@ public:
 			{
 				WTL::CWaitCursor
 					const wait_cursor;
-				CProgressDialog dlg(static_cast<ATL::CWindow>(*this));
+				CProgressDialog dlg(this->m_hWnd);
 				TCHAR buf[0x100];
 				safe_stprintf(buf, this->LoadString(IDS_STATUS_SORTING_RESULTS), static_cast<std::tstring> (nformat_ui(this->results.size())).c_str());
 				dlg.SetProgressTitle(buf);
@@ -1784,7 +1784,7 @@ public:
 		this->clear(false, false);
 		WTL::CWaitCursor
 			const wait_cursor;
-		CProgressDialog dlg(static_cast<ATL::CWindow>(*this));
+		CProgressDialog dlg(this->m_hWnd);
 		dlg.SetProgressTitle(this->LoadString(IDS_SEARCHING_TITLE));
 		if (dlg.HasUserCancelled())
 		{
@@ -1974,7 +1974,7 @@ public:
 					{
 						if (selected != 0)
 						{
-							(dlg.IsWindow() ? ATL::CWindow(dlg.GetHWND()) : static_cast<ATL::CWindow>(*this)).MessageBox(GetAnyErrorText(task_result), this->LoadString(IDS_ERROR_TITLE), MB_OK | MB_ICONERROR);
+							ATL::CWindow(dlg.IsWindow() ? dlg.GetHWND() : this->m_hWnd).MessageBox(GetAnyErrorText(task_result), this->LoadString(IDS_ERROR_TITLE), MB_OK | MB_ICONERROR);
 						}
 					}
 
@@ -2251,7 +2251,7 @@ public:
 					this->lvFiles.GetItemRect(index, &bounds, LVIR_SELECTBOUNDS);
 					point.x = bounds.left;
 					point.y = bounds.top;
-					this->lvFiles.MapWindowPoints(nullptr, &point, 1);
+					this->lvFiles.MapWindowPoints(HWND_DESKTOP, &point, 1);
 					indices.push_back(static_cast<size_t> (index));
 				}
 			}
@@ -2304,10 +2304,7 @@ public:
 
 			if (!found_lock)
 			{
-				indices_locks.push_back(IndicesLocks::value_type());
-				IndicesLocks::value_type temp(*m);
-				using std::swap;
-				swap(temp, indices_locks.back());
+				indices_locks.emplace_back(*m);
 			}
 		}
 	};
@@ -2590,7 +2587,7 @@ public:
 					EmptyClipboard();
 				}
 
-				CProgressDialog dlg(static_cast<ATL::CWindow>(*this));
+				CProgressDialog dlg(this->m_hWnd);
 				dlg.SetProgressTitle(this->LoadString(output ? IDS_DUMPING_TITLE : IDS_COPYING_TITLE));
 				if (locked_indices.size() > 1 && dlg.HasUserCancelled())
 				{
@@ -2739,7 +2736,7 @@ public:
 							{
 								unsigned long long
 									const tick_before = GetTickCount64();
-								(dlg.IsWindow() ? ATL::CWindow(dlg.GetHWND()) : static_cast<ATL::CWindow>(*this)).MessageBox(this->LoadString(IDS_COPYING_ADS_PROBLEM_BODY), this->LoadString(IDS_WARNING_TITLE), MB_OK | MB_ICONWARNING);
+								ATL::CWindow(dlg.IsWindow() ? dlg.GetHWND() : this->m_hWnd).MessageBox(this->LoadString(IDS_COPYING_ADS_PROBLEM_BODY), this->LoadString(IDS_WARNING_TITLE), MB_OK | MB_ICONWARNING);
 								prev_update_time += GetTickCount64() - tick_before;
 								warned_about_ads = true;
 							}
@@ -2777,8 +2774,10 @@ public:
 					{
 						unsigned int
 							const format = shell_file_list ? CF_HDROP : sizeof(*line_buffer.data()) > sizeof(char) ? CF_UNICODETEXT : CF_TEXT;
+						HGLOBAL const hGlobal = GlobalHandle(line_buffer.c_str());
+						if (hGlobal)
 						if (HGLOBAL
-							const resized = GlobalReAlloc(GlobalHandle(line_buffer.c_str()), (line_buffer.size() + 1) * sizeof(*line_buffer.data()), 0))
+							const resized = GlobalReAlloc(hGlobal, (line_buffer.size() + 1) * sizeof(*line_buffer.data()), 0))
 						{
 							HANDLE
 								const result = SetClipboardData(format, resized);
@@ -2837,7 +2836,10 @@ public:
 		if (hr == S_OK && basename(path.begin(), path.end()) != path.end())
 		{
 			p->second.resize(1);
-			hr = SHParseDisplayName((path.c_str(), path.empty() ? nullptr : &path[0]), nullptr, &p->second.back().m_pidl, sfgao, &sfgao);
+			if (!path.empty())
+			{
+				hr = SHParseDisplayName(&path[0], nullptr, &p->second.back().m_pidl, sfgao, &sfgao);
+			}
 		}
 
 		SHELLEXECUTEINFO shei = { sizeof(shei), SEE_MASK_INVOKEIDLIST | SEE_MASK_UNICODE, *this, nullptr, nullptr, p->second.empty() ? path_directory.c_str() : nullptr, path_directory.c_str(), SW_SHOWDEFAULT, 0, p->second.empty() ? nullptr : p->second.back().m_pidl

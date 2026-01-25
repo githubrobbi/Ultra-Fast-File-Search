@@ -769,6 +769,7 @@ long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo)
 			const guard(global_exception_mutex);
 		TCHAR buf[512];
 		safe_stprintf(buf, _T("The program encountered an error 0x%lX.\r\n\r\nPLEASE send me an email, so I can try to fix it.!\r\n\r\nIf you see OK, press OK.\r\nOtherwise:\r\n- Press Retry to attempt to handle the error (recommended)\r\n- Press Abort to quit\r\n- Press Ignore to continue (NOT recommended)"), ExceptionInfo->ExceptionRecord->ExceptionCode);
+		buf[_countof(buf) - 1] = _T('\0');  // Ensure null termination for static analysis
 		int
 			const r = MessageBox(topmostWindow.m_hWnd, buf, _T("Fatal Error"), MB_ICONERROR | ((ExceptionInfo->ExceptionRecord->ExceptionFlags & EXCEPTION_NONCONTINUABLE) ? MB_OK : MB_ABORTRETRYIGNORE) | MB_TASKMODAL);
 		if (r == IDABORT)
@@ -802,8 +803,8 @@ void DisplayError(LPTSTR lpszFunction)
 // Routine Description:
 // Retrieve and output the system error message for the last-error code
 {
-	LPVOID lpMsgBuf;
-	LPVOID lpDisplayBuf;
+	LPVOID lpMsgBuf = nullptr;
+	LPVOID lpDisplayBuf = nullptr;
 	DWORD dw = GetLastError();
 
 	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
@@ -829,7 +830,7 @@ void DisplayError(LPTSTR lpszFunction)
 		TEXT("%s failed with error code %d as follows:\n%s"),
 		lpszFunction,
 		dw,
-		lpMsgBuf)))
+		(LPTSTR)lpMsgBuf)))
 	{
 		printf("FATAL ERROR: Unable to output error code.\n");
 	}
@@ -1086,7 +1087,7 @@ namespace ntfs
 			bool result = true;
 			for (unsigned short i = 1; i < this->USACount; i++)
 			{
-				const size_t offset = i * 512 - sizeof(unsigned short);
+				const size_t offset = static_cast<size_t>(i) * 512 - sizeof(unsigned short);
 				unsigned short* const check = (unsigned short*)((unsigned char*)this + offset);
 				if (offset < max_size)
 				{
@@ -1489,12 +1490,12 @@ std::tvstring NormalizePath(std::tvstring const& path)
 std::tstring GetDisplayName(HWND hWnd, const std::tstring& path, DWORD shgdn)
 {
 	ATL::CComPtr<IShellFolder> desktop;
-	STRRET ret;
-	LPITEMIDLIST shidl;
+	STRRET ret = {};
+	LPITEMIDLIST shidl = nullptr;
 	ATL::CComBSTR bstr;
 	ULONG attrs = SFGAO_ISSLOW | SFGAO_HIDDEN;
-	std::tstring result = (SHGetDesktopFolder(&desktop) == S_OK &&
-		desktop->ParseDisplayName(hWnd, nullptr, path.empty() ? nullptr : const_cast<LPWSTR> (path.c_str()), nullptr, &shidl, &attrs) == S_OK &&
+	std::tstring result = (!path.empty() && SHGetDesktopFolder(&desktop) == S_OK &&
+		desktop->ParseDisplayName(hWnd, nullptr, const_cast<LPWSTR>(path.c_str()), nullptr, &shidl, &attrs) == S_OK &&
 		(attrs & SFGAO_ISSLOW) == 0 &&
 		desktop->GetDisplayNameOf(shidl, shgdn, &ret) == S_OK &&
 		StrRetToBSTR(&ret, shidl, &bstr) == S_OK
@@ -1504,13 +1505,14 @@ std::tstring GetDisplayName(HWND hWnd, const std::tstring& path, DWORD shgdn)
 
 int LCIDToLocaleName_XPCompatible(LCID lcid, LPTSTR name, int name_length)
 {
-	HMODULE hKernel32;
+	HMODULE hKernel32 = nullptr;
 	if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCTSTR> (&GetSystemInfo), &hKernel32))
 	{
 		hKernel32 = nullptr;
 	}
 
 	typedef int WINAPI LCIDToLocaleName_t(LCID Locale, LPTSTR lpName, int cchName, DWORD dwFlags);
+	if (hKernel32)
 	if (LCIDToLocaleName_t* const LCIDToLocaleName = reinterpret_cast<LCIDToLocaleName_t*> (GetProcAddress(hKernel32, _CRT_STRINGIZE(LCIDToLocaleName))))
 	{
 		name_length = (*LCIDToLocaleName)(lcid, name, name_length, 0);
@@ -1521,7 +1523,7 @@ int LCIDToLocaleName_XPCompatible(LCID lcid, LPTSTR name, int name_length)
 		ATL::CRegKey key;
 		if (key.Open(HKEY_CLASSES_ROOT, TEXT("MIME\\Database\\Rfc1766"), KEY_QUERY_VALUE) == 0)
 		{
-			TCHAR value_data[64 + MAX_PATH];
+			TCHAR value_data[64 + MAX_PATH] = {};
 			TCHAR value_name[16];
 			value_name[0] = _T('\0');
 			safe_stprintf(value_name, _T("%04lX"), lcid);
@@ -1981,7 +1983,7 @@ public:
 		if (id >= this->strings.size())
 		{
 			assert(GetCurrentThreadId() && this->thread_id && "cannot expand string table from another thread");
-			this->strings.resize(id + 1);
+			this->strings.resize(static_cast<size_t>(id) + 1);
 		}
 
 		if (this->strings[id].IsEmpty())
@@ -1991,7 +1993,7 @@ public:
 			bool success = mui_module && (SwapModuleResource(mui_module), !!str.LoadString(id));
 			if (!success)
 			{
-				str.LoadString(id);
+				(void)str.LoadString(id);
 			}
 		}
 
@@ -3042,7 +3044,7 @@ long long get_time_zone_bias()
 {
 	long long ft = 0;
 	GetSystemTimeAsFileTime(&reinterpret_cast<FILETIME&> (ft));
-	long long ft_local;
+	long long ft_local = 0;
 	if (!FileTimeToLocalFileTime(&reinterpret_cast<FILETIME&> (ft), &reinterpret_cast<FILETIME&> (ft_local)))
 	{
 		ft_local = 0;
@@ -3228,7 +3230,7 @@ std::pair<int, std::tstring > extract_and_run_if_needed(HINSTANCE hInstance, int
 	else
 	{
 		module_path.resize(USHRT_MAX, _T('\0'));
-		module_path.resize(GetModuleFileName(hInstance, module_path.empty() ? nullptr : &*module_path.begin(), static_cast<unsigned int> (module_path.size())));
+		module_path.resize(GetModuleFileName(hInstance, &module_path[0], static_cast<unsigned int> (module_path.size())));
 	}
 
 	if (Wow64::is_wow64() && !string_matcher(string_matcher::pattern_regex, string_matcher::pattern_option_case_insensitive, _T("^.*(?:(?:\\.|_)(?:x86|I386|IA32)|32)(?:\\.[^:/\\\\\\.]+)(?::.*)?$")).is_match(module_path.data(), module_path.size()))
@@ -3244,7 +3246,8 @@ std::pair<int, std::tstring > extract_and_run_if_needed(HINSTANCE hInstance, int
 				hRsrs = FindResourceEx(nullptr, _T("BINARY"), _T("AMD64"), langs[ilang]);
 			}
 
-			LPVOID pBinary = LockResource(LoadResource(nullptr, hRsrs));
+			HGLOBAL hResource = LoadResource(nullptr, hRsrs);
+			LPVOID pBinary = hResource ? LockResource(hResource) : nullptr;
 			if (pBinary)
 			{
 				std::tstring tempDir(32 * 1024, _T('\0'));
