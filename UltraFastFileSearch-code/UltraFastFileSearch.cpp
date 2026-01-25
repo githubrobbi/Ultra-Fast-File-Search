@@ -2552,8 +2552,8 @@ class CProgressDialog : private CModifiedDialogImpl < CProgressDialog>, private 
 	WTL::CProgressBarCtrl progressBar;
 	bool canceled;
 	bool invalidated;
-	DWORD creationTime;
-	DWORD lastUpdateTime;
+	unsigned long long creationTime;
+	unsigned long long lastUpdateTime;
 	HWND parent;
 	std::tstring lastProgressText, lastProgressTitle;
 	bool windowCreated;
