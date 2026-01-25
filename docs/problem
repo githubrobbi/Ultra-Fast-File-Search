@@ -7,11 +7,11 @@ Line
 Suppression State
 Details
 Warning
-C6387
-'hTemplate' could be '0':  this does not adhere to the specification for the function 'FreeResource'. See line 205 for an earlier location where this can occur.
+C6011
+Dereferencing NULL pointer 'pTemplate'. See line 345 for an earlier location where this can occur.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
-210
+351
 
 
 Warning
@@ -56,6 +56,14 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplat
 
 Warning
 C6387
+'hTemplate' could be '0':  this does not adhere to the specification for the function 'FreeResource'. See line 205 for an earlier location where this can occur.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
+210
+
+
+Warning
+C6387
 'pTemplate' could be '0':  this does not adhere to the specification for the function 'ATL::_DialogSizeHelper::HasFont'. .
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
@@ -76,14 +84,6 @@ C6387
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
 345
-
-
-Warning
-C6011
-Dereferencing NULL pointer 'pTemplate'. See line 345 for an earlier location where this can occur.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CDlgTemplate.hpp
-351
 
 
 Warning
@@ -115,7 +115,7 @@ C6387
 '(line_buffer.empty())?(0):(&line_buffer[](0))' could be '0':  this does not adhere to the specification for the function 'WideCharToMultiByte'. .
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\cli_main.hpp
-611
+609
 
 
 Warning
@@ -123,7 +123,7 @@ C6387
 'outHandle' could be '0':  this does not adhere to the specification for the function 'CloseHandle'. .
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\cli_main.hpp
-1135
+1133
 
 
 Warning
@@ -155,7 +155,7 @@ C6001
 Using uninitialized memory 'tf'.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-431
+430
 
 
 Warning
@@ -163,7 +163,7 @@ C6031
 Return value ignored: 'UnregisterWait'.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-463
+462
 
 
 Warning
@@ -171,7 +171,7 @@ C28159
 Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1155
+1154
 
 
 Warning
@@ -179,7 +179,7 @@ C26437
 Do not slice (es.63).
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1514
+1513
 
 
 Warning
@@ -187,7 +187,7 @@ C26437
 Do not slice (es.63).
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1788
+1787
 
 
 Warning
@@ -195,7 +195,7 @@ C26437
 Do not slice (es.63).
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1978
+1977
 
 
 Warning
@@ -203,7 +203,7 @@ C28159
 Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1994
+1993
 
 
 Warning
@@ -211,7 +211,7 @@ C6387
 '_Param_(1)' could be '0':  this does not adhere to the specification for the function 'ATL::CWindow::MapWindowPoints'. .
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2255
+2254
 
 
 Warning
@@ -219,7 +219,7 @@ C26115
 Failing to release lock '*m' in function 'CMainDlg::LockedResults::operator()'.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2311
+2310
 
 
 Warning
@@ -227,7 +227,7 @@ C26437
 Do not slice (es.63).
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2594
+2593
 
 
 Warning
@@ -235,7 +235,7 @@ C28159
 Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2626
+2625
 
 
 Warning
@@ -243,31 +243,31 @@ C28159
 Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2670
+2669
 
 
 Warning
 C28159
 Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2741
+
+
+Warning
+C26437
+Do not slice (es.63).
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
 2742
 
 
 Warning
-C26437
-Do not slice (es.63).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2743
-
-
-Warning
 C28159
 Consider using 'GetTickCount64' instead of 'GetTickCount'. Reason: GetTickCount overflows roughly every 49 days.  Code that does not take that into account can loop indefinitely.  GetTickCount64 operates on 64 bit values and does not have that problem.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2744
+2743
 
 
 Warning
@@ -275,7 +275,7 @@ C6387
 'GlobalHandle(line_buffer.c_str())' could be '0':  this does not adhere to the specification for the function 'GlobalReAlloc'. .
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2782
+2781
 
 
 Warning
@@ -283,7 +283,7 @@ C6387
 'path.c_str(), (path.empty())?(0):(&path[](0))' could be '0':  this does not adhere to the specification for the function 'SHParseDisplayName'. .
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2841
+2840
 
 
 Warning
@@ -291,7 +291,7 @@ C6001
 Using uninitialized memory 'shfi'.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2990
+2989
 
 
 Warning

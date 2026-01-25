@@ -2706,7 +2706,7 @@ public: using Base::IsWindow;
 		  UPDATE_INTERVAL = 1000 / 64
 	  };
 
-	  CProgressDialog(ATL::CWindow parent) : Base(true, !!(parent.GetExStyle()& WS_EX_LAYOUTRTL)), canceled(false), invalidated(false), creationTime(GetTickCount()), lastUpdateTime(0), parent(parent), windowCreated(false), windowCreateAttempted(false), windowShowAttempted(false), lastProgress(0), lastProgressTotal(1) {}
+	  CProgressDialog(ATL::CWindow parent) : Base(true, !!(parent.GetExStyle()& WS_EX_LAYOUTRTL)), canceled(false), invalidated(false), creationTime(GetTickCount64()), lastUpdateTime(0), parent(parent), windowCreated(false), windowCreateAttempted(false), windowShowAttempted(false), lastProgress(0), lastProgressTotal(1) {}
 
 	  ~CProgressDialog()
 	  {
@@ -2721,14 +2721,14 @@ public: using Base::IsWindow;
 		  }
 	  }
 
-	  unsigned long Elapsed(unsigned long
-		  const now = GetTickCount()) const
+	  unsigned long long Elapsed(unsigned long long
+		  const now = GetTickCount64()) const
 	  {
 		  return now - this->lastUpdateTime;
 	  }
 
-	  bool ShouldUpdate(unsigned long
-		  const now = GetTickCount()) const
+	  bool ShouldUpdate(unsigned long long
+		  const now = GetTickCount64()) const
 	  {
 		  return this->Elapsed(now) >= UPDATE_INTERVAL;
 	  }
@@ -2782,8 +2782,8 @@ public: using Base::IsWindow;
 		  }
 	  }
 
-	  bool HasUserCancelled(unsigned long
-		  const now = GetTickCount())
+	  bool HasUserCancelled(unsigned long long
+		  const now = GetTickCount64())
 	  {
 		  bool justCreated = false;
 		  if (abs(static_cast<int> (now - this->creationTime)) >= static_cast<int> (this->GetMinDelay()))
@@ -2823,7 +2823,7 @@ public: using Base::IsWindow;
 				  this->UpdateWindow();
 			  }
 
-			  this->lastUpdateTime = GetTickCount();
+			  this->lastUpdateTime = GetTickCount64();
 			  }
 		  }
 

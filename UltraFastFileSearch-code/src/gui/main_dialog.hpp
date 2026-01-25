@@ -1150,8 +1150,8 @@ public:
 			++numerator;
 			if (dlg)
 			{
-				unsigned long
-					const tnow = GetTickCount();
+				unsigned long long
+					const tnow = GetTickCount64();
 				if (dlg->ShouldUpdate(tnow))
 				{
 					if (dlg->HasUserCancelled(tnow))
@@ -1989,8 +1989,8 @@ public:
 							const& key, size_t
 							const depth)
 							{
-								unsigned long
-									const now = GetTickCount();
+								unsigned long long
+									const now = GetTickCount64();
 								if (dlg.ShouldUpdate(now) || current_progress_denominator - current_progress_numerator <= 1)
 								{
 									if (dlg.HasUserCancelled(now))
@@ -2622,7 +2622,7 @@ public:
 				std::vector<int> displayed_columns(ncolumns, -1);
 				this->lvFiles.GetColumnOrderArray(static_cast<int> (displayed_columns.size()), &*displayed_columns.begin());
 				unsigned long long nwritten_since_update = 0;
-				unsigned long prev_update_time = GetTickCount();
+				unsigned long long prev_update_time = GetTickCount64();
 				try
 				{
 					bool warned_about_ads = false;
@@ -2665,8 +2665,8 @@ public:
 									const first_char = begin_offset < line_buffer.size() ? line_buffer[begin_offset] : _T('\0');
 								// TODO: This is broken currently
 								is_ads = is_ads || (begin_offset <= last_colon_index && last_colon_index < line_buffer.size() && !(last_colon_index == begin_offset + 1 && ((_T('a') <= first_char && first_char <= _T('z')) || (_T('A') <= first_char && first_char <= _T('Z'))) && line_buffer.size() > last_colon_index + 1 && line_buffer.at(last_colon_index + 1) == _T('\\'))) /*TODO: This will fail if we later support paths like \\.\C: */;
-								unsigned long
-									const update_time = GetTickCount();
+								unsigned long long
+									const update_time = GetTickCount64();
 								if (dlg.ShouldUpdate(update_time) || i + 1 == locked_indices.size())
 								{
 									if (dlg.HasUserCancelled(update_time))
@@ -2737,10 +2737,10 @@ public:
 						{
 							if (!warned_about_ads)
 							{
-								unsigned long
-									const tick_before = GetTickCount();
+								unsigned long long
+									const tick_before = GetTickCount64();
 								(dlg.IsWindow() ? ATL::CWindow(dlg.GetHWND()) : static_cast<ATL::CWindow>(*this)).MessageBox(this->LoadString(IDS_COPYING_ADS_PROBLEM_BODY), this->LoadString(IDS_WARNING_TITLE), MB_OK | MB_ICONWARNING);
-								prev_update_time += GetTickCount() - tick_before;
+								prev_update_time += GetTickCount64() - tick_before;
 								warned_about_ads = true;
 							}
 

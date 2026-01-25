@@ -20,7 +20,7 @@
 #pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif
 
-#define _WIN32_WINNT 0x0502
+#define _WIN32_WINNT 0x0601
 #define _WIN32_IE 0x0600
 
 #ifdef _MSC_VER
