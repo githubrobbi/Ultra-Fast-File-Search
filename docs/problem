@@ -8,335 +8,7 @@ Suppression State
 Details
 Warning
 VCR001
-Function definition for 'operator=' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1786
-
-
-Warning
-C26827
-Did you forget to initialize an enum constant, or intend to use another type?.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\CLI11.hpp
-4423
-
-
-Warning
-C26437
-Do not slice (es.63).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1513
-
-
-Warning
-C26437
-Do not slice (es.63).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1787
-
-
-Warning
-C26437
-Do not slice (es.63).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1977
-
-
-Warning
-C6387
-'_Param_(1)' could be '0':  this does not adhere to the specification for the function 'ATL::CWindow::MapWindowPoints'. .
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2254
-
-
-Warning
-C26115
-Failing to release lock '*m' in function 'CMainDlg::LockedResults::operator()'.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2310
-
-
-Warning
-C26437
-Do not slice (es.63).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2593
-
-
-Warning
-C26437
-Do not slice (es.63).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2742
-
-
-Warning
-C6387
-'GlobalHandle(line_buffer.c_str())' could be '0':  this does not adhere to the specification for the function 'GlobalReAlloc'. .
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2781
-
-
-Warning
-C6387
-'path.c_str(), (path.empty())?(0):(&path[](0))' could be '0':  this does not adhere to the specification for the function 'SHParseDisplayName'. .
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2840
-
-
-Warning
-C6054
-String 'buf' might not be zero-terminated.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-1150
-
-
-Warning
-C26819
-Unannotated fallthrough between switch labels (es.78).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-1537
-
-
-Warning
-C26819
-Unannotated fallthrough between switch labels (es.78).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-1552
-
-
-Warning
-C26819
-Unannotated fallthrough between switch labels (es.78).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-1569
-
-
-Warning
-C26819
-Unannotated fallthrough between switch labels (es.78).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-1579
-
-
-Warning
-C26819
-Unannotated fallthrough between switch labels (es.78).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-1593
-
-
-Warning
-C26819
-Unannotated fallthrough between switch labels (es.78).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-1607
-
-
-Warning
-C26819
-Unannotated fallthrough between switch labels (es.78).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-1623
-
-
-Warning
-C26819
-Unannotated fallthrough between switch labels (es.78).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-1641
-
-
-Warning
-C6054
-String 'buf' might not be zero-terminated.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-773
-
-
-Warning
-C6067
-_Param_(6) in call to 'StringCchPrintfW' must be the address of a string. Actual type: 'void *'.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-827
-
-
-Warning
-C6387
-'(path.empty())?(0):(const_cast<WCHAR *>path.c_str())' could be '0':  this does not adhere to the specification for the function 'IShellFolder::ParseDisplayName'. .
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1496
-
-
-Warning
-C6387
-'hKernel32' could be '0':  this does not adhere to the specification for the function 'GetProcAddress'. .
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1514
-
-
-Warning
-C6031
-Return value ignored: 'ATL::CStringT<wchar_t,ATL::StrTraitATL<wchar_t,ATL::ChTraitsCRT<wchar_t> > >::LoadStringW'.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1994
-
-
-Warning
-C6387
-'(module_path.empty())?(0):(&module_path.begin()->*())' could be '0':  this does not adhere to the specification for the function 'GetModuleFileNameW'. .
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3231
-
-
-Warning
-C6387
-'LoadResource(0, hRsrs)' could be '0':  this does not adhere to the specification for the function 'LockResource'. .
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3247
-
-
-Warning
-C26110
-Caller failing to hold lock '(&this->m_cslock)->m_cs' before calling function 'ATL::CComCritSecLock<ATL::CComCriticalSection>::Unlock'.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlapp.h
-759
-
-
-Warning
-C6387
-'m_lpstrHyperLink' could be '0':  this does not adhere to the specification for the function 'ATL::_U_STRINGorID::{ctor}'. .
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h
-1444
-
-
-Warning
-C26819
-Unannotated fallthrough between switch labels (es.78).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h
-3058
-
-
-Warning
-C26819
-Unannotated fallthrough between switch labels (es.78).
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h
-3061
-
-
-Warning
-C6387
-'_Param_(1)' could be '0':  this does not adhere to the specification for the function 'ATL::CWindow::SetFont'. .
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h
-4441
-
-
-Warning
-C6387
-'_Param_(1)' could be '0':  this does not adhere to the specification for the function 'ATL::CWindow::SetFont'. .
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrlx.h
-4475
-
-
-Warning
-C6387
-'hResource' could be '0':  this does not adhere to the specification for the function 'LoadResource'. .
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlgdi.h
-67
-
-
-Warning
-C6387
-'hGlobal' could be '0':  this does not adhere to the specification for the function 'LockResource'. .
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlgdi.h
-69
-
-
-Warning
-VCR001
-Function definition for 'HOOK_CONCAT' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1866
-
-
-Warning
-VCR001
-Function definition for 'HOOK_CONCAT' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1871
-
-
-Warning
-VCR001
-Function definition for 'operator<<' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1946
-
-
-Warning
-VCR001
-Function definition for 'operator=' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1957
-
-
-Warning
-VCR001
-Function definition for 'operator=' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2059
-
-
-Warning
-VCR001
 Function definition for 'ClientDC' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2107
-
-
-Warning
-VCR001
-Function definition for 'operator=' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2109
@@ -344,10 +16,10 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFi
 
 Warning
 VCR001
-Function definition for 'HOOK_CONCAT' not found.
+Function definition for 'operator=' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3149
+1788
 
 
 Warning
@@ -355,7 +27,63 @@ VCR001
 Function definition for 'HOOK_CONCAT' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3166
+1868
+
+
+Warning
+VCR001
+Function definition for 'HOOK_CONCAT' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1873
+
+
+Warning
+VCR001
+Function definition for 'operator<<' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1948
+
+
+Warning
+VCR001
+Function definition for 'operator=' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1959
+
+
+Warning
+VCR001
+Function definition for 'operator=' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2061
+
+
+Warning
+VCR001
+Function definition for 'operator=' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2111
+
+
+Warning
+VCR001
+Function definition for 'HOOK_CONCAT' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+3151
+
+
+Warning
+VCR001
+Function definition for 'HOOK_CONCAT' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+3168
 
 
 Message
@@ -363,7 +91,15 @@ lnt-uninitialized-local
 Local variable is not initialized.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-805
+1527
+
+
+Message
+lnt-uninitialized-local
+Local variable is not initialized.
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2295
 
 
 Message
@@ -371,7 +107,7 @@ lnt-arithmetic-overflow
 A sub-expression may overflow before being assigned to a wider type.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1089
+2390
 
 
 Message
@@ -379,7 +115,7 @@ lnt-uninitialized-local
 Local variable is not initialized.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1492
+3670
 
 
 Message
@@ -387,7 +123,7 @@ lnt-uninitialized-local
 Local variable is not initialized.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1493
+3872
 
 
 Message
@@ -395,63 +131,7 @@ lnt-uninitialized-local
 Local variable is not initialized.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1525
-
-
-Message
-lnt-arithmetic-overflow
-A sub-expression may overflow before being assigned to a wider type.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1984
-
-
-Message
-lnt-uninitialized-local
-Local variable is not initialized.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2293
-
-
-Message
-lnt-arithmetic-overflow
-A sub-expression may overflow before being assigned to a wider type.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2388
-
-
-Message
-lnt-uninitialized-local
-Local variable is not initialized.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3045
-
-
-Message
-lnt-uninitialized-local
-Local variable is not initialized.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3667
-
-
-Message
-lnt-uninitialized-local
-Local variable is not initialized.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3869
-
-
-Message
-lnt-uninitialized-local
-Local variable is not initialized.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-4080
+4083
 
 
 Message
@@ -483,7 +163,7 @@ VCR003
 Function 'is_ascii' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-786
+787
 
 
 Message
@@ -491,7 +171,7 @@ VCR003
 Function 'DisplayError' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-801
+802
 
 
 Message
@@ -499,7 +179,7 @@ VCR003
 Function 'CppRaiseException' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-943
+944
 
 
 Message
@@ -507,7 +187,7 @@ VCR003
 Function 'CheckAndThrow' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-980
+981
 
 
 Message
@@ -515,7 +195,7 @@ VCR003
 Function 'GetAnyErrorText' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-989
+990
 
 
 Message
@@ -523,7 +203,7 @@ VCR003
 Function 'isdevnull' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1015
+1016
 
 
 Message
@@ -531,7 +211,7 @@ VCR003
 Function 'isdevnull' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1022
+1023
 
 
 Message
@@ -539,7 +219,7 @@ VCR003
 Function 'remove_path_stream_and_trailing_sep' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1410
+1411
 
 
 Message
@@ -547,7 +227,7 @@ VCR003
 Function 'NormalizePath' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1461
+1462
 
 
 Message
@@ -555,7 +235,7 @@ VCR003
 Function 'GetDisplayName' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1489
+1490
 
 
 Message
@@ -563,7 +243,7 @@ VCR003
 Function 'LCIDToLocaleName_XPCompatible' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1505
+1506
 
 
 Message
@@ -571,7 +251,7 @@ VCR003
 Function 'LCIDToLocaleName_XPCompatible' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1566
+1568
 
 
 Message
@@ -579,7 +259,7 @@ VCR003
 Function 'get_ui_locale_name' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1577
+1579
 
 
 Message
@@ -587,7 +267,7 @@ VCR003
 Function 'get_cluster_size' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1592
+1594
 
 
 Message
@@ -595,7 +275,7 @@ VCR003
 Function 'get_retrieval_pointers' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1606
+1608
 
 
 Message
@@ -603,7 +283,7 @@ VCR003
 Function 'autosize_columns' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2305
+2307
 
 
 Message
@@ -636,6 +316,38 @@ Browsing operations around this macro may fail. Consider adding it to a hint fil
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2534
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2536
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2536
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2536
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2536
 
 
 Message
@@ -707,7 +419,47 @@ VCR102
 Browsing operations around this macro may fail. Consider adding it to a hint file.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2545
+2543
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2543
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2543
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2543
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2544
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2544
 
 
 Message
@@ -723,7 +475,7 @@ VCR102
 Browsing operations around this macro may fail. Consider adding it to a hint file.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2546
+2545
 
 
 Message
@@ -748,6 +500,62 @@ Browsing operations around this macro may fail. Consider adding it to a hint fil
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2546
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2546
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2547
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2547
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2548
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2548
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2548
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2548
 
 
 Message
@@ -771,6 +579,22 @@ VCR102
 Browsing operations around this macro may fail. Consider adding it to a hint file.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2566
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2566
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2574
 
 
@@ -780,6 +604,22 @@ Browsing operations around this macro may fail. Consider adding it to a hint fil
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2574
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2576
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2576
 
 
 Message
@@ -867,6 +707,54 @@ VCR102
 Browsing operations around this macro may fail. Consider adding it to a hint file.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2578
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2578
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2579
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2579
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2579
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2579
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2579
 
 
@@ -931,6 +819,70 @@ VCR102
 Browsing operations around this macro may fail. Consider adding it to a hint file.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2581
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2581
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2581
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2581
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2581
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2581
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2582
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2582
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2583
 
 
@@ -940,6 +892,22 @@ Browsing operations around this macro may fail. Consider adding it to a hint fil
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2583
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2585
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2585
 
 
 Message
@@ -956,6 +924,22 @@ Browsing operations around this macro may fail. Consider adding it to a hint fil
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2586
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2588
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2588
 
 
 Message
@@ -1004,6 +988,38 @@ Browsing operations around this macro may fail. Consider adding it to a hint fil
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2593
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2594
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2594
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2595
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2595
 
 
 Message
@@ -1075,6 +1091,38 @@ VCR102
 Browsing operations around this macro may fail. Consider adding it to a hint file.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2603
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2603
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2604
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2604
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2611
 
 
@@ -1084,6 +1132,22 @@ Browsing operations around this macro may fail. Consider adding it to a hint fil
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2611
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2613
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2613
 
 
 Message
@@ -1116,6 +1180,38 @@ Browsing operations around this macro may fail. Consider adding it to a hint fil
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 2621
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2622
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2622
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2623
+
+
+Message
+VCR102
+Browsing operations around this macro may fail. Consider adding it to a hint file.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2623
 
 
 Message
@@ -1123,7 +1219,7 @@ VCR003
 Function 'WaitMessageLoop' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2660
+2662
 
 
 Message
@@ -1131,7 +1227,7 @@ VCR003
 Function 'GetMinDelay' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2693
+2695
 
 
 Message
@@ -1139,7 +1235,7 @@ VCR003
 Function 'GetHWND' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2699
+2701
 
 
 Message
@@ -1147,7 +1243,7 @@ VCR003
 Function 'CProgressDialog' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2709
+2711
 
 
 Message
@@ -1155,7 +1251,7 @@ VCR003
 Function '~CProgressDialog' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2711
+2713
 
 
 Message
@@ -1163,7 +1259,7 @@ VCR003
 Function 'Elapsed' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2724
+2726
 
 
 Message
@@ -1171,7 +1267,7 @@ VCR003
 Function 'ShouldUpdate' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2730
+2732
 
 
 Message
@@ -1179,7 +1275,7 @@ VCR003
 Function 'ProcessMessages' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2736
+2738
 
 
 Message
@@ -1187,7 +1283,7 @@ VCR003
 Function 'refresh_marquee' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2754
+2756
 
 
 Message
@@ -1195,7 +1291,7 @@ VCR003
 Function 'ForceShow' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2762
+2764
 
 
 Message
@@ -1203,7 +1299,7 @@ VCR003
 Function 'HasUserCancelled' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2785
+2787
 
 
 Message
@@ -1211,7 +1307,7 @@ VCR003
 Function 'Flush' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2802
+2804
 
 
 Message
@@ -1219,7 +1315,7 @@ VCR003
 Function 'SetProgress' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2830
+2832
 
 
 Message
@@ -1227,7 +1323,7 @@ VCR003
 Function 'SetProgressTitle' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2849
+2851
 
 
 Message
@@ -1235,7 +1331,7 @@ VCR003
 Function 'SetProgressText' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2855
+2857
 
 
 Message
@@ -1243,7 +1339,7 @@ VCR003
 Function 'SetProgressText' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2862
+2864
 
 
 Message
@@ -1251,7 +1347,7 @@ VCR003
 Function 'get_volume_path_names' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2875
+2877
 
 
 Message
@@ -1259,7 +1355,7 @@ VCR003
 Function 'get_time_zone_bias' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3041
+3043
 
 
 Message
@@ -1267,7 +1363,7 @@ VCR003
 Function 'get_subsystem' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3111
+3113
 
 
 Message
@@ -1275,7 +1371,7 @@ VCR003
 Function 'get_version' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3119
+3121
 
 
 Message
@@ -1283,7 +1379,7 @@ VCR003
 Function 'get_app_guid' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3213
+3215
 
 
 Message
@@ -1291,7 +1387,7 @@ VCR003
 Function 'extract_and_run_if_needed' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3220
+3222
 
 
 Message
@@ -1331,7 +1427,7 @@ VCR003
 Function 'drivenames' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3382
+3385
 
 
 Message
@@ -1339,7 +1435,7 @@ VCR003
 Function 'replaceAll' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3417
+3420
 
 
 Message
@@ -1347,7 +1443,7 @@ VCR003
 Function 'removeSpaces' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3431
+3434
 
 
 Message
@@ -1355,7 +1451,7 @@ VCR003
 Function 's2ws' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3445
+3448
 
 
 Message
@@ -1363,7 +1459,7 @@ VCR003
 Function 'GetLastErrorAsString' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3456
+3459
 
 
 Message
@@ -1443,7 +1539,7 @@ VCR003
 Function 'dump_raw_mft' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3507
+3510
 
 
 Message
@@ -1451,7 +1547,7 @@ VCR003
 Function 'dump_mft_extents' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3744
+3747
 
 
 Message
@@ -1459,7 +1555,7 @@ VCR003
 Function 'benchmark_mft_read' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-3956
+3959
 
 
 Message
@@ -1467,7 +1563,7 @@ VCR003
 Function 'benchmark_index_build' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-4190
+4193
 
 
 Message
@@ -1491,7 +1587,7 @@ C4310
 cast truncates constant value
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-3270
+3272
 
 
 Warning

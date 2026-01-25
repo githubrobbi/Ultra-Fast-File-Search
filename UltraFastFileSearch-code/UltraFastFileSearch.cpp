@@ -1524,7 +1524,7 @@ int LCIDToLocaleName_XPCompatible(LCID lcid, LPTSTR name, int name_length)
 		if (key.Open(HKEY_CLASSES_ROOT, TEXT("MIME\\Database\\Rfc1766"), KEY_QUERY_VALUE) == 0)
 		{
 			TCHAR value_data[64 + MAX_PATH] = {};
-			TCHAR value_name[16];
+			TCHAR value_name[16] = {};
 			value_name[0] = _T('\0');
 			safe_stprintf(value_name, _T("%04lX"), lcid);
 			unsigned long value_data_length = sizeof(value_data) / sizeof(*value_data);
@@ -2292,7 +2292,7 @@ public:
 	bool SetColumnText(int
 		const column, String& text)
 	{
-		LVCOLUMN col;
+		LVCOLUMN col = {};
 		col.mask = LVCF_TEXT;
 		col.pszText = const_cast<TCHAR*> (text.c_str());
 		return !!me->SetColumn(column, &col);
@@ -2387,7 +2387,7 @@ void autosize_columns(ListViewAdapter list)
 			int
 				const feather = 1;
 			visible.first = visible.first >= feather ? visible.first - feather : 0;
-			visible.second = visible.second + feather <= static_cast<ptrdiff_t> (n) ? visible.second + feather : static_cast<int> (n);
+			visible.second = visible.second + static_cast<ptrdiff_t>(feather) <= static_cast<ptrdiff_t> (n) ? visible.second + feather : static_cast<int> (n);
 			int cximg = 0;
 			if (ListViewAdapter::ImageList imagelist = list->GetImageList())
 			{
@@ -3667,7 +3667,7 @@ int dump_raw_mft(char drive_letter, const char* output_path, std::ostream& OS)
         unsigned long long extent_bytes_read = 0;
         while (extent_bytes_read < byte_length && bytes_written < total_bytes) {
             // Seek to position
-            LARGE_INTEGER seek_pos;
+            LARGE_INTEGER seek_pos = {};
             seek_pos.QuadPart = byte_offset + static_cast<long long>(extent_bytes_read);
             if (!SetFilePointerEx(volume_handle, seek_pos, nullptr, FILE_BEGIN)) {
                 DWORD err = GetLastError();
@@ -3869,7 +3869,7 @@ int dump_mft_extents(char drive_letter, const char* output_path, bool verify_ext
 
         // Verification: read first record from this extent and check FRS number
         if (verify_extents && lcn >= 0) {
-            LARGE_INTEGER seek_pos;
+            LARGE_INTEGER seek_pos = {};
             seek_pos.QuadPart = static_cast<LONGLONG>(byte_offset);
 
             if (SetFilePointerEx(volume_handle, seek_pos, nullptr, FILE_BEGIN)) {
@@ -4080,7 +4080,7 @@ int benchmark_mft_read(char drive_letter, std::ostream& OS)
         unsigned long long extent_bytes_read = 0;
         while (extent_bytes_read < byte_length && bytes_read_total < total_bytes) {
             // Seek to position
-            LARGE_INTEGER seek_pos;
+            LARGE_INTEGER seek_pos = {};
             seek_pos.QuadPart = byte_offset + static_cast<long long>(extent_bytes_read);
             if (!SetFilePointerEx(volume_handle, seek_pos, nullptr, FILE_BEGIN)) {
                 DWORD err = GetLastError();
