@@ -198,6 +198,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="string_matcher.cpp" />
+    <ClCompile Include="src\util\string_utils.cpp" />
     <ClCompile Include="UltraFastFileSearch.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -233,7 +234,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Search Drive.ico" />
+    <Image Include="search_drive.ico" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\core\ntfs_types.hpp" />
@@ -246,6 +247,7 @@
     <ClInclude Include="src\cli\cli_main.hpp" />
     <ClInclude Include="src\gui\gui_main.hpp" />
     <ClInclude Include="src\gui\main_dialog.hpp" />
+    <ClInclude Include="src\util\string_utils.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

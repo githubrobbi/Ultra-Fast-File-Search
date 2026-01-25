@@ -474,7 +474,6 @@ C:\UFFS
 │
 ├───Original Packages
 │       BOOST_1_90_0_NOT_INCLUDED.txt   <-- Instructions for downloading Boost
-│       swiftsearch-code-4043bc-2023-03-24.zip
 │       WTL10_10320_Release.zip
 │
 └───UltraFastFileSearch-code
