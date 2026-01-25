@@ -172,11 +172,11 @@
 
 
 ### Phase 6: Separate GUI from CLI
-| Status | 🟢 Complete |
+| Status | 🟡 In Progress |
 |--------|----------------|
 | **Branch** | `refactoring/phase-6-gui-cli-split` |
 | **Estimated** | 8 hours |
-| **Actual** | ~30 min (documentation phase) |
+| **Actual** | ~30 min (documentation), extraction in progress |
 | **Assignee** | AI Assistant |
 
 | Step | Task | Status | Notes |
@@ -186,9 +186,9 @@
 | 6.3 | Create cli_main.hpp | ✅ | Documentation header (~130 lines) |
 | 6.4 | Create gui_main.hpp | ✅ | Documentation header (~120 lines) |
 | 6.5 | Create main_dialog.hpp | ✅ | Documentation header (~130 lines) |
-| 6.6 | Update project file | ✅ | Added cli_main.hpp, gui_main.hpp, main_dialog.hpp to .vcxproj |
-| 6.7 | Verify build | ✅ | Windows build verified |
-| 6.8 | Commit and push | ✅ | Complete |
+| 6.6 | Extract _tWinMain() to gui_main.hpp | ⬜ | ~107 lines (9364-9471) - GUI entry point |
+| 6.7 | Extract main() to cli_main.hpp | ⬜ | ~1,152 lines (8207-9359) - CLI entry point |
+| 6.8 | Extract CMainDlg to main_dialog.hpp | ⬜ | ~3,905 lines (3172-7077) - Main dialog class |
 
 **Verification Checklist:**
 - [ ] Build succeeds (Release)
@@ -197,7 +197,14 @@
 - [ ] GUI tool works (`uffs.exe`)
 - [ ] Both produce same search results
 
-**Notes:** Created documentation headers for CLI entry point (lines 12919-14071), GUI entry point (lines 14076-14183), and CMainDlg class (lines 7869-11974). Full extraction deferred due to complex dependencies.
+**Current Code Locations (in monolith):**
+| Component | Lines | Size | Destination |
+|-----------|-------|------|-------------|
+| `CMainDlg` class | 3172-7077 | ~3,905 lines | `src/gui/main_dialog.hpp` |
+| `main()` CLI entry | 8207-9359 | ~1,152 lines | `src/cli/cli_main.hpp` |
+| `_tWinMain()` GUI entry | 9364-9471 | ~107 lines | `src/gui/gui_main.hpp` |
+
+**Notes:** Phase 6 initially created documentation headers only. Now proceeding with actual code extraction, starting with smallest component (_tWinMain) to establish pattern.
 
 ---
 
