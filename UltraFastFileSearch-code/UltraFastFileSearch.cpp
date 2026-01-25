@@ -1662,36 +1662,7 @@ unsigned int get_cluster_size(void* const volume)
 	return result;
 }
 
-template < class From, class To > struct propagate_const
-{
-	typedef To type;
-};
-
-template < class From, class To > struct propagate_const < From
-	const, To> : propagate_const<From, To
-	const > {};
-
-template < class From, class To > struct propagate_const < From&, To> : propagate_const<From, To> {};
-
-// spin_lock and spin_atomic extracted to src/util/atomic_compat.hpp
-
-// Overlapped, negative_one, value_initialized, constant extracted to src/io/overlapped.hpp
-
-template < class It>
-typename propagate_const < typename std::iterator_traits<It>::reference, typename std::iterator_traits<It>::value_type>::type* fast_subscript(It
-	const it, size_t
-	const i)
-{
-	return
-
-#if 1 
-		&*(it + static_cast<ptrdiff_t> (i))
-#else
-		reinterpret_cast<typename propagate_const < typename std::iterator_traits<It>::reference, typename std::iterator_traits<It>::value_type >::type*> (reinterpret_cast<typename propagate_const < typename std::iterator_traits<It>::reference, unsigned char >::type*> (&*it) + i * constant<sizeof(*it) >())
-#endif
-		;
-}
-
+// propagate_const and fast_subscript templates extracted to src/index/ntfs_index.hpp
 
 #include "src/util/buffer.hpp"
 

@@ -95,44 +95,117 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 
 	struct StandardInfo
 	{
-		long long created, written, accessed;
-		bool is_system : 1;
-		bool is_hidden : 1;
-		bool is_offline : 1;
-		bool is_notcontentidx : 1;
-		bool is_noscrubdata : 1;
-		bool is_integretystream : 1;
-		bool is_pinned : 1;
-		bool is_unpinned : 1;
-		bool is_directory : 1;
-		bool is_compressed : 1;
-		bool is_encrypted : 1;
-		bool is_sparsefile : 1;
-		bool is_reparsepoint : 1;
-		StandardInfo() : created(), written(), accessed(), is_system(), is_hidden(), is_offline(), is_notcontentidx(), is_noscrubdata(), is_integretystream(), is_pinned(), is_unpinned(), is_directory(), is_compressed(), is_encrypted(), is_sparsefile(), is_reparsepoint() {}
+		unsigned long long
+			created,
+			written,
+			accessed           : 0x40 - 6,
+			//is_system        : 1,
+			//is_directory     : 1,
+			//is_sparse        : 1,
+			//is_compressed    : 1,
+			//is_encrypted     : 1,
+			//is_reparse       : 1,
+			is_readonly        : 1,
+			is_archive         : 1,
+			is_system          : 1,
+			is_hidden          : 1,
+			is_offline         : 1,
+			is_notcontentidx   : 1,
+			is_noscrubdata     : 1,
+			is_integretystream : 1,
+			is_pinned          : 1,
+			is_unpinned        : 1,
+			is_directory       : 1,
+			is_compressed      : 1,
+			is_encrypted       : 1,
+			is_sparsefile      : 1,
+			is_reparsepoint    : 1;
 
-		unsigned int GetAttributes() const
+		// #####
+
+#define FILE_ATTRIBUTE_DEVICE                0x00000040
+#define FILE_ATTRIBUTE_NORMAL                0x00000080
+#define FILE_ATTRIBUTE_TEMPORARY             0x00000100
+#define FILE_ATTRIBUTE_ENCRYPTED             0x00004000
+#define FILE_ATTRIBUTE_VIRTUAL               0x00010000
+#define FILE_ATTRIBUTE_EA                    0x00040000
+#define FILE_ATTRIBUTE_RECALL_ON_OPEN        0x00040000
+#define FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS 0x00400000
+
+		/*Displays or changes file attributes.
+
+		ATTRIB[+R | -R][+A | -A][+S | -S][+H | -H][+O | -O][+I | -I][+X | -X][+P | -P][+U | -U]
+			[drive:][path][filename][/ S[/ D]][/ L]
+
+		+	Sets an attribute.
+		-	Clears an attribute.
+		R   Read - only file attribute.
+		A   Archive file attribute.
+		S   System file attribute.
+		H   Hidden file attribute.
+		O   Offline attribute.
+		I   Not content indexed file attribute.
+		X   No scrub file attribute.
+		V   Integrity attribute.
+		P   Pinned attribute.
+		U   Unpinned attribute.
+		B   SMR Blob attribute.
+	[drive:][path][filename]
+			Specifies a file or files for attrib to process.
+		/S  Processes matching files in the current folder
+			and all subfolders.
+		/D  Processes folders as well.
+		/L  Work on the attributes of the Symbolic Link versus
+			the target of the Symbolic Link*/
+
+#define FILE_ATTRIBUTE_INTEGRITY_STREAM      0x00008000
+#define FILE_ATTRIBUTE_VIRTUAL               0x00010000
+#define FILE_ATTRIBUTE_NO_SCRUB_DATA         0x00020000
+#define FILE_ATTRIBUTE_EA                    0x00040000
+#define FILE_ATTRIBUTE_PINNED                0x00080000
+#define FILE_ATTRIBUTE_UNPINNED              0x00100000
+#define FILE_ATTRIBUTE_RECALL_ON_OPEN        0x00040000
+#define FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS 0x00400000
+
+			unsigned long attributes() const
 		{
-			unsigned int result = 0;
-			result |= this->is_system ? FILE_ATTRIBUTE_SYSTEM : 0;
-			result |= this->is_hidden ? FILE_ATTRIBUTE_HIDDEN : 0;
-			result |= this->is_offline ? FILE_ATTRIBUTE_OFFLINE : 0;
-			result |= this->is_notcontentidx ? FILE_ATTRIBUTE_NOT_CONTENT_INDEXED : 0;
-			result |= this->is_noscrubdata ? FILE_ATTRIBUTE_NO_SCRUB_DATA : 0;
-			result |= this->is_integretystream ? FILE_ATTRIBUTE_INTEGRITY_STREAM : 0;
-			result |= this->is_pinned ? FILE_ATTRIBUTE_PINNED : 0;
-			result |= this->is_unpinned ? FILE_ATTRIBUTE_UNPINNED : 0;
-			result |= this->is_directory ? FILE_ATTRIBUTE_DIRECTORY : 0;
-			result |= this->is_compressed ? FILE_ATTRIBUTE_COMPRESSED : 0;
-			result |= this->is_encrypted ? FILE_ATTRIBUTE_ENCRYPTED : 0;
-			result |= this->is_sparsefile ? FILE_ATTRIBUTE_SPARSE_FILE : 0;
-			result |= this->is_reparsepoint ? FILE_ATTRIBUTE_REPARSE_POINT : 0;
-			return result;
+			//return (this->is_system     ? FILE_ATTRIBUTE_SYSTEM              : 0U) |
+			//	(this->is_directory       ? FILE_ATTRIBUTE_DIRECTORY           : 0U) |
+			//	(this->is_sparse          ? FILE_ATTRIBUTE_SPARSE_FILE         : 0U) |
+			//	(this->is_compressed      ? FILE_ATTRIBUTE_COMPRESSED          : 0U) |
+			//	(this->is_encrypted       ? FILE_ATTRIBUTE_ENCRYPTED           : 0U) |
+			//	(this->is_reparse         ? FILE_ATTRIBUTE_REPARSE_POINT       : 0U);
+
+			// #####
+			return (this->is_readonly     ? FILE_ATTRIBUTE_READONLY            : 0U) |
+				(this->is_archive         ? FILE_ATTRIBUTE_ARCHIVE             : 0U) |
+				(this->is_system          ? FILE_ATTRIBUTE_SYSTEM              : 0U) |
+				(this->is_hidden          ? FILE_ATTRIBUTE_HIDDEN              : 0U) |
+				(this->is_offline         ? FILE_ATTRIBUTE_OFFLINE             : 0U) |
+				(this->is_notcontentidx   ? FILE_ATTRIBUTE_NOT_CONTENT_INDEXED : 0U) |
+				(this->is_noscrubdata     ? FILE_ATTRIBUTE_NO_SCRUB_DATA       : 0U) |
+				(this->is_integretystream ? FILE_ATTRIBUTE_INTEGRITY_STREAM    : 0U) |
+				(this->is_pinned          ? FILE_ATTRIBUTE_PINNED              : 0U) |
+				(this->is_unpinned        ? FILE_ATTRIBUTE_UNPINNED            : 0U) |
+				(this->is_directory       ? FILE_ATTRIBUTE_DIRECTORY           : 0U) |
+				(this->is_compressed      ? FILE_ATTRIBUTE_COMPRESSED          : 0U) |
+				(this->is_encrypted       ? FILE_ATTRIBUTE_ENCRYPTED           : 0U) |
+				(this->is_sparsefile      ? FILE_ATTRIBUTE_SPARSE_FILE         : 0U) |
+				(this->is_reparsepoint    ? FILE_ATTRIBUTE_REPARSE_POINT       : 0U);
 		}
 
-		void SetAttributes(unsigned int
+		void attributes(unsigned long
 			const value)
 		{
+			//this->is_system        = !!(value & FILE_ATTRIBUTE_SYSTEM);
+			//this->is_directory     = !!(value & FILE_ATTRIBUTE_DIRECTORY);
+			//this->is_sparse        = !!(value & FILE_ATTRIBUTE_SPARSE_FILE);
+			//this->is_compressed    = !!(value & FILE_ATTRIBUTE_COMPRESSED);
+			//this->is_encrypted     = !!(value & FILE_ATTRIBUTE_ENCRYPTED);
+			//this->is_reparse       = !!(value & FILE_ATTRIBUTE_REPARSE_POINT);
+
+			this->is_readonly        = !!(value & FILE_ATTRIBUTE_READONLY);
+			this->is_archive         = !!(value & FILE_ATTRIBUTE_ARCHIVE);
 			this->is_system          = !!(value & FILE_ATTRIBUTE_SYSTEM);
 			this->is_hidden          = !!(value & FILE_ATTRIBUTE_HIDDEN);
 			this->is_offline         = !!(value & FILE_ATTRIBUTE_OFFLINE);
@@ -1856,5 +1929,3 @@ namespace std
 #undef X
 #endif
 }
-
-#endif // NTFS_INDEX_HPP
