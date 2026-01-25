@@ -14,6 +14,24 @@ public:
 	CShellItemIDList(const CShellItemIDList&) = delete;
 	CShellItemIDList& operator=(const CShellItemIDList&) = delete;
 
+	// Move constructor
+	CShellItemIDList(CShellItemIDList&& other) noexcept : m_pidl(other.m_pidl)
+	{
+		other.m_pidl = NULL;
+	}
+
+	// Move assignment operator
+	CShellItemIDList& operator=(CShellItemIDList&& other) noexcept
+	{
+		if (this != &other)
+		{
+			::CoTaskMemFree(m_pidl);
+			m_pidl = other.m_pidl;
+			other.m_pidl = NULL;
+		}
+		return *this;
+	}
+
 	~CShellItemIDList()
 	{
 		::CoTaskMemFree(m_pidl);
