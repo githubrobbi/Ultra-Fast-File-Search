@@ -3,6 +3,8 @@
 #ifndef SHITEMID_HPP
 #define SHITEMID_HPP
 
+#include <memory>  // for std::addressof
+
 class CShellItemIDList
 {
 public:
@@ -23,7 +25,7 @@ public:
 	// Move assignment operator
 	CShellItemIDList& operator=(CShellItemIDList&& other) noexcept
 	{
-		if (this != &other)
+		if (this != std::addressof(other))
 		{
 			::CoTaskMemFree(m_pidl);
 			m_pidl = other.m_pidl;
