@@ -4131,7 +4131,7 @@ int benchmark_mft_read(char drive_letter, std::ostream& OS)
     // Stop timing
     auto end_time = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-    double seconds = duration.count() / 1000.0;
+    double seconds = static_cast<double>(duration.count()) / 1000.0;
     double mb_per_sec = (seconds > 0) ? (bytes_read_total / (1024.0 * 1024.0)) / seconds : 0;
 
     CloseHandle(volume_handle);
@@ -4247,7 +4247,7 @@ int benchmark_index_build(char drive_letter, std::ostream& OS)
 
     // Calculate timing
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-    double seconds = duration.count() / 1000.0;
+    double seconds = static_cast<double>(duration.count()) / 1000.0;
     double clock_seconds = static_cast<double>(tend - tbegin) / CLOCKS_PER_SEC;
 
     // Get index statistics from public accessors

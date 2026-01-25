@@ -38,7 +38,7 @@ private:
 
 public:
 	BackgroundWorker() : refs() { InitializeCriticalSection(&this->criticalSection); }
-	virtual ~BackgroundWorker() throw(std::exception) { DeleteCriticalSection(&this->criticalSection); }
+	virtual ~BackgroundWorker() noexcept(false) { DeleteCriticalSection(&this->criticalSection); }
 
 	virtual void clear() = 0;
 
@@ -101,7 +101,7 @@ public:
 		ResumeThread(this->hThread);
 	}
 
-	~BackgroundWorkerImpl() throw(std::exception)
+	~BackgroundWorkerImpl() noexcept(false)
 	{
 		// Clear all the tasks
 		this->stop = true;

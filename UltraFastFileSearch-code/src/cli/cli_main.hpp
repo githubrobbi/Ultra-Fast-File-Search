@@ -189,8 +189,6 @@ int main(int argc, char* argv[])
 
 			if (!hasWildcard)
 			{
-				const size_t zahl = drivesCopy.size();
-
 				for (size_t i = 0, e = drivesCopy.size(); i != e; ++i)
 				{
 					replaceAll(drivesCopy[i], "\\", "");
@@ -257,7 +255,7 @@ int main(int argc, char* argv[])
 				if (drivesCopy.size() == 1) searchPathCopy = std::string(laufwerke.begin(), laufwerke.end()) + searchPathCopy;
 			}
 
-			std::filesystem::path tempath = searchPathCopy;
+			tempath = searchPathCopy;
 
 			// do we have an EXTENTION?
 			if (tempath.has_extension())
@@ -343,7 +341,7 @@ int main(int argc, char* argv[])
 
 		std::string originalsep = separator;
 		std::string t = separator;
-		std::transform(t.begin(), t.end(), t.begin(), ::toupper);
+		std::transform(t.begin(), t.end(), t.begin(), [](char c) { return static_cast<char>(::toupper(static_cast<unsigned char>(c))); });
 		separator = t;
 
 		if (separator == "TAB")
@@ -727,10 +725,10 @@ int main(int argc, char* argv[])
 
 									std::tvstring pathstr, namestr, pathonlystr, temp;
 									i->get_path(key, temp, false);
-									std::filesystem::path tempath = temp.c_str();
+									std::filesystem::path itempath = temp.c_str();
 
-									pathstr = tempath.c_str();
-									namestr = tempath.filename().c_str();
+									pathstr = itempath.c_str();
+									namestr = itempath.filename().c_str();
 									pathonlystr = pathstr;
 									pathonlystr.resize(pathstr.size() - namestr.size());
 
@@ -941,10 +939,10 @@ int main(int argc, char* argv[])
 
 									std::tvstring pathstr, namestr, pathonlystr, temp;
 									i->get_path(key, temp, false);
-									std::filesystem::path tempath = temp.c_str();
+									std::filesystem::path itempath = temp.c_str();
 
-									pathstr = tempath.c_str();
-									namestr = tempath.filename().c_str();
+									pathstr = itempath.c_str();
+									namestr = itempath.filename().c_str();
 									pathonlystr = pathstr;
 									pathonlystr.resize(pathstr.size() - namestr.size());
 

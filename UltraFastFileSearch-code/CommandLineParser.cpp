@@ -107,12 +107,12 @@ int CommandLineParser::parse(int argc, const char* const* argv) {
         
         opts_.parseResult = 0;
         return 0;
-    } catch (const CLI::CallForHelp& e) {
+    } catch (const CLI::CallForHelp&) {
         std::cout << app_.help() << std::endl;
         opts_.helpRequested = true;
         opts_.parseResult = 0;
         return 0;
-    } catch (const CLI::CallForVersion& e) {
+    } catch (const CLI::CallForVersion&) {
         PrintVersion();
         opts_.versionRequested = true;
         opts_.parseResult = 0;

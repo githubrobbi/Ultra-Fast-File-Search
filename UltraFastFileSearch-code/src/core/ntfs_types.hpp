@@ -132,7 +132,7 @@ enum FileRecordHeaderFlags
 // ============================================================================
 // Reparse Point Type Flags
 // ============================================================================
-enum ReparseTypeFlags
+enum ReparseTypeFlags : unsigned int
 {
     ReparseIsMicrosoft              = 0x80000000,
     ReparseIsHighLatency            = 0x40000000,

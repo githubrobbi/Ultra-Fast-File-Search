@@ -179,8 +179,7 @@ class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResi
 		std::tvstring description;
 	};
 
-	static unsigned int
-		const WM_TASKBARCREATED()
+	static unsigned int WM_TASKBARCREATED()
 	{
 		static unsigned int result = 0;
 		if (!result)
@@ -1944,7 +1943,7 @@ public:
 					{
 						ss << _T('\n');
 						ss << this->LoadString(IDS_TEXT_AVERAGE_SPEED) << this->LoadString(IDS_TEXT_COLON) << this->LoadString(IDS_TEXT_SPACE) <<
-							nformat_ui(static_cast<size_t> ((average_speed.first - initial_average_amount) * static_cast<double> (CLOCKS_PER_SEC) / ((tnow != initial_time ? tnow - initial_time : 1) * (1ULL << 20)))) <<
+							nformat_ui(static_cast<size_t> ((average_speed.first - initial_average_amount) * static_cast<double> (CLOCKS_PER_SEC) / ((tnow != initial_time ? tnow - initial_time : 1) * static_cast<double>(1ULL << 20)))) <<
 							this->LoadString(IDS_TEXT_SPACE) << this->LoadString(IDS_TEXT_MIB_S);
 						ss << this->LoadString(IDS_TEXT_SPACE);
 						// These MUST be separate statements since nformat_ui is used twice
@@ -3268,7 +3267,7 @@ public:
 		COLORREF
 			const systemColor     = RGB(0xFF, 0   , 0   );
 		COLORREF
-			const sparseColor     = RGB(GetRValue(compressedColor), (GetGValue(compressedColor) + GetBValue(compressedColor)) / 2, (GetGValue(compressedColor) + GetBValue(compressedColor)) / 2);
+			const sparseColor     = RGB(GetRValue(compressedColor), static_cast<BYTE>((GetGValue(compressedColor) + GetBValue(compressedColor)) / 2), static_cast<BYTE>((GetGValue(compressedColor) + GetBValue(compressedColor)) / 2));
 		LPNMLVCUSTOMDRAW
 			const pLV             = (LPNMLVCUSTOMDRAW)pnmh;
 		if (pLV->nmcd.dwItemSpec < this->results.size())

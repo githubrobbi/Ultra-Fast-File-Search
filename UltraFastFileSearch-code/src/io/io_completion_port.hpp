@@ -48,6 +48,9 @@ protected:
 	struct WorkerThread
 	{
 		Handle handle;
+		WorkerThread() = default;
+		WorkerThread(const WorkerThread&) = delete;
+		WorkerThread& operator=(const WorkerThread&) = delete;
 		~WorkerThread()
 		{
 			if (Handle::valid(this->handle))

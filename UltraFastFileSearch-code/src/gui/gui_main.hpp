@@ -32,7 +32,7 @@ int __stdcall _tWinMain(HINSTANCE
 int result = 0;
 bool right_to_left = false;
 unsigned long reading_layout;
-if (GetLocaleInfo(LOCALE_USER_DEFAULT, 0x00000070 /*LOCALE_IREADINGLAYOUT*/ | LOCALE_RETURN_NUMBER, reinterpret_cast<LPTSTR> (&reading_layout), sizeof(reading_layout) / sizeof(TCHAR)) >= sizeof(reading_layout) / sizeof(TCHAR))
+if (GetLocaleInfo(LOCALE_USER_DEFAULT, 0x00000070 /*LOCALE_IREADINGLAYOUT*/ | LOCALE_RETURN_NUMBER, reinterpret_cast<LPTSTR> (&reading_layout), static_cast<int>(sizeof(reading_layout) / sizeof(TCHAR))) >= static_cast<int>(sizeof(reading_layout) / sizeof(TCHAR)))
 {
 	right_to_left = reading_layout == 1;
 }

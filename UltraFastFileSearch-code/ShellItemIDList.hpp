@@ -11,6 +11,9 @@ public:
 	CShellItemIDList(LPITEMIDLIST pidl = NULL) : m_pidl(pidl)
 	{ }
 
+	CShellItemIDList(const CShellItemIDList&) = delete;
+	CShellItemIDList& operator=(const CShellItemIDList&) = delete;
+
 	~CShellItemIDList()
 	{
 		::CoTaskMemFree(m_pidl);
