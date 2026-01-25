@@ -51,6 +51,23 @@ protected:
 		WorkerThread() = default;
 		WorkerThread(const WorkerThread&) = delete;
 		WorkerThread& operator=(const WorkerThread&) = delete;
+		// Move constructor - required for std::vector operations
+		WorkerThread(WorkerThread&& other) noexcept : handle(std::move(other.handle))
+		{
+		}
+		// Move assignment operator
+		WorkerThread& operator=(WorkerThread&& other) noexcept
+		{
+			if (this != &other)
+			{
+				if (Handle::valid(this->handle))
+				{
+					WaitForSingleObject(this->handle, INFINITE);
+				}
+				handle = std::move(other.handle);
+			}
+			return *this;
+		}
 		~WorkerThread()
 		{
 			if (Handle::valid(this->handle))
