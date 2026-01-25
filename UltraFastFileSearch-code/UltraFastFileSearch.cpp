@@ -1772,21 +1772,7 @@ struct MatchOperation
 };
 // MatchOperation
 
-namespace std
-
-{
-#ifdef _XMEMORY_
-#define X(...) template < > struct is_scalar<__VA_ARGS__>: is_pod<__VA_ARGS__> {}
-
-	X(NtfsIndex::StandardInfo);
-	X(NtfsIndex::NameInfo);
-	X(NtfsIndex::StreamInfo);
-	X(NtfsIndex::LinkInfo);
-	X(NtfsIndex::Record); 
-#undef X
-#endif
-
-}
+// std::is_scalar specializations are now in src/index/ntfs_index.hpp
 
 #include "src/util/com_init.hpp"
 #include "src/io/io_completion_port.hpp"
