@@ -13,10 +13,10 @@
 | **Estimated Hours** | 25-40 |
 | **Start Date** | 2026-01-23 |
 | **Target Completion** | _TBD_ |
-| **Current Phase** | Phase 5 NtfsIndex extraction complete, pending build verification |
-| **Overall Progress** | 95% (Phases 1-4, 7 complete; Phase 5-6 pending verification) |
-| **Monolith Size** | 9,514 lines (down from 14,155) |
-| **Lines Extracted** | ~4,640 lines into new headers under src/ |
+| **Current Phase** | Phase 6 GUI/CLI separation (Steps 6.6-6.8 pending) |
+| **Overall Progress** | 96% (Phases 1-5, 7 complete; Phase 6 steps 6.6-6.8 pending) |
+| **Monolith Size** | ~9,470 lines (down from 14,155) |
+| **Lines Extracted** | ~4,685 lines into new headers under src/ |
 
 ---
 
@@ -157,16 +157,16 @@
 | 5.2 | Identify NtfsIndex dependencies | ✅ | RefCounted, atomic_namespace, intrusive_ptr |
 | 5.3 | Create ntfs_index.hpp | ✅ | **FULL EXTRACTION** (~1860 lines) |
 | 5.4 | Gradual migration | ✅ | Complete - all NtfsIndex code extracted |
-| 5.5 | Verify build | ⬜ | Pending Windows build verification |
-| 5.6 | Commit and push | ⬜ | Pending |
+| 5.5 | Verify build | ✅ | Windows build verified (2026-01-25) |
+| 5.6 | Commit and push | ✅ | Commits 112459d5, f3755ab3, 39379a36 |
 
 **Verification Checklist:**
-- [ ] Build succeeds (Release)
-- [ ] Build succeeds (Debug)
-- [ ] Benchmark matches baseline
-- [ ] Index building works correctly
+- [x] Build succeeds (Release)
+- [x] Build succeeds (Debug)
+- [x] Benchmark matches baseline
+- [x] Index building works correctly
 
-**Notes:** NtfsIndex class (~1860 lines) fully extracted to `src/index/ntfs_index.hpp`. Monolith reduced from ~11,370 to ~9,514 lines.
+**Notes:** NtfsIndex class (~1860 lines) fully extracted to `src/index/ntfs_index.hpp`. Monolith reduced from ~11,370 to ~9,470 lines. Fixed duplicate std::is_scalar specializations (commit 39379a36).
 
 ---
 
@@ -186,8 +186,8 @@
 | 6.3 | Create cli_main.hpp | ✅ | Documentation header (~130 lines) |
 | 6.4 | Create gui_main.hpp | ✅ | Documentation header (~120 lines) |
 | 6.5 | Create main_dialog.hpp | ✅ | Documentation header (~130 lines) |
-| 6.6 | Update project file | ⬜ | Deferred - requires Windows build |
-| 6.7 | Verify build | ⬜ | Deferred - requires Windows |
+| 6.6 | Update project file | ✅ | Added cli_main.hpp, gui_main.hpp, main_dialog.hpp to .vcxproj |
+| 6.7 | Verify build | ⬜ | Pending Windows verification |
 | 6.8 | Commit and push | ⬜ | — |
 
 **Verification Checklist:**
@@ -240,10 +240,10 @@
 | 2 | Extract NTFS Types | 3 | 🟢 Complete | 6/6 |
 | 3 | Extract Utilities | 3 | 🟢 Complete | 8/8 |
 | 4 | Extract I/O Layer | 6 | 🟢 Complete | 8/8 |
-| 5 | Extract NtfsIndex | 6 | 🟢 Complete | 5/6 |
+| 5 | Extract NtfsIndex | 6 | 🟢 Complete | 6/6 |
 | 6 | Separate GUI/CLI | 8 | 🟡 In Progress | 5/8 |
 | 7 | Modernize C++ | 6 | 🟢 Complete | 12/12 |
-| **Total** | | **34** | | **50/54** |
+| **Total** | | **34** | | **51/54** |
 
 ### Status Legend
 
@@ -327,6 +327,11 @@ Record these BEFORE starting any refactoring:
 | 2026-01-24 | 7 | Phase 7.4: Convert `AttributeTypeCode` and `ReparseTypeFlags` to enum class for type safety | AI Assistant |
 | 2026-01-24 | 5 | **REAL EXTRACTION**: NtfsIndex class (~1860 lines) → `src/index/ntfs_index.hpp` | AI Assistant |
 | 2026-01-24 | - | Monolith reduced from 11,373 to 9,514 lines (~4,640 lines extracted in total) | AI Assistant |
+| 2026-01-25 | 6 | Phase 6.6: Add GUI/CLI documentation headers to .vcxproj | AI Assistant |
+| 2026-01-25 | 5 | Fix Windows compilation errors: propagate_const, StandardInfo struct, orphan #endif (commit f3755ab3) | AI Assistant |
+| 2026-01-25 | 5 | Fix duplicate std::is_scalar specializations (C2766) - removed from monolith (commit 39379a36) | AI Assistant |
+| 2026-01-25 | 5 | Phase 5 Windows build verified - all green | AI Assistant |
+| 2026-01-25 | - | Monolith reduced from 9,514 to ~9,470 lines (~4,685 lines extracted in total) | AI Assistant |
 
 ---
 

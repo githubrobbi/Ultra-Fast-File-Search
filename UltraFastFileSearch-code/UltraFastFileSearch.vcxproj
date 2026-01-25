@@ -243,6 +243,9 @@
     <ClInclude Include="src\io\io_priority.hpp" />
     <ClInclude Include="src\io\overlapped.hpp" />
     <ClInclude Include="src\index\ntfs_index.hpp" />
+    <ClInclude Include="src\cli\cli_main.hpp" />
+    <ClInclude Include="src\gui\gui_main.hpp" />
+    <ClInclude Include="src\gui\main_dialog.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
