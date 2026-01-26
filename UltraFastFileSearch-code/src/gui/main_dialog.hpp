@@ -3569,7 +3569,7 @@ public:
 					this->iocp.post(0, static_cast<uintptr_t> (ii), p);
 					if (this->cmbDrive.SetItemDataPtr(ii, q.get()) != CB_ERR)
 					{
-						q.detach();
+						(void)q.detach();  // Intentionally release ownership
 						++this->indices_created;
 					}
 				}

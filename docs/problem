@@ -6,12 +6,12 @@ File
 Line
 Suppression State
 Details
-Message
-VCR003
-Function 'isdevnull' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-584
+Error
+C2446
+'!=': no conversion from 'uffs::File::handle_type *' to 'uffs::File *'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\file_handle.hpp
+35
 
 
 Error (active)
@@ -19,7 +19,7 @@ E0308
 more than one instance of overloaded function "safe_stprintf" matches the argument list:
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-442
+319
 
 
 Warning
@@ -27,7 +27,7 @@ VCR001
 Function definition for 'HOOK_CONCAT' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-805
+467
 
 
 Warning
@@ -35,7 +35,7 @@ VCR001
 Function definition for 'HOOK_CONCAT' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-819
+481
 
 
 Message
@@ -43,7 +43,7 @@ lnt-uninitialized-local
 Local variable is not initialized.
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-441
+318
 
 
 Message
@@ -59,47 +59,39 @@ VCR003
 Function 'global_exception_handler' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-427
+304
 
 
-Message
-VCR003
-Function 'isdevnull' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-577
-
-
-Message
-VCR003
-Function 'remove_path_stream_and_trailing_sep' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-599
+Warning
+C4834
+discarding return value of function with [[nodiscard]] attribute
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
+119
 
 
-Message
-VCR003
-Function 'NormalizePath' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-650
-
-
-Message
-VCR003
-Function 'GetDisplayName' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-678
+Warning
+C4834
+discarding return value of function with [[nodiscard]] attribute
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
+195
 
 
-Message
-VCR003
-Function 'get_cluster_size' can be made static
+Warning
+C4834
+discarding return value of function with [[nodiscard]] attribute
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
+269
 
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-709
+
+Error
+C3445
+copy-list-initialization of 'uffs::File' cannot use an explicit constructor
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2281
 
 
 Warning
@@ -107,23 +99,14 @@ C4310
 cast truncates constant value
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-3272
+3000
 
 
-Error
-C2678
-binary '+': no operator found which takes a left-hand operand of type 'ATL::CStringT<wchar_t,ATL::StrTraitATL<wchar_t,ATL::ChTraitsCRT<wchar_t>>>' (or there is no acceptable conversion)
+Warning
+C4834
+discarding return value of function with [[nodiscard]] attribute
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\gui_main.hpp
-57
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+3572
 
 
-Error
-C2660
-'CreateEventW': function does not take 3 arguments
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\gui_main.hpp
-57
-
-
-...

@@ -116,7 +116,7 @@ protected:
 
 					if (r >= 0)
 					{
-						overlapped.detach();
+						(void)overlapped.detach();  // Intentionally release ownership
 					}
 				}
 				else if (key == 1)
@@ -192,7 +192,7 @@ protected:
 		else if (attempted_reading_file)
 		{
 			CheckAndThrow(GetLastError() == ERROR_IO_PENDING);
-			task.overlapped.detach();
+			(void)task.overlapped.detach();  // Intentionally release ownership
 		}
 	}
 
@@ -266,7 +266,7 @@ public:
 	void post(unsigned long cb, uintptr_t const key, intrusive_ptr<Overlapped> overlapped) volatile
 	{
 		CheckAndThrow(this->try_post(cb, key, overlapped));
-		overlapped.detach();
+		(void)overlapped.detach();  // Intentionally release ownership
 	}
 
 	bool try_post(unsigned long cb, uintptr_t const key, intrusive_ptr<Overlapped>& overlapped) volatile

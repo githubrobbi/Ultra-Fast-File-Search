@@ -21,8 +21,10 @@ struct File
 	typedef int handle_type;
 	handle_type f;
 
+	// Default and value constructor - NOT explicit to allow brace initialization
+	// This matches original behavior: File output = { fd };
 	File() noexcept : f(0) {}
-	explicit File(handle_type fd) noexcept : f(fd) {}
+	File(handle_type fd) noexcept : f(fd) {}
 
 	// Non-copyable (file descriptors shouldn't be implicitly copied)
 	File(const File&) = delete;
@@ -51,24 +53,10 @@ struct File
 
 	[[nodiscard]] handle_type get() const noexcept { return f; }
 	[[nodiscard]] bool valid() const noexcept { return f != 0; }
-	[[nodiscard]] explicit operator bool() const noexcept { return valid(); }
 
 	operator handle_type&() noexcept { return this->f; }
 	[[nodiscard]] operator handle_type() const noexcept { return this->f; }
 	handle_type* operator&() noexcept { return &this->f; }
-
-	handle_type release() noexcept
-	{
-		handle_type tmp = f;
-		f = 0;
-		return tmp;
-	}
-
-	void reset(handle_type fd = 0) noexcept
-	{
-		if (f) { _close(f); }
-		f = fd;
-	}
 };
 
 } // namespace uffs
