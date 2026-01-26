@@ -1627,6 +1627,7 @@ void autosize_columns(ListViewAdapter list)
 
 
 // CProgressDialog extracted to src/gui/progress_dialog.hpp
+#include "src/util/temp_swap.hpp"
 #include "src/gui/progress_dialog.hpp"
 
 // IoCompletionPort and OleIoCompletionPort classes extracted to src/io/io_completion_port.hpp
