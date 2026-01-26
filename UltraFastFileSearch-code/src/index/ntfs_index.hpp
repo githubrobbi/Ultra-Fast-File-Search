@@ -18,6 +18,9 @@
 #include "../util/buffer.hpp"
 #include "../util/path.hpp"
 #include "../util/append_directional.hpp"
+#include "../util/error_utils.hpp"
+#include "../io/winnt_types.hpp"
+#include "../io/io_priority.hpp"
 
 // propagate_const template for const propagation through pointers
 template < class From, class To > struct propagate_const
