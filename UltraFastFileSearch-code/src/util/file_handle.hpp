@@ -12,13 +12,14 @@ namespace uffs {
 // ============================================================================
 // File - RAII wrapper for C file descriptors
 // ============================================================================
+// Note: This struct intentionally matches the original monolith behavior:
+// - No explicit constructor (allows brace initialization)
+// - Implicit copy/move (original didn't restrict these)
+// ============================================================================
 struct File
 {
 	typedef int handle_type;
 	handle_type f;
-
-	File() : f(0) {}
-	explicit File(handle_type h) : f(h) {}
 
 	~File()
 	{
@@ -26,23 +27,6 @@ struct File
 		{
 			_close(f);
 		}
-	}
-
-	// Non-copyable
-	File(const File&) = delete;
-	File& operator=(const File&) = delete;
-
-	// Movable
-	File(File&& other) noexcept : f(other.f) { other.f = 0; }
-	File& operator=(File&& other) noexcept
-	{
-		if (this != &other)
-		{
-			if (f) _close(f);
-			f = other.f;
-			other.f = 0;
-		}
-		return *this;
 	}
 
 	operator handle_type&()
