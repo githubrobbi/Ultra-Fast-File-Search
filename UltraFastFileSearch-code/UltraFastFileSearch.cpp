@@ -188,83 +188,11 @@ extern WTL::CAppModule _Module;
 
 #endif
 
-template < class It, class Less>
-bool is_sorted_ex(It begin, It
-	const end, Less less, bool
-	const reversed = false)
-{
-	if (begin != end)
-	{
-		It i(begin);
-		It
-			const& left = reversed ? i : begin, & right = reversed ? begin : i;
-		++i;
-		while (i != end)
-		{
-			if (less(*right, *left))
-			{
-				return false;
-			}
-
-			begin = i;
-			++i;
-		}
-	}
-
-	return true;
-}
-
-template < class ValueType, class KeyComp>
-struct stable_sort_by_key_comparator : KeyComp
-{
-	explicit stable_sort_by_key_comparator(KeyComp
-		const& comp = KeyComp()) : KeyComp(comp) {}
-
-	typedef ValueType value_type;
-	bool operator()(value_type
-		const& a, value_type
-		const& b) const
-	{
-		return this->KeyComp::operator()(a.first, b.first) || (!this->KeyComp::operator()(b.first, a.first) && (a.second < b.second));
-	}
-};
-
-template < class It, class Key, class Swapper>
-void stable_sort_by_key(It begin, It end, Key key, Swapper swapper)
-{
-	typedef typename std::iterator_traits<It>::difference_type Diff;
-	typedef std::less < typename Key::result_type > KeyComp;
-	typedef std::vector<std::pair < typename Key::result_type, Diff>> Keys;
-	Keys keys;
-	Diff
-		const n = std::distance(begin, end);
-	keys.reserve(static_cast<typename Keys::size_type> (n));
-	{
-		Diff j = 0;
-		for (It i = begin; i != end; ++i)
-		{
-			keys.push_back(typename Keys::value_type(key(*i), j++));
-		}
-	}
-
-	std::stable_sort(keys.begin(), keys.end(), stable_sort_by_key_comparator < typename Keys::value_type, KeyComp>());
-	for (Diff i = 0; i != n; ++i)
-	{
-		for (Diff j = i;;)
-		{
-			using std::swap;
-			swap(j, keys[j].second);
-			swapper(*(begin + j), *(begin + j));
-			if (j == i)
-			{
-				break;
-			}
-
-			using std::iter_swap;
-			swapper(*(begin + j), *(begin + keys[j].second));
-		}
-	}
-}
+// Sort utilities extracted to src/util/sort_utils.hpp
+#include "src/util/sort_utils.hpp"
+using uffs::is_sorted_ex;
+using uffs::stable_sort_by_key_comparator;
+using uffs::stable_sort_by_key;
 
 
 #include "src/util/allocators.hpp"
@@ -349,63 +277,12 @@ namespace std
 }
 
 
-namespace stdext
-{
-	template < class T > struct remove_const
-	{
-		typedef T type;
-	};
+// Type traits compatibility extracted to src/util/type_traits_compat.hpp
+#include "src/util/type_traits_compat.hpp"
 
-	template < class T > struct remove_const<const T >
-	{
-		typedef T type;
-	};
-
-	template < class T > struct remove_volatile
-	{
-		typedef T type;
-	};
-
-	template < class T > struct remove_volatile < volatile T>
-	{
-		typedef T type;
-	};
-
-	template < class T>
-	struct remove_cv
-	{
-		typedef typename remove_volatile < typename remove_const<T>::type>::type type;
-	};
-
-}
-
-struct File
-{
-	typedef int handle_type;
-	handle_type f;
-	~File()
-	{
-		if (f)
-		{
-			_close(f);
-		}
-	}
-
-	operator handle_type& ()
-	{
-		return this->f;
-	}
-
-	operator handle_type() const
-	{
-		return this->f;
-	}
-
-	handle_type* operator&()
-	{
-		return &this->f;
-	}
-};
+// File RAII wrapper extracted to src/util/file_handle.hpp
+#include "src/util/file_handle.hpp"
+using uffs::File;
 
 #define X(Class)(GetProcAddress(GetModuleHandle(TEXT("win32u.dll")), HOOK_TYPE(Class)::static_name()))
 HOOK_DEFINE_DEFAULT(HANDLE __stdcall, NtUserGetProp, (HWND hWnd, ATOM PropId), X);
@@ -574,122 +451,18 @@ namespace winnt = uffs::winnt;  // Alias for code that uses winnt:: prefix
 FILE_FS_DEVICE_INFORMATION fsinfo;
 
 
-[[nodiscard]] bool isdevnull(int fd)
-{
-	winnt::IO_STATUS_BLOCK iosb;
-	winnt::FILE_FS_DEVICE_INFORMATION fsinfo = {};
-	return winnt::NtQueryVolumeInformationFile((HANDLE)_get_osfhandle(fd), &iosb, &fsinfo, sizeof(fsinfo), 4) == 0 && fsinfo.DeviceType == 0x00000015;
-}
-
-[[nodiscard]] bool isdevnull(FILE* f)
-{
-	return isdevnull(
-
-#ifdef _O_BINARY 
-		_fileno(f)
-#else
-		fileno(f)
-#endif
-			);
-}
+// isdevnull functions extracted to src/util/devnull_check.hpp
+#include "src/util/devnull_check.hpp"
+using uffs::isdevnull;
 
 // NTFS types are now defined in src/core/ntfs_types.hpp
 // The ntfs:: namespace is exposed at global scope via type aliases in that header.
 
-void remove_path_stream_and_trailing_sep(std::tvstring& path)
-{
-	size_t ifirstsep = 0;
-	while (ifirstsep < path.size())
-	{
-		if (isdirsep(path[ifirstsep]))
-		{
-			break;
-		}
-
-		++ifirstsep;
-	}
-
-	while (!path.empty() && isdirsep(*(path.end() - 1)))
-	{
-		if (path.size() <= ifirstsep + 1)
-		{
-			break;
-		}
-
-		path.erase(path.end() - 1);
-	}
-
-	for (size_t i = path.size(); i != 0 && ((void) --i, true);)
-	{
-		if (path[i] == _T(':'))
-		{
-			path.erase(path.begin() + static_cast<ptrdiff_t> (i), path.end());
-		}
-		else if (isdirsep(path[i]))
-		{
-			break;
-		}
-	}
-
-	while (!path.empty() && isdirsep(*(path.end() - 1)))
-	{
-		if (path.size() <= ifirstsep + 1)
-		{
-			break;
-		}
-
-		path.erase(path.end() - 1);
-	}
-
-	if (!path.empty() && *(path.end() - 1) == _T('.') && (path.size() == 1 || isdirsep(*(path.end() - 2))))
-	{
-		path.erase(path.end() - 1);
-	}
-}
-
-std::tvstring NormalizePath(std::tvstring const& path)
-{
-	std::tvstring result;
-	bool wasSep = false;
-	bool isCurrentlyOnPrefix = true;
-	for (TCHAR const& c : path)
-	{
-		isCurrentlyOnPrefix &= isdirsep(c);
-		if (isCurrentlyOnPrefix || !wasSep || !isdirsep(c))
-		{
-			result.push_back(c);
-		}
-
-		wasSep = isdirsep(c);
-	}
-
-	if (!isrooted(result.begin(), result.end()))
-	{
-		std::tvstring currentDir(32 * 1024, _T('\0'));
-		currentDir.resize(GetCurrentDirectory(static_cast<DWORD> (currentDir.size()), &currentDir[0]));
-		adddirsep(currentDir);
-		result = currentDir + result;
-	}
-
-	remove_path_stream_and_trailing_sep(result);
-	return result;
-}
-
-std::tstring GetDisplayName(HWND hWnd, const std::tstring& path, DWORD shgdn)
-{
-	ATL::CComPtr<IShellFolder> desktop;
-	STRRET ret = {};
-	LPITEMIDLIST shidl = nullptr;
-	ATL::CComBSTR bstr;
-	ULONG attrs = SFGAO_ISSLOW | SFGAO_HIDDEN;
-	std::tstring result = (!path.empty() && SHGetDesktopFolder(&desktop) == S_OK &&
-		desktop->ParseDisplayName(hWnd, nullptr, const_cast<LPWSTR>(path.c_str()), nullptr, &shidl, &attrs) == S_OK &&
-		(attrs & SFGAO_ISSLOW) == 0 &&
-		desktop->GetDisplayNameOf(shidl, shgdn, &ret) == S_OK &&
-		StrRetToBSTR(&ret, shidl, &bstr) == S_OK
-		) ? static_cast<LPCTSTR> (bstr) : std::tstring(basename(path.begin(), path.end()), path.end());
-	return result;
-}
+// Path utilities extracted to src/util/path_utils.hpp
+#include "src/util/path_utils.hpp"
+using uffs::remove_path_stream_and_trailing_sep;
+using uffs::NormalizePath;
+using uffs::GetDisplayName;
 
 // Locale utilities extracted to src/util/locale_utils.hpp
 #include "src/util/locale_utils.hpp"
@@ -705,21 +478,7 @@ using uffs::IoPriority;
 template < class T, class Alloc = uffs::default_memheap_alloc<T> >
 using memheap_vector = uffs::memheap_vector<T, Alloc>;
 
-
-unsigned int get_cluster_size(void* const volume)
-{
-	winnt::IO_STATUS_BLOCK iosb;
-	winnt::FILE_FS_SIZE_INFORMATION info = {};
-
-	if (unsigned long
-		const error = winnt::RtlNtStatusToDosError(winnt::NtQueryVolumeInformationFile(volume, &iosb, &info, sizeof(info), 3)))
-	{
-		CppRaiseException(error);
-	}
-
-	return info.BytesPerSector * info.SectorsPerAllocationUnit;
-}
-
+// get_cluster_size() extracted to src/util/volume_utils.hpp
 // get_retrieval_pointers() extracted to src/util/volume_utils.hpp
 
 // propagate_const and fast_subscript templates extracted to src/index/ntfs_index.hpp
@@ -828,39 +587,9 @@ HMODULE mui_module = nullptr;
 WTL::CAppModule _Module;
 
 
+// My_Stable_sort_unchecked1 extracted to src/util/sort_utils.hpp
 #if defined(_CPPLIB_VER) && 610 <= _CPPLIB_VER && _CPPLIB_VER < 650
-template < class _BidIt,
-	class _Diff,
-	class _Ty,
-	class _Pr > inline
-	void My_Stable_sort_unchecked1(_BidIt _First, _BidIt _Last, _Diff _Count,
-		std::_Temp_iterator<_Ty>& _Tempbuf, _Pr& _Pred)
-{
-	// sort preserving order of equivalents, using _Pred
-	{
-		// sort halves and merge
-		_Diff _Count2 = (_Count + 1) / 2;
-		_BidIt _Mid = _First;
-		_STD advance(_Mid, _Count2);
-
-		if (_Count2 <= _Tempbuf._Maxlen())
-		{
-			// temp buffer big enough, sort each half using buffer
-			std::_Buffered_merge_sort_unchecked(_First, _Mid, _Count2, _Tempbuf, _Pred);
-			std::_Buffered_merge_sort_unchecked(_Mid, _Last, _Count - _Count2,
-				_Tempbuf, _Pred);
-		}
-		else
-		{
-			// temp buffer not big enough, divide and conquer
-			My_Stable_sort_unchecked1(_First, _Mid, _Count2, _Tempbuf, _Pred);
-			My_Stable_sort_unchecked1(_Mid, _Last, _Count - _Count2, _Tempbuf, _Pred);
-		}
-
-		std::_Buffered_merge_unchecked(_First, _Mid, _Last,
-			_Count2, _Count - _Count2, _Tempbuf, _Pred);	// merge halves
-	}
-}
+using uffs::My_Stable_sort_unchecked1;
 #endif
 
 // get_app_guid and extract_and_run_if_needed extracted to src/util/x64_launcher.hpp

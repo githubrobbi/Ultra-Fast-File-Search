@@ -18,8 +18,33 @@
 #include "handle.hpp"
 #include "error_utils.hpp"
 #include "core_types.hpp"  // For std::tvstring
+#include "../io/winnt_types.hpp"  // For winnt:: types
 
 namespace uffs {
+
+// ============================================================================
+// Cluster Size Query
+// ============================================================================
+
+/**
+ * @brief Gets the cluster size for a volume
+ * @param volume Handle to the volume (opened with appropriate access)
+ * @return Cluster size in bytes
+ * @throws CStructured_Exception on failure
+ */
+[[nodiscard]] inline unsigned int get_cluster_size(void* const volume)
+{
+    winnt::IO_STATUS_BLOCK iosb;
+    winnt::FILE_FS_SIZE_INFORMATION info = {};
+
+    if (unsigned long const error = winnt::RtlNtStatusToDosError(
+            winnt::NtQueryVolumeInformationFile(volume, &iosb, &info, sizeof(info), 3)))
+    {
+        CppRaiseException(error);
+    }
+
+    return info.BytesPerSector * info.SectorsPerAllocationUnit;
+}
 
 // ============================================================================
 // Volume Path Enumeration
@@ -143,6 +168,7 @@ get_retrieval_pointers(
 } // namespace uffs
 
 // Expose at global scope for backward compatibility
+using uffs::get_cluster_size;
 using uffs::get_volume_path_names;
 using uffs::get_retrieval_pointers;
 
