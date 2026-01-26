@@ -2996,8 +2996,10 @@ public:
 			const hiddenColor     = RGB(0xFF, 0x99, 0x99);
 		COLORREF
 			const systemColor     = RGB(0xFF, 0   , 0   );
+		BYTE
+			const sparseGreenBlue = static_cast<BYTE>((static_cast<unsigned int>(GetGValue(compressedColor)) + static_cast<unsigned int>(GetBValue(compressedColor))) / 2);
 		COLORREF
-			const sparseColor     = RGB(GetRValue(compressedColor), static_cast<BYTE>((GetGValue(compressedColor) + GetBValue(compressedColor)) / 2), static_cast<BYTE>((GetGValue(compressedColor) + GetBValue(compressedColor)) / 2));
+			const sparseColor     = RGB(GetRValue(compressedColor), sparseGreenBlue, sparseGreenBlue);
 		LPNMLVCUSTOMDRAW
 			const pLV             = (LPNMLVCUSTOMDRAW)pnmh;
 		if (pLV->nmcd.dwItemSpec < this->results.size())
