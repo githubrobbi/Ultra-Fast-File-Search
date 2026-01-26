@@ -17,19 +17,9 @@
 
 #include "handle.hpp"
 #include "error_utils.hpp"
+#include "core_types.hpp"  // For std::tvstring
 
 namespace uffs {
-
-// ============================================================================
-// Type Definitions
-// ============================================================================
-
-// TCHAR-based string types (matches project conventions)
-#ifdef _UNICODE
-using tstring = std::wstring;
-#else
-using tstring = std::string;
-#endif
 
 // ============================================================================
 // Volume Path Enumeration
@@ -39,10 +29,10 @@ using tstring = std::string;
  * @brief Gets all logical drive path names on the system
  * @return Vector of drive paths (e.g., "C:\", "D:\")
  */
-[[nodiscard]] inline std::vector<tstring> get_volume_path_names()
+[[nodiscard]] inline std::vector<std::tvstring> get_volume_path_names()
 {
-    std::vector<tstring> result;
-    tstring buf;
+    std::vector<std::tvstring> result;
+    std::tvstring buf;
     size_t prev;
     do {
         prev = buf.size();
@@ -53,10 +43,10 @@ using tstring = std::string;
             buf.size()));
     } while (prev < buf.size());
     
-    for (size_t i = 0, n; n = std::char_traits<TCHAR>::length(&buf[i]), 
+    for (size_t i = 0, n; n = std::char_traits<TCHAR>::length(&buf[i]),
          i < buf.size() && buf[i]; i += n + 1)
     {
-        result.push_back(tstring(&buf[i], n));
+        result.push_back(std::tvstring(&buf[i], n));
     }
 
     return result;
