@@ -1,5 +1,7 @@
 #pragma once
 
+#include "mft_diagnostics.hpp"
+
 int main(int argc, char* argv[])
 	{
 		std::ostream& OS = std::cout;
