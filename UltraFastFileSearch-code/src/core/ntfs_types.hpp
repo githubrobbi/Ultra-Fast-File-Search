@@ -11,6 +11,7 @@
 // ============================================================================
 
 #include <Windows.h>
+#include <tchar.h>
 #include <cstdint>
 
 namespace uffs {
@@ -99,8 +100,9 @@ struct MultiSectorHeader
 // ============================================================================
 // Attribute Type Codes
 // ============================================================================
-enum AttributeTypeCode
+enum class AttributeTypeCode : int
 {
+    AttributeNone                = 0,      // For default-constructed comparison
     AttributeStandardInformation = 0x10,
     AttributeAttributeList       = 0x20,
     AttributeFileName            = 0x30,
@@ -392,6 +394,81 @@ struct ReparseMountPointBuffer
     WCHAR PathBuffer[1];
 };
 
+// ============================================================================
+// Attribute Names Table
+// ============================================================================
+static struct
+{
+    TCHAR const* data;
+    size_t size;
+}
+attribute_names[] =
+{
+#define X(S) { _T(S), sizeof(_T(S)) / sizeof(*_T(S)) - 1 }
+    X(""),
+    X("$STANDARD_INFORMATION"),
+    X("$ATTRIBUTE_LIST"),
+    X("$FILE_NAME"),
+    X("$OBJECT_ID"),
+    X("$SECURITY_DESCRIPTOR"),
+    X("$VOLUME_NAME"),
+    X("$VOLUME_INFORMATION"),
+    X("$DATA"),
+    X("$INDEX_ROOT"),
+    X("$INDEX_ALLOCATION"),
+    X("$BITMAP"),
+    X("$REPARSE_POINT"),
+    X("$EA_INFORMATION"),
+    X("$EA"),
+    X("$PROPERTY_SET"),
+    X("$LOGGED_UTILITY_STREAM"),
+#undef  X
+};
+
 } // namespace ntfs
 } // namespace uffs
+
+// ============================================================================
+// Legacy Type Aliases (for backward compatibility with existing code)
+// ============================================================================
+// These aliases allow existing code using SCREAMING_CASE names to continue
+// working without modification.
+// ============================================================================
+namespace ntfs {
+
+using uffs::ntfs::BootSector;
+using uffs::ntfs::MultiSectorHeader;
+using uffs::ntfs::AttributeTypeCode;
+using uffs::ntfs::AttributeRecordHeader;
+using uffs::ntfs::FileRecordHeaderFlags;
+using uffs::ntfs::FileRecordSegmentHeader;
+using uffs::ntfs::FilenameInformation;
+using uffs::ntfs::StandardInformation;
+using uffs::ntfs::IndexHeader;
+using uffs::ntfs::IndexRoot;
+using uffs::ntfs::AttributeList;
+using uffs::ntfs::ReparseTypeFlags;
+using uffs::ntfs::ReparsePoint;
+using uffs::ntfs::ReparseMountPointBuffer;
+using uffs::ntfs::attribute_names;
+
+// Legacy SCREAMING_CASE type aliases
+using NTFS_BOOT_SECTOR = uffs::ntfs::BootSector;
+using MULTI_SECTOR_HEADER = uffs::ntfs::MultiSectorHeader;
+using ATTRIBUTE_RECORD_HEADER = uffs::ntfs::AttributeRecordHeader;
+using FILE_RECORD_HEADER_FLAGS = uffs::ntfs::FileRecordHeaderFlags;
+using FILE_RECORD_SEGMENT_HEADER = uffs::ntfs::FileRecordSegmentHeader;
+using FILENAME_INFORMATION = uffs::ntfs::FilenameInformation;
+using STANDARD_INFORMATION = uffs::ntfs::StandardInformation;
+using INDEX_HEADER = uffs::ntfs::IndexHeader;
+using INDEX_ROOT = uffs::ntfs::IndexRoot;
+using ATTRIBUTE_LIST = uffs::ntfs::AttributeList;
+using REPARSE_POINT = uffs::ntfs::ReparsePoint;
+using REPARSE_MOUNT_POINT_BUFFER = uffs::ntfs::ReparseMountPointBuffer;
+
+// Note: AttributeTypeCode is an enum class, so values are accessed via
+// ntfs::AttributeTypeCode::AttributeFileName etc.
+// FileRecordHeaderFlags and ReparseTypeFlags are plain enums, values accessible directly.
+
+} // namespace ntfs
 
