@@ -51,7 +51,7 @@ class CProgressDialog : private CModifiedDialogImpl<CProgressDialog>, private WT
 	bool windowShowAttempted;
 	TempSwap<ATL::CWindow> setTopmostWindow;
 	int lastProgress, lastProgressTotal;
-	StringLoader LoadString;
+	StringLoader stringLoader_;  // Renamed from LoadString to avoid Windows macro conflict
 
 	void OnDestroy()
 	{
@@ -63,9 +63,9 @@ class CProgressDialog : private CModifiedDialogImpl<CProgressDialog>, private WT
 		this->setTopmostWindow.reset(::topmostWindow, this->m_hWnd);
 		(this->progressText.SubclassWindow)(this->GetDlgItem(IDC_RICHEDITPROGRESS));
 		this->btnPause.Attach(this->GetDlgItem(IDRETRY));
-		this->btnPause.SetWindowText(this->LoadString(IDS_BUTTON_PAUSE));
+		this->btnPause.SetWindowText(this->stringLoader_(IDS_BUTTON_PAUSE));
 		this->btnStop.Attach(this->GetDlgItem(IDCANCEL));
-		this->btnStop.SetWindowText(this->LoadString(IDS_BUTTON_STOP));
+		this->btnStop.SetWindowText(this->stringLoader_(IDS_BUTTON_STOP));
 		this->progressBar.Attach(this->GetDlgItem(IDC_PROGRESS1));
 		this->DlgResize_Init(false, false, 0);
 		ATL::CComBSTR bstr;

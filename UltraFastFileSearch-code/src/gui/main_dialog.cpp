@@ -50,10 +50,10 @@ void CMainDlg::Search()
     }
     catch (std::invalid_argument& ex)
     {
-        RefCountedCString error = this->LoadString(IDS_INVALID_PATTERN);
+        RefCountedCString error = this->stringLoader_(IDS_INVALID_PATTERN);
         error += _T("\r\n");
         error += ex.what();
-        this->MessageBox(error, this->LoadString(IDS_ERROR_TITLE), MB_ICONERROR);
+        this->MessageBox(error, this->stringLoader_(IDS_ERROR_TITLE), MB_ICONERROR);
         return;
     }
 
@@ -64,7 +64,7 @@ void CMainDlg::Search()
     this->clear(false, false);
     WTL::CWaitCursor const wait_cursor;
     CProgressDialog dlg(this->m_hWnd);
-    dlg.SetProgressTitle(this->LoadString(IDS_SEARCHING_TITLE));
+    dlg.SetProgressTitle(this->stringLoader_(IDS_SEARCHING_TITLE));
     if (dlg.HasUserCancelled())
     {
         return;
@@ -159,7 +159,7 @@ void CMainDlg::Search()
             if (dlg.ShouldUpdate())
             {
                 basic_fast_ostringstream<TCHAR> ss;
-                ss << this->LoadString(IDS_TEXT_READING_FILE_TABLES) << this->LoadString(IDS_TEXT_SPACE);
+                ss << this->stringLoader_(IDS_TEXT_READING_FILE_TABLES) << this->stringLoader_(IDS_TEXT_SPACE);
                 bool any = false;
                 unsigned long long temp_overall_progress_numerator = overall_progress_numerator;
                 for (const auto& j : wait_indices)
@@ -169,11 +169,11 @@ void CMainDlg::Search()
                     unsigned int const mft_capacity = j->mft_capacity;
                     if (records_so_far != mft_capacity)
                     {
-                        if (any) { ss << this->LoadString(IDS_TEXT_COMMA) << this->LoadString(IDS_TEXT_SPACE); }
-                        else { ss << this->LoadString(IDS_TEXT_SPACE); }
-                        ss << j->root_path() << this->LoadString(IDS_TEXT_SPACE) << this->LoadString(IDS_TEXT_PAREN_OPEN) << nformat_ui(j->records_so_far());
-                        ss << this->LoadString(IDS_TEXT_SPACE) << this->LoadString(IDS_TEXT_OF) << this->LoadString(IDS_TEXT_SPACE);
-                        ss << nformat_ui(mft_capacity) << this->LoadString(IDS_TEXT_PAREN_CLOSE);
+                        if (any) { ss << this->stringLoader_(IDS_TEXT_COMMA) << this->stringLoader_(IDS_TEXT_SPACE); }
+                        else { ss << this->stringLoader_(IDS_TEXT_SPACE); }
+                        ss << j->root_path() << this->stringLoader_(IDS_TEXT_SPACE) << this->stringLoader_(IDS_TEXT_PAREN_OPEN) << nformat_ui(j->records_so_far());
+                        ss << this->stringLoader_(IDS_TEXT_SPACE) << this->stringLoader_(IDS_TEXT_OF) << this->stringLoader_(IDS_TEXT_SPACE);
+                        ss << nformat_ui(mft_capacity) << this->stringLoader_(IDS_TEXT_PAREN_CLOSE);
                         any = true;
                     }
                 }
@@ -194,11 +194,11 @@ void CMainDlg::Search()
                 if (average_speed.first > initial_average_amount)
                 {
                     ss << _T('\n');
-                    ss << this->LoadString(IDS_TEXT_AVERAGE_SPEED) << this->LoadString(IDS_TEXT_COLON) << this->LoadString(IDS_TEXT_SPACE) <<
+                    ss << this->stringLoader_(IDS_TEXT_AVERAGE_SPEED) << this->stringLoader_(IDS_TEXT_COLON) << this->stringLoader_(IDS_TEXT_SPACE) <<
                         nformat_ui(static_cast<size_t>((average_speed.first - initial_average_amount) * static_cast<double>(CLOCKS_PER_SEC) / ((tnow != initial_time ? tnow - initial_time : 1) * static_cast<double>(1ULL << 20)))) <<
-                        this->LoadString(IDS_TEXT_SPACE) << this->LoadString(IDS_TEXT_MIB_S);
-                    ss << this->LoadString(IDS_TEXT_SPACE);
-                    ss << this->LoadString(IDS_TEXT_PAREN_OPEN) << nformat_ui(average_speed.first / (1 << 20)) << this->LoadString(IDS_TEXT_SPACE) << this->LoadString(IDS_TEXT_MIB_READ) << this->LoadString(IDS_TEXT_PAREN_CLOSE);
+                        this->stringLoader_(IDS_TEXT_SPACE) << this->stringLoader_(IDS_TEXT_MIB_S);
+                    ss << this->stringLoader_(IDS_TEXT_SPACE);
+                    ss << this->stringLoader_(IDS_TEXT_PAREN_OPEN) << nformat_ui(average_speed.first / (1 << 20)) << this->stringLoader_(IDS_TEXT_SPACE) << this->stringLoader_(IDS_TEXT_MIB_READ) << this->stringLoader_(IDS_TEXT_PAREN_CLOSE);
                 }
 
                 std::tstring const text = ss.str();
@@ -221,7 +221,7 @@ void CMainDlg::Search()
                 {
                     if (selected != 0)
                     {
-                        ATL::CWindow(dlg.IsWindow() ? dlg.GetHWND() : this->m_hWnd).MessageBox(GetAnyErrorText(task_result), this->LoadString(IDS_ERROR_TITLE), MB_OK | MB_ICONERROR);
+                        ATL::CWindow(dlg.IsWindow() ? dlg.GetHWND() : this->m_hWnd).MessageBox(GetAnyErrorText(task_result), this->stringLoader_(IDS_ERROR_TITLE), MB_OK | MB_ICONERROR);
                     }
                 }
 
@@ -243,18 +243,18 @@ void CMainDlg::Search()
 
                             std::tvstring text(0x100 + root_path.size(), _T('\0'));
                             text.resize(static_cast<size_t>(_sntprintf(&*text.begin(), text.size(), _T("%s%s%.*s%s%s%s%s%s%s%s%s%s\r\n"),
-                                this->LoadString(IDS_TEXT_SEARCHING).c_str(),
-                                this->LoadString(IDS_TEXT_SPACE).c_str(),
+                                this->stringLoader_(IDS_TEXT_SEARCHING).c_str(),
+                                this->stringLoader_(IDS_TEXT_SPACE).c_str(),
                                 static_cast<int>(root_path.size()), root_path.c_str(),
-                                this->LoadString(IDS_TEXT_SPACE).c_str(),
-                                this->LoadString(IDS_TEXT_PAREN_OPEN).c_str(),
+                                this->stringLoader_(IDS_TEXT_SPACE).c_str(),
+                                this->stringLoader_(IDS_TEXT_PAREN_OPEN).c_str(),
                                 static_cast<std::tstring>(nformat_ui(current_progress_numerator)).c_str(),
-                                this->LoadString(IDS_TEXT_SPACE).c_str(),
-                                this->LoadString(IDS_TEXT_OF).c_str(),
-                                this->LoadString(IDS_TEXT_SPACE).c_str(),
+                                this->stringLoader_(IDS_TEXT_SPACE).c_str(),
+                                this->stringLoader_(IDS_TEXT_OF).c_str(),
+                                this->stringLoader_(IDS_TEXT_SPACE).c_str(),
                                 static_cast<std::tstring>(nformat_ui(current_progress_denominator)).c_str(),
-                                this->LoadString(IDS_TEXT_PAREN_CLOSE).c_str(),
-                                this->LoadString(IDS_TEXT_ELLIPSIS).c_str())));
+                                this->stringLoader_(IDS_TEXT_PAREN_CLOSE).c_str(),
+                                this->stringLoader_(IDS_TEXT_ELLIPSIS).c_str())));
                             if (name_length) { append_directional(text, name, name_length, ascii ? -1 : 0); }
 
                             dlg.SetProgressText(text);
@@ -319,7 +319,7 @@ void CMainDlg::Search()
 
     clock_t const tend = clock();
     TCHAR buf[0x100];
-    safe_stprintf(buf, this->LoadString(IDS_STATUS_FOUND_RESULTS), static_cast<std::tstring>(nformat_ui(this->results.size())).c_str(), (tend - tstart) * 1.0 / CLOCKS_PER_SEC);
+    safe_stprintf(buf, this->stringLoader_(IDS_STATUS_FOUND_RESULTS), static_cast<std::tstring>(nformat_ui(this->results.size())).c_str(), (tend - tstart) * 1.0 / CLOCKS_PER_SEC);
     this->statusbar.SetText(0, buf);
 }
 
@@ -332,11 +332,11 @@ void CMainDlg::dump_or_save(std::vector<size_t> const& locked_indices, int const
     if (mode <= 0)
     {
         std::tstring const null_char(1, _T('\0'));
-        file_dialog_save_options += this->LoadString(IDS_SAVE_OPTION_UTF8_CSV);
+        file_dialog_save_options += this->stringLoader_(IDS_SAVE_OPTION_UTF8_CSV);
         file_dialog_save_options += null_char;
         file_dialog_save_options += _T("*.csv");
         file_dialog_save_options += null_char;
-        file_dialog_save_options += this->LoadString(IDS_SAVE_OPTION_UTF8_TSV);
+        file_dialog_save_options += this->stringLoader_(IDS_SAVE_OPTION_UTF8_TSV);
         file_dialog_save_options += null_char;
         file_dialog_save_options += _T("*.tsv");
         file_dialog_save_options += null_char;
@@ -346,8 +346,8 @@ void CMainDlg::dump_or_save(std::vector<size_t> const& locked_indices, int const
     WTL::CFileDialog fdlg(FALSE, _T("csv"), nullptr, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, file_dialog_save_options.c_str(), *this);
     fdlg.m_ofn.lpfnHook = nullptr;
     fdlg.m_ofn.Flags &= ~OFN_ENABLEHOOK;
-    fdlg.m_ofn.lpstrTitle = this->LoadString(IDS_SAVE_TABLE_TITLE);
-    if (mode <= 0 ? GetSaveFileName(&fdlg.m_ofn) : (locked_indices.size() <= 1 << 16 || this->MessageBox(this->LoadString(IDS_COPY_MAY_USE_TOO_MUCH_MEMORY_BODY), this->LoadString(IDS_WARNING_TITLE), MB_OKCANCEL | MB_ICONWARNING) == IDOK))
+    fdlg.m_ofn.lpstrTitle = this->stringLoader_(IDS_SAVE_TABLE_TITLE);
+    if (mode <= 0 ? GetSaveFileName(&fdlg.m_ofn) : (locked_indices.size() <= 1 << 16 || this->MessageBox(this->stringLoader_(IDS_COPY_MAY_USE_TOO_MUCH_MEMORY_BODY), this->stringLoader_(IDS_WARNING_TITLE), MB_OKCANCEL | MB_ICONWARNING) == IDOK))
     {
         bool const tabsep = mode > 0 || fdlg.m_ofn.nFilterIndex > 1;
         WTL::CWaitCursor wait;
@@ -371,7 +371,7 @@ void CMainDlg::dump_or_save(std::vector<size_t> const& locked_indices, int const
             if (clipboard) { EmptyClipboard(); }
 
             CProgressDialog dlg(this->m_hWnd);
-            dlg.SetProgressTitle(this->LoadString(output ? IDS_DUMPING_TITLE : IDS_COPYING_TITLE));
+            dlg.SetProgressTitle(this->stringLoader_(output ? IDS_DUMPING_TITLE : IDS_COPYING_TITLE));
             if (locked_indices.size() > 1 && dlg.HasUserCancelled()) { return; }
 
             std::string line_buffer_utf8;
@@ -434,17 +434,17 @@ void CMainDlg::dump_or_save(std::vector<size_t> const& locked_indices, int const
                                 if (dlg.HasUserCancelled(update_time)) { throw CStructured_Exception(ERROR_CANCELLED, nullptr); }
                                 should_flush = true;
                                 basic_fast_ostringstream<TCHAR> ss;
-                                ss << this->LoadString(output ? IDS_TEXT_DUMPING_SELECTION : IDS_TEXT_COPYING_SELECTION) << this->LoadString(IDS_TEXT_SPACE);
+                                ss << this->stringLoader_(output ? IDS_TEXT_DUMPING_SELECTION : IDS_TEXT_COPYING_SELECTION) << this->stringLoader_(IDS_TEXT_SPACE);
                                 ss << nformat_ui(i + 1);
-                                ss << this->LoadString(IDS_TEXT_SPACE) << this->LoadString(IDS_TEXT_OF) << this->LoadString(IDS_TEXT_SPACE);
+                                ss << this->stringLoader_(IDS_TEXT_SPACE) << this->stringLoader_(IDS_TEXT_OF) << this->stringLoader_(IDS_TEXT_SPACE);
                                 ss << nformat_ui(locked_indices.size());
                                 if (update_time != prev_update_time)
                                 {
-                                    ss << this->LoadString(IDS_TEXT_SPACE) << this->LoadString(IDS_TEXT_PAREN_OPEN);
+                                    ss << this->stringLoader_(IDS_TEXT_SPACE) << this->stringLoader_(IDS_TEXT_PAREN_OPEN);
                                     ss << nformat_ui(nwritten_since_update * 1000U / ((update_time - prev_update_time) * 1ULL << 20));
-                                    ss << this->LoadString(IDS_TEXT_SPACE) << this->LoadString(IDS_TEXT_MIB_S) << this->LoadString(IDS_TEXT_PAREN_CLOSE);
+                                    ss << this->stringLoader_(IDS_TEXT_SPACE) << this->stringLoader_(IDS_TEXT_MIB_S) << this->stringLoader_(IDS_TEXT_PAREN_CLOSE);
                                 }
-                                ss << this->LoadString(IDS_TEXT_COLON) << _T('\n');
+                                ss << this->stringLoader_(IDS_TEXT_COLON) << _T('\n');
                                 ss.append(line_buffer.data() + static_cast<ptrdiff_t>(begin_offset), line_buffer.size() - begin_offset);
                                 std::tstring const& text = ss.str();
                                 dlg.SetProgressText(text);
@@ -482,7 +482,7 @@ void CMainDlg::dump_or_save(std::vector<size_t> const& locked_indices, int const
                         if (!warned_about_ads)
                         {
                             unsigned long long const tick_before = GetTickCount64();
-                            ATL::CWindow(dlg.IsWindow() ? dlg.GetHWND() : this->m_hWnd).MessageBox(this->LoadString(IDS_COPYING_ADS_PROBLEM_BODY), this->LoadString(IDS_WARNING_TITLE), MB_OK | MB_ICONWARNING);
+                            ATL::CWindow(dlg.IsWindow() ? dlg.GetHWND() : this->m_hWnd).MessageBox(this->stringLoader_(IDS_COPYING_ADS_PROBLEM_BODY), this->stringLoader_(IDS_WARNING_TITLE), MB_OK | MB_ICONWARNING);
                             prev_update_time += GetTickCount64() - tick_before;
                             warned_about_ads = true;
                         }
@@ -610,28 +610,28 @@ void CMainDlg::RightClick(std::vector<size_t> const& indices, POINT const& point
 
     if (indices.size() == 1)
     {
-        MENUITEMINFO mii2 = { sizeof(mii2), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, MFS_ENABLED, openContainingFolderId, nullptr, nullptr, nullptr, 0, this->LoadString(IDS_MENU_OPEN_CONTAINING_FOLDER) };
+        MENUITEMINFO mii2 = { sizeof(mii2), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, MFS_ENABLED, openContainingFolderId, nullptr, nullptr, nullptr, 0, this->stringLoader_(IDS_MENU_OPEN_CONTAINING_FOLDER) };
         menu.InsertMenuItem(ninserted++, TRUE, &mii2);
         if (false) { menu.SetMenuDefaultItem(openContainingFolderId, FALSE); }
     }
 
     if (0 <= focused && static_cast<size_t>(focused) < this->results.size())
     {
-        { RefCountedCString text = this->LoadString(IDS_MENU_FILE_NUMBER);
+        { RefCountedCString text = this->stringLoader_(IDS_MENU_FILE_NUMBER);
         text += static_cast<std::tstring>(nformat_ui(this->results[static_cast<size_t>(focused)].key().frs())).c_str();
         MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, MFS_DISABLED, fileIdId, nullptr, nullptr, nullptr, 0, text };
         menu.InsertMenuItem(ninserted++, TRUE, &mii); }
 
-        { MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyId, nullptr, nullptr, nullptr, 0, this->LoadString(IDS_MENU_COPY) };
+        { MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyId, nullptr, nullptr, nullptr, 0, this->stringLoader_(IDS_MENU_COPY) };
         menu.InsertMenuItem(ninserted++, TRUE, &mii); }
 
-        { MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyPathId, nullptr, nullptr, nullptr, 0, this->LoadString(IDS_MENU_COPY_PATHS) };
+        { MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyPathId, nullptr, nullptr, nullptr, 0, this->stringLoader_(IDS_MENU_COPY_PATHS) };
         menu.InsertMenuItem(ninserted++, TRUE, &mii); }
 
-        { MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyTableId, nullptr, nullptr, nullptr, 0, this->LoadString(IDS_MENU_COPY_TABLE) };
+        { MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, copyTableId, nullptr, nullptr, nullptr, 0, this->stringLoader_(IDS_MENU_COPY_TABLE) };
         menu.InsertMenuItem(ninserted++, TRUE, &mii); }
 
-        { MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, dumpId, nullptr, nullptr, nullptr, 0, this->LoadString(IDS_MENU_DUMP_TO_TABLE) };
+        { MENUITEMINFO mii = { sizeof(mii), MIIM_ID | MIIM_STRING | MIIM_STATE, MFT_STRING, 0, dumpId, nullptr, nullptr, nullptr, 0, this->stringLoader_(IDS_MENU_DUMP_TO_TABLE) };
         menu.InsertMenuItem(ninserted++, TRUE, &mii); }
     }
 
@@ -658,7 +658,7 @@ void CMainDlg::RightClick(std::vector<size_t> const& indices, POINT const& point
     {
         CMINVOKECOMMANDINFO cmd = { sizeof(cmd), CMIC_MASK_ASYNCOK, *this, reinterpret_cast<LPCSTR>(static_cast<uintptr_t>(id - minID)), nullptr, nullptr, SW_SHOW };
         hr = contextMenu ? contextMenu->InvokeCommand(&cmd) : S_FALSE;
-        if (hr != S_OK) { this->MessageBox(GetAnyErrorText(hr), this->LoadString(IDS_ERROR_TITLE), MB_OK | MB_ICONERROR); }
+        if (hr != S_OK) { this->MessageBox(GetAnyErrorText(hr), this->stringLoader_(IDS_ERROR_TITLE), MB_OK | MB_ICONERROR); }
     }
 }
 
@@ -670,123 +670,123 @@ BOOL CMainDlg::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     _Module.GetMessageLoop()->AddMessageFilter(this);
     this->setTopmostWindow.reset(::topmostWindow, this->m_hWnd);
 
-    this->SetWindowText(this->LoadString(IDS_APPNAME));
+    this->SetWindowText(this->stringLoader_(IDS_APPNAME));
     this->lvFiles.Attach(this->GetDlgItem(IDC_LISTFILES));
     this->btnBrowse.Attach(this->GetDlgItem(IDC_BUTTON_BROWSE));
-    this->btnBrowse.SetWindowText(this->LoadString(IDS_BUTTON_BROWSE));
+    this->btnBrowse.SetWindowText(this->stringLoader_(IDS_BUTTON_BROWSE));
     this->btnOK.Attach(this->GetDlgItem(IDOK));
-    this->btnOK.SetWindowText(this->LoadString(IDS_BUTTON_SEARCH));
+    this->btnOK.SetWindowText(this->stringLoader_(IDS_BUTTON_SEARCH));
     this->cmbDrive.Attach(this->GetDlgItem(IDC_LISTVOLUMES));
     this->accel.LoadAccelerators(IDR_ACCELERATOR1);
     this->txtPattern.SubclassWindow(this->GetDlgItem(IDC_EDITFILENAME));
     if (!this->txtPattern) { this->txtPattern.Attach(this->GetDlgItem(IDC_EDITFILENAME)); }
 
     this->txtPattern.EnsureTrackingMouseHover();
-    this->txtPattern.SetCueBannerText(this->LoadString(IDS_SEARCH_PATTERN_BANNER), true);
+    this->txtPattern.SetCueBannerText(this->stringLoader_(IDS_SEARCH_PATTERN_BANNER), true);
     WTL::CHeaderCtrl hdr = this->lvFiles.GetHeader();
 
     // Insert all columns
     { int const icol = COLUMN_INDEX_NAME;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_LEFT, 250, this->LoadString(IDS_COLUMN_NAME_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_LEFT, 250, this->stringLoader_(IDS_COLUMN_NAME_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_PATH;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_LEFT, 280, this->LoadString(IDS_COLUMN_PATH_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_LEFT, 280, this->stringLoader_(IDS_COLUMN_PATH_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_TYPE;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_LEFT, 120, this->LoadString(IDS_COLUMN_TYPE_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_LEFT, 120, this->stringLoader_(IDS_COLUMN_TYPE_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_SIZE;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_RIGHT, 80, this->LoadString(IDS_COLUMN_SIZE_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_RIGHT, 80, this->stringLoader_(IDS_COLUMN_SIZE_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_SIZE_ON_DISK;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_RIGHT, 80, this->LoadString(IDS_COLUMN_SIZE_ON_DISK_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_RIGHT, 80, this->stringLoader_(IDS_COLUMN_SIZE_ON_DISK_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_CREATION_TIME;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 140, this->LoadString(IDS_COLUMN_CREATION_TIME_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 140, this->stringLoader_(IDS_COLUMN_CREATION_TIME_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_MODIFICATION_TIME;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 140, this->LoadString(IDS_COLUMN_WRITE_TIME_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 140, this->stringLoader_(IDS_COLUMN_WRITE_TIME_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_ACCESS_TIME;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 140, this->LoadString(IDS_COLUMN_ACCESS_TIME_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 140, this->stringLoader_(IDS_COLUMN_ACCESS_TIME_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_DESCENDENTS;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_RIGHT, 80, this->LoadString(IDS_COLUMN_DESCENDENTS_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_RIGHT, 80, this->stringLoader_(IDS_COLUMN_DESCENDENTS_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_readonly;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->LoadString(IDS_COLUMN_INDEX_IS_READONLY_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->stringLoader_(IDS_COLUMN_INDEX_IS_READONLY_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_archive;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->LoadString(IDS_COLUMN_INDEX_IS_ARCHIVE_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->stringLoader_(IDS_COLUMN_INDEX_IS_ARCHIVE_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_system;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->LoadString(IDS_COLUMN_INDEX_IS_SYSTEM_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->stringLoader_(IDS_COLUMN_INDEX_IS_SYSTEM_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_hidden;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->LoadString(IDS_COLUMN_INDEX_IS_HIDDEN_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->stringLoader_(IDS_COLUMN_INDEX_IS_HIDDEN_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_offline;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->LoadString(IDS_COLUMN_INDEX_IS_OFFLINE_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->stringLoader_(IDS_COLUMN_INDEX_IS_OFFLINE_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_notcontentidx;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->LoadString(IDS_COLUMN_INDEX_IS_NOTCONTENTIDX_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->stringLoader_(IDS_COLUMN_INDEX_IS_NOTCONTENTIDX_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_noscrubdata;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->LoadString(IDS_COLUMN_INDEX_IS_NOSCRUBDATA_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->stringLoader_(IDS_COLUMN_INDEX_IS_NOSCRUBDATA_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_integretystream;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->LoadString(IDS_COLUMN_INDEX_IS_INTEGRETYSTREAM_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->stringLoader_(IDS_COLUMN_INDEX_IS_INTEGRETYSTREAM_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_pinned;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->LoadString(IDS_COLUMN_INDEX_IS_PINNED_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->stringLoader_(IDS_COLUMN_INDEX_IS_PINNED_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_unpinned;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->LoadString(IDS_COLUMN_INDEX_IS_UNPINNED_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 25, this->stringLoader_(IDS_COLUMN_INDEX_IS_UNPINNED_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_directory;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 30, this->LoadString(IDS_COLUMN_INDEX_IS_DIRECTORY_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 30, this->stringLoader_(IDS_COLUMN_INDEX_IS_DIRECTORY_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_compressed;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 80, this->LoadString(IDS_COLUMN_INDEX_IS_COMPRESSED_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 80, this->stringLoader_(IDS_COLUMN_INDEX_IS_COMPRESSED_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_encrypted;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 70, this->LoadString(IDS_COLUMN_INDEX_IS_ENCRYPTED_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 70, this->stringLoader_(IDS_COLUMN_INDEX_IS_ENCRYPTED_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_sparsefile;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 50, this->LoadString(IDS_COLUMN_INDEX_IS_SPARSEFILE_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 50, this->stringLoader_(IDS_COLUMN_INDEX_IS_SPARSEFILE_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_is_reparsepoint;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 60, this->LoadString(IDS_COLUMN_INDEX_IS_REPARSEPOINT_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 60, this->stringLoader_(IDS_COLUMN_INDEX_IS_REPARSEPOINT_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
     { int const icol = COLUMN_INDEX_ATTRIBUTE;
-    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 60, this->LoadString(IDS_COLUMN_INDEX_IS_ATTRIBUTE_HEADER) };
+    LVCOLUMN column = { LVCF_FMT | LVCF_WIDTH | LVCF_TEXT, LVCFMT_CENTER, 60, this->stringLoader_(IDS_COLUMN_INDEX_IS_ATTRIBUTE_HEADER) };
     this->lvFiles.InsertColumn(icol, &column); }
 
-    this->cmbDrive.SetCueBannerText(this->LoadString(IDS_SEARCH_VOLUME_BANNER));
+    this->cmbDrive.SetCueBannerText(this->stringLoader_(IDS_SEARCH_VOLUME_BANNER));
     HINSTANCE hInstance = GetModuleHandle(nullptr);
     this->SetIcon((HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), 0), FALSE);
     this->SetIcon((HICON)LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON), 0), TRUE);
@@ -822,7 +822,7 @@ BOOL CMainDlg::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     this->statusbar = CreateStatusWindow(WS_CHILD | SBT_TOOLTIPS | WS_VISIBLE, nullptr, *this, IDC_STATUS_BAR);
     int const rcStatusPaneWidths[] = { 360, -1 };
     this->statusbar.SetParts(sizeof(rcStatusPaneWidths) / sizeof(*rcStatusPaneWidths), const_cast<int*>(rcStatusPaneWidths));
-    this->statusbar.SetText(0, this->LoadString(IDS_STATUS_DEFAULT));
+    this->statusbar.SetText(0, this->stringLoader_(IDS_STATUS_DEFAULT));
     WTL::CRect rcStatusPane1;
     this->statusbar.GetRect(1, &rcStatusPane1);
     WTL::CRect clientRect;
@@ -838,7 +838,7 @@ BOOL CMainDlg::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     if (unresize) { this->ResizeClient(my_client_rect.Width(), my_client_rect.Height(), FALSE); }
 
     std::vector<std::tvstring> path_names = get_volume_path_names();
-    this->cmbDrive.SetCurSel(this->cmbDrive.AddString(this->LoadString(IDS_SEARCH_VOLUME_ALL)));
+    this->cmbDrive.SetCurSel(this->cmbDrive.AddString(this->stringLoader_(IDS_SEARCH_VOLUME_ALL)));
     for (const auto& path_name : path_names) { this->cmbDrive.AddString(path_name.c_str()); }
 
     if (!this->ShouldWaitForWindowVisibleOnStartup())

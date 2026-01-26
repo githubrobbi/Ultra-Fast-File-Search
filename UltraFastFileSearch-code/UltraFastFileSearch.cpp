@@ -284,11 +284,15 @@ namespace std
 #include "src/util/file_handle.hpp"
 using uffs::File;
 
+// Hook type declarations are in src/util/nt_user_hooks.hpp
+// Here we only define the static _instance members
+#include "src/util/nt_user_hooks.hpp"
+
 #define X(Class)(GetProcAddress(GetModuleHandle(TEXT("win32u.dll")), HOOK_TYPE(Class)::static_name()))
-HOOK_DEFINE_DEFAULT(HANDLE __stdcall, NtUserGetProp, (HWND hWnd, ATOM PropId), X);
-HOOK_DEFINE_DEFAULT(BOOL __stdcall, NtUserSetProp, (HWND hWnd, ATOM PropId, HANDLE value), X);
-HOOK_DEFINE_DEFAULT(LRESULT __stdcall, NtUserMessageCall, (HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, ULONG_PTR xParam, DWORD xpfnProc, BOOL bAnsi), X);
-HOOK_DEFINE_DEFAULT(BOOL __stdcall, NtUserRedrawWindow, (HWND hWnd, CONST RECT * lprcUpdate, HRGN hrgnUpdate, UINT flags), X); 
+template<> HOOK_TYPE(NtUserGetProp) HOOK_IMPLEMENT(NtUserGetProp, HANDLE __stdcall(HWND hWnd, ATOM PropId), X);
+template<> HOOK_TYPE(NtUserSetProp) HOOK_IMPLEMENT(NtUserSetProp, BOOL __stdcall(HWND hWnd, ATOM PropId, HANDLE value), X);
+template<> HOOK_TYPE(NtUserMessageCall) HOOK_IMPLEMENT(NtUserMessageCall, LRESULT __stdcall(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, ULONG_PTR xParam, DWORD xpfnProc, BOOL bAnsi), X);
+template<> HOOK_TYPE(NtUserRedrawWindow) HOOK_IMPLEMENT(NtUserRedrawWindow, BOOL __stdcall(HWND hWnd, CONST RECT * lprcUpdate, HRGN hrgnUpdate, UINT flags), X);
 #undef X
 
 // atomic_namespace moved to src/util/atomic_compat.hpp
@@ -301,7 +305,8 @@ HOOK_DEFINE_DEFAULT(BOOL __stdcall, NtUserRedrawWindow, (HWND hWnd, CONST RECT *
 ATL::CWindow topmostWindow;
 atomic_namespace::recursive_mutex global_exception_mutex;
 
-static long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo)
+// Note: Not static - needs external linkage for io_completion_port.hpp
+long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo)
 {
 	long result;
 	if (ExceptionInfo->ExceptionRecord->ExceptionCode == 0x40010006 /*DBG_PRINTEXCEPTION_C*/ ||

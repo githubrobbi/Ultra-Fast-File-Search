@@ -6,12 +6,12 @@ File
 Line
 Suppression State
 Details
-Warning
-C4464
-relative include path contains '..'
+Error
+C2065
+'IO_STATUS_BLOCK': undeclared identifier
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\mft_reader.hpp
-27
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+287
 
 
 Warning
@@ -30,595 +30,723 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFi
 481
 
 
-Message
-VCR003
-Function 'ILIsEmpty' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-158
-
-
-Message
-VCR003
-Function 'global_exception_handler' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-304
-
-
-Warning
-C4865
-'<unnamed-enum-DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER>': the underlying type will change from 'int' to '__int64' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
-2806
-
-
-Warning
-C4865
-'<unnamed-enum-DISPLAYCONFIG_SCANLINE_ORDERING_UNSPECIFIED>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
-2831
-
-
-Warning
-C4865
-'<unnamed-enum-DISPLAYCONFIG_SCALING_IDENTITY>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
-2874
-
-
-Warning
-C4865
-'<unnamed-enum-DISPLAYCONFIG_ROTATION_IDENTITY>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
-2885
-
-
-Warning
-C4865
-'<unnamed-enum-DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
-2894
-
-
-Warning
-C4865
-'<unnamed-enum-DISPLAYCONFIG_PIXELFORMAT_8BPP>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
-2902
-
-
-Warning
-C4865
-'DISPLAYCONFIG_TOPOLOGY_ID': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
-3022
-
-
-Warning
-C4865
-'<unnamed-enum-DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
-3033
-
-
-Warning
-C4865
-'_DISPLAYCONFIG_COLOR_ENCODING': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
-3157
-
-
-Warning
-C4865
-'tagCLSCTX': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\wtypesbase.h
-367
-
-
-Warning
-C4865
-'CO_MARSHALING_CONTEXT_ATTRIBUTES': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\objidlbase.h
-7906
-
-
-Warning
-C4865
-'__MIDL_IBindStatusCallback_0003': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\urlmon.h
-1362
-
-
-Warning
-C4865
-'__MIDL_IBindStatusCallbackEx_0001': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\urlmon.h
-1806
-
-
-Warning
-C4865
-'ATL::_DialogSplitHelper::<unnamed-enum-ATL_WM_OCC_LOADFROMSTREAM>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\atlmfc\include\atlwin.h
-394
-
-
-Warning
-C4865
-'DXGI_COLOR_SPACE_TYPE': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\dxgicommon.h
-27
-
-
-Warning
-C4865
-'DXGI_FORMAT': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\dxgiformat.h
-11
-
-
-Warning
-C4865
-'_FINDTEXT_FLAGS': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\MsHTML.h
-13279
-
-
-Warning
-C4865
-'BrowserNavConstants': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\ExDisp.h
-397
-
-
-Warning
-C4865
-'PROPDESC_TYPE_FLAGS': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\propsys.h
-1840
-
-
-Warning
-C4865
-'FOLDERFLAGS': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\shobjidl_core.h
-5253
-
-
-Warning
-C4865
-'_SVGIO': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\shobjidl_core.h
-5356
-
-
-Warning
-C4865
-'_FILEOPENDIALOGOPTIONS': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\shobjidl_core.h
-19640
-
-
-Warning
-C4865
-'<unnamed-enum-KF_FLAG_DEFAULT>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
-UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\shlobj_core.h
-947
-
-
-Warning
-C5267
-definition of implicit copy constructor for 'WTL::CDCT<false>' is deprecated because it has a user-provided destructor
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlgdi.h
-1150
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\command_line_parser.cpp
-1
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\command_line_parser.hpp
-2
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\mft_diagnostics.cpp
-24
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\volume_utils.hpp
-21
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\mft_diagnostics.cpp
-27
-
-
-Warning
-C5219
-implicit conversion from 'uint64_t' to 'double', possible loss of data
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\mft_diagnostics.cpp
-669
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\volume_utils.hpp
-21
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\time_utils.hpp
-14
-
-
-Warning
-C5267
-definition of implicit copy constructor for 'boost::algorithm::boyer_moore_horspool<tracking_iterator<const wchar_t *>,boost::algorithm::detail::BM_traits<patIter>>' is deprecated because it has a user-provided destructor        with        [            patIter=tracking_iterator<const wchar_t *>        ]
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp
-66
-
-
-Warning
-C5267
-definition of implicit copy constructor for 'boost::algorithm::boyer_moore_horspool<tracking_iterator<case_insensitive_iterator<const wchar_t *>>,boost::algorithm::detail::BM_traits<patIter>>' is deprecated because it has a user-provided destructor        with        [            patIter=tracking_iterator<case_insensitive_iterator<const wchar_t *>>        ]
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp
-66
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\match_operation.hpp
-16
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\overlapped.hpp
-17
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\match_operation.hpp
-17
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\command_line_parser.hpp
-2
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\devnull_check.hpp
-17
-
-
-Warning
-C4464
-relative include path contains '..'
+Error
+C2653
+'winnt': is not a class or namespace name
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-12
+287
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C2146
+syntax error: missing ';' before identifier 'iosb'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-13
+287
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C2065
+'iosb': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-14
+287
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C2653
+'winnt': is not a class or namespace name
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-15
+288
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C2504
+'FILE_FS_ATTRIBUTE_INFORMATION': base class undefined
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-16
+288
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C2653
+'winnt': is not a class or namespace name
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-17
+295
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C2653
+'winnt': is not a class or namespace name
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-18
+295
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C2065
+'iosb': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-19
+295
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C3861
+'NtQueryVolumeInformationFile': identifier not found
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-20
+295
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C2653
+'winnt': is not a class or namespace name
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-21
+298
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C3861
+'RtlNtStatusToDosError': identifier not found
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+298
+
+
+Error
+C2039
+'FileSystemNameLength': is not a member of 'NtfsIndex::init::<unnamed-type-info>'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+301
+
+
+Error
+C2039
+'FileSystemName': is not a member of 'NtfsIndex::init::<unnamed-type-info>'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+301
+
+
+Error
+C2039
+'FileSystemName': is not a member of 'NtfsIndex::init::<unnamed-type-info>'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+301
+
+
+Error
+C2653
+'winnt': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+308
+
+
+Error
+C2065
+'IoPriorityLow': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+308
+
+
+Error
+C3861
+'global_exception_handler': identifier not found
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
+329
+
+
+Error
+C2184
+'<error>': illegal type for __except expression
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
+329
+
+
+Error
+C2065
+'Hook_NtUserMessageCall': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_hooks.hpp
 22
 
 
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-23
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-24
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-25
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-26
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\core\packed_file_size.hpp
-6
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-27
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-28
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\core\ntfs_record_types.hpp
-6
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-29
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\core\ntfs_key_type.hpp
-19
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-8
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
-26
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
-27
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\mft_reader.hpp
-28
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\mft_reader.hpp
-29
-
-
-Warning
-C4464
-relative include path contains '..'
+Error
+C2923
+'hook_detail::thread_hook_swap': 'Hook_NtUserMessageCall' is not a valid template type argument for parameter 'H'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_hooks.hpp
-11
+22
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C2955
+'hook_detail::thread_hook_swap': use of class template requires template argument list
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_adapter.hpp
-21
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_hooks.hpp
+22
 
 
-Warning
-C5267
-definition of implicit copy constructor for 'WTL::CImageListT<false>' is deprecated because it has a user-provided destructor
+Error
+C3668
+'uffs::gui::CDisableListViewUnnecessaryMessages::operator ()': method with override specifier 'override' did not override any base class methods
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrls.h
-1866
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_hooks.hpp
+37
 
 
-Warning
-C5219
-implicit conversion from '__int64' to 'double', possible loss of data
+Error
+C2653
+'hook_base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_hooks.hpp
+51
+
+
+Error
+C2065
+'Hook_NtUserRedrawWindow': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_hooks.hpp
+88
+
+
+Error
+C2923
+'hook_detail::thread_hook_swap': 'Hook_NtUserRedrawWindow' is not a valid template type argument for parameter 'H'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_hooks.hpp
+88
+
+
+Error
+C2955
+'hook_detail::thread_hook_swap': use of class template requires template argument list
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_hooks.hpp
+88
+
+
+Error
+C3668
+'uffs::gui::CSetRedraw::Hooked::operator ()': method with override specifier 'override' did not override any base class methods
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_hooks.hpp
+90
+
+
+Error
+C2653
+'hook_base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_hooks.hpp
+98
+
+
+Error
+C3646
+'LoadStringW': unknown override specifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
-313
+54
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C4430
+missing type specifier - int assumed. Note: C++ does not support default-int
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\search_pattern_edit.hpp
-12
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
+54
 
 
-Warning
-C4464
-relative include path contains '..'
+Error
+C2039
+'topmostWindow': is not a member of '`global namespace''
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\icon_cache_types.hpp
-14
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
+63
+
+
+Error
+C2065
+'topmostWindow': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
+63
+
+
+Error
+C2039
+'LoadStringW': is not a member of 'CProgressDialog'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
+66
+
+
+Error
+C2039
+'LoadStringW': is not a member of 'CProgressDialog'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
+68
+
+
+Error
+C2504
+'memheap_vector': base class undefined
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+52
+
+
+Error
+C2143
+syntax error: missing ',' before '<'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+52
+
+
+Error
+C2143
+syntax error: missing ';' before '<'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+55
+
+
+Error
+C4430
+missing type specifier - int assumed. Note: C++ does not support default-int
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+55
+
+
+Error
+C2238
+unexpected token(s) preceding ';'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+55
+
+
+Error
+C2653
+'base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+62
+
+
+Error
+C3646
+'allocator_type': unknown override specifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+62
+
+
+Error
+C4430
+missing type specifier - int assumed. Note: C++ does not support default-int
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+62
+
+
+Error
+C2653
+'base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+63
+
+
+Error
+C3646
+'value_type': unknown override specifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+63
+
+
+Error
+C4430
+missing type specifier - int assumed. Note: C++ does not support default-int
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+63
+
+
+Error
+C2653
+'base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+64
+
+
+Error
+C3646
+'iterator': unknown override specifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+64
+
+
+Error
+C4430
+missing type specifier - int assumed. Note: C++ does not support default-int
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+64
+
+
+Error
+C2653
+'base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+65
+
+
+Error
+C3646
+'const_iterator': unknown override specifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+65
+
+
+Error
+C4430
+missing type specifier - int assumed. Note: C++ does not support default-int
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+65
+
+
+Error
+C2653
+'base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+66
+
+
+Error
+C3646
+'size_type': unknown override specifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+66
+
+
+Error
+C4430
+missing type specifier - int assumed. Note: C++ does not support default-int
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+66
+
+
+Error
+C3646
+'begin': unknown override specifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+72
+
+
+Error
+C2059
+syntax error: '('
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+72
+
+
+Error
+C2334
+unexpected token(s) preceding '{'; skipping apparent function body
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+73
+
+
+Error
+C3646
+'begin': unknown override specifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+77
+
+
+Error
+C2059
+syntax error: '('
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+77
+
+
+Error
+C2334
+unexpected token(s) preceding '{'; skipping apparent function body
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+78
+
+
+Error
+C3646
+'end': unknown override specifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+82
+
+
+Error
+C2059
+syntax error: '('
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+82
+
+
+Error
+C2334
+unexpected token(s) preceding '{'; skipping apparent function body
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+83
+
+
+Error
+C3646
+'end': unknown override specifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+87
+
+
+Error
+C2059
+syntax error: '('
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+87
+
+
+Error
+C2334
+unexpected token(s) preceding '{'; skipping apparent function body
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+88
+
+
+Error
+C2653
+'base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+92
+
+
+Error
+C2873
+'capacity': symbol cannot be used in a using-declaration
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+92
+
+
+Error
+C2825
+'Results::value_type': must be a class or namespace when followed by '::'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+115
+
+
+Error
+C2510
+'value_type': left of '::' must be a class/struct/union
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+115
+
+
+Error
+C2061
+syntax error: identifier 'index_type'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+115
+
+
+Error
+C2653
+'base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+131
+
+
+Error
+C2061
+syntax error: identifier 'const_reference'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+131
+
+
+Error
+C2614
+'Results': illegal member initialization: 'base_type' is not a base or member
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+68
+
+
+Error
+C2614
+'Results': illegal member initialization: 'base_type' is not a base or member
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+70
+
+
+Error
+C2039
+'end': is not a member of 'Results'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+96
+
+
+Error
+C2039
+'begin': is not a member of 'Results'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+96
+
+
+Error
+C2660
+'Results::ith_index': function does not take 1 arguments
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+112
+
+
+Error
+C2065
+'i': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+117
+
+
+Error
+C2039
+'begin': is not a member of 'Results'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+122
+
+
+Error
+C2653
+'base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+128
+
+
+Error
+C2653
+'base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+133
+
+
+Error
+C2065
+'value': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+133
+
+
+Error
+C2653
+'base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+134
+
+
+Error
+C2039
+'end': is not a member of 'Results'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+134
+
+
+Error
+C2653
+'base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+139
+
+
+Error
+C2653
+'base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+146
+
+
+Error
+C2061
+syntax error: identifier 'base_type'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\search_results.hpp
+146
 
 
 Error
 C1083
-Cannot open include file: '../util/tstring.hpp': No such file or directory
+Cannot open include file: 'resource.h': No such file or directory
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\icon_cache_types.hpp
-14
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\search_pattern_edit.hpp
+13
+
+
+Warning
+C4244
+'=': conversion from 'wchar_t' to 'char', possible loss of data
+UltraFastFileSearch
+C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xutility
+4924
 
 

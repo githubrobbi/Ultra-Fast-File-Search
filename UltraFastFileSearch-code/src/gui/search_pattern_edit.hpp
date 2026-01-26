@@ -10,7 +10,7 @@
 
 #include "string_loader.hpp"
 #include "../util/path.hpp"
-#include "resource.h"
+#include "../../resource.h"
 
 namespace uffs {
 
@@ -26,7 +26,7 @@ class CSearchPattern : public ATL::CWindowImpl<CSearchPattern, WTL::CEdit>
     END_MSG_MAP()
 
     bool tracking;
-    StringLoader LoadString;
+    StringLoader stringLoader_;  // Renamed from LoadString to avoid Windows macro conflict
 
 public:
     CSearchPattern() : tracking() {}
@@ -108,8 +108,8 @@ public:
         }
 
         WTL::CString const
-            title = this->LoadString(IDS_SEARCH_PATTERN_TITLE),
-            body = this->LoadString(IDS_SEARCH_PATTERN_BODY) + _T("\r\n") + sysdir + getdirsep() + _T("**") + getdirsep() + _T("*.exe") + _T("\r\n") + _T("Picture*.jpg");
+            title = this->stringLoader_(IDS_SEARCH_PATTERN_TITLE),
+            body = this->stringLoader_(IDS_SEARCH_PATTERN_BODY) + _T("\r\n") + sysdir + getdirsep() + _T("**") + getdirsep() + _T("*.exe") + _T("\r\n") + _T("Picture*.jpg");
         EDITBALLOONTIP tip = { sizeof(tip), title, body, TTI_INFO };
         this->ShowBalloonTip(&tip);
     }

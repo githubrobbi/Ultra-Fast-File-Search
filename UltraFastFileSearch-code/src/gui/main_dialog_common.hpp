@@ -6,8 +6,8 @@
 // main_dialog.cpp. It mirrors the include structure of UltraFastFileSearch.cpp
 // up to the point where main_dialog.hpp is included.
 //
-// This allows main_dialog.cpp to be compiled as a separate translation unit
-// while still having access to all the necessary types and functions.
+// IMPORTANT: Include order matters! Headers that depend on namespace aliases
+// or using declarations must come AFTER those declarations.
 // ============================================================================
 
 // ============================================================================
@@ -43,17 +43,6 @@
 #include <vector>
 
 // ============================================================================
-// Utility Headers (extracted from monolith)
-// ============================================================================
-#include "../util/string_utils.hpp"
-#include "../util/volume_utils.hpp"
-#include "../util/time_utils.hpp"
-#include "../util/nformat_ext.hpp"
-#include "../util/utf_convert.hpp"
-#include "../search/match_operation.hpp"
-#include "../core/ntfs_types.hpp"
-
-// ============================================================================
 // Compiler-Specific Headers
 // ============================================================================
 #ifdef _OPENMP
@@ -78,14 +67,6 @@
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-
-// ============================================================================
-// Utility Headers (extracted from monolith)
-// ============================================================================
-#include "../util/atomic_compat.hpp"
-#include "../util/intrusive_ptr.hpp"
-#include "../util/lock_ptr.hpp"
-#include "../io/overlapped.hpp"
 
 // ============================================================================
 // Windows SDK Headers
@@ -118,8 +99,19 @@
 #include <boost/algorithm/string.hpp>
 
 // ============================================================================
-// Project Headers
+// Basic Utility Headers (no winnt:: dependency)
 // ============================================================================
+#include "../util/string_utils.hpp"
+#include "../util/volume_utils.hpp"
+#include "../util/time_utils.hpp"
+#include "../util/nformat_ext.hpp"
+#include "../util/utf_convert.hpp"
+#include "../search/match_operation.hpp"
+#include "../core/ntfs_types.hpp"
+#include "../util/atomic_compat.hpp"
+#include "../util/intrusive_ptr.hpp"
+#include "../util/lock_ptr.hpp"
+#include "../io/overlapped.hpp"
 #include "../../resource.h"
 #include "../util/background_worker.hpp"
 #include "modified_dialog_impl.hpp"
@@ -136,33 +128,22 @@
 #include "../util/memheap_vector.hpp"
 #include "../util/buffer.hpp"
 #include "../util/containers.hpp"
-#include "../index/ntfs_index.hpp"
-#include "../util/com_init.hpp"
-#include "../io/io_completion_port.hpp"
-#include "../io/mft_reader.hpp"
-#include "listview_hooks.hpp"
-#include "string_loader.hpp"
-#include "listview_adapter.hpp"
 #include "../util/temp_swap.hpp"
-#include "progress_dialog.hpp"
-#include "../search/search_results.hpp"
 #include "../util/pe_utils.hpp"
 #include "../util/nt_user_call_hook.hpp"
+#include "../util/com_init.hpp"
 
 // ============================================================================
-// Using declarations (mirrors UltraFastFileSearch.cpp)
+// Namespace aliases (MUST come before headers that use winnt:: prefix)
+// ============================================================================
+using namespace uffs::winnt;
+namespace winnt = uffs::winnt;
+
+// ============================================================================
+// Using declarations (MUST come before headers that use these types)
 // ============================================================================
 using uffs::Handle;
 using uffs::IoPriority;
-using uffs::gui::CDisableListViewUnnecessaryMessages;
-#ifdef WM_SETREDRAW
-using uffs::gui::CSetRedraw;
-#endif
-using uffs::gui::RefCountedCString;
-using uffs::gui::StringLoader;
-using uffs::gui::ImageListAdapter;
-using uffs::gui::ListViewAdapter;
-using uffs::gui::autosize_columns;
 using uffs::get_subsystem;
 using uffs::get_version;
 using uffs::LCIDToLocaleName_XPCompatible;
@@ -172,9 +153,38 @@ template <class T, class Alloc = uffs::default_memheap_alloc<T>>
 using memheap_vector = uffs::memheap_vector<T, Alloc>;
 
 // ============================================================================
-// External declarations
+// External declarations (MUST come before headers that use them)
 // ============================================================================
 extern HMODULE mui_module;
 extern WTL::CAppModule _Module;
 extern ATL::CWindow topmostWindow;
+
+// Forward declaration for global_exception_handler (used by io_completion_port.hpp)
+long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo);
+
+// ============================================================================
+// Headers that depend on namespace aliases and using declarations
+// ============================================================================
+#include "../util/nt_user_hooks.hpp"
+#include "../index/ntfs_index.hpp"
+#include "../io/io_completion_port.hpp"
+#include "../io/mft_reader.hpp"
+#include "listview_hooks.hpp"
+#include "string_loader.hpp"
+#include "listview_adapter.hpp"
+#include "progress_dialog.hpp"
+#include "../search/search_results.hpp"
+
+// ============================================================================
+// Additional using declarations for GUI components
+// ============================================================================
+using uffs::gui::CDisableListViewUnnecessaryMessages;
+#ifdef WM_SETREDRAW
+using uffs::gui::CSetRedraw;
+#endif
+using uffs::gui::RefCountedCString;
+using uffs::gui::StringLoader;
+using uffs::gui::ImageListAdapter;
+using uffs::gui::ListViewAdapter;
+using uffs::gui::autosize_columns;
 

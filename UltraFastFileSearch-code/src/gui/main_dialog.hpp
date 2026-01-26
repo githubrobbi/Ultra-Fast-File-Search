@@ -98,7 +98,7 @@ class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResi
 	value_initialized<int> suppress_escapes;
 	value_initialized<bool> trie_filtering;
 	TempSwap<ATL::CWindow > setTopmostWindow;
-	StringLoader LoadString;
+	StringLoader stringLoader_;  // Renamed from LoadString to avoid Windows macro conflict
 	static DWORD WINAPI SHOpenFolderAndSelectItemsThread(IN LPVOID lpParameter)
 	{
 		std::unique_ptr<std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList > >> p(static_cast<std::pair<std::pair<CShellItemIDList, ATL::CComPtr<IShellFolder> >, std::vector< CShellItemIDList > > *> (lpParameter));
@@ -844,7 +844,7 @@ public:
 					const wait_cursor;
 				CProgressDialog dlg(this->m_hWnd);
 				TCHAR buf[0x100];
-				safe_stprintf(buf, this->LoadString(IDS_STATUS_SORTING_RESULTS), static_cast<std::tstring> (nformat_ui(this->results.size())).c_str());
+				safe_stprintf(buf, this->stringLoader_(IDS_STATUS_SORTING_RESULTS), static_cast<std::tstring> (nformat_ui(this->results.size())).c_str());
 				dlg.SetProgressTitle(buf);
 				if (!dlg.HasUserCancelled())
 				{
@@ -909,7 +909,7 @@ public:
 					resulting_sort = proposed_sort;
 					clock_t
 						const tend = clock();
-					safe_stprintf(buf, this->LoadString(IDS_STATUS_SORTED_RESULTS), static_cast<std::tstring> (nformat_ui(this->results.size())).c_str(), (tend - tstart) * 1.0 / CLOCKS_PER_SEC);
+					safe_stprintf(buf, this->stringLoader_(IDS_STATUS_SORTED_RESULTS), static_cast<std::tstring> (nformat_ui(this->results.size())).c_str(), (tend - tstart) * 1.0 / CLOCKS_PER_SEC);
 					this->statusbar.SetText(0, buf);
 				}
 			}
@@ -1116,7 +1116,7 @@ public:
 		std::tstring path(MAX_PATH, _T('\0'));
 		CoInit
 			const coinit;
-		BROWSEINFO info = { this->m_hWnd, nullptr, &*path.begin(), this->LoadString(IDS_BROWSE_BODY), BIF_NONEWFOLDERBUTTON | BIF_USENEWUI | BIF_RETURNONLYFSDIRS | BIF_RETURNFSANCESTORS | BIF_DONTGOBELOWDOMAIN, Callback::BrowseCallbackProc, reinterpret_cast<LPARAM> (&callback)
+		BROWSEINFO info = { this->m_hWnd, nullptr, &*path.begin(), this->stringLoader_(IDS_BROWSE_BODY), BIF_NONEWFOLDERBUTTON | BIF_USENEWUI | BIF_RETURNONLYFSDIRS | BIF_RETURNFSANCESTORS | BIF_DONTGOBELOWDOMAIN, Callback::BrowseCallbackProc, reinterpret_cast<LPARAM> (&callback)
 		};
 
 		CShellItemIDList pidl(SHBrowseForFolder(&info));
@@ -1858,7 +1858,7 @@ public:
 		NOTIFYICONDATA nid = { sizeof(nid), *this, 0, NIF_MESSAGE | NIF_ICON | NIF_TIP, WM_NOTIFYICON, this->GetIcon(FALSE)
 		};
 
-		_tcsncpy(nid.szTip, this->LoadString(IDS_APPNAME), sizeof(nid.szTip) / sizeof(*nid.szTip));
+		_tcsncpy(nid.szTip, this->stringLoader_(IDS_APPNAME), sizeof(nid.szTip) / sizeof(*nid.szTip));
 		return (!checkVisible || (this->ShouldWaitForWindowVisibleOnStartup() && !this->IsWindowVisible())) && Shell_NotifyIcon(NIM_ADD, &nid);
 	}
 
@@ -1886,38 +1886,38 @@ public:
 		switch (nID)
 		{
 		case ID_HELP_DONATE:
-			body.Format(this->LoadString(IDS_HELP_DONATE_BODY), this->get_project_url(IDS_PROJECT_USER_FRIENDLY_URL).c_str());
-			title = this->LoadString(IDS_HELP_DONATE_TITLE);
+			body.Format(this->stringLoader_(IDS_HELP_DONATE_BODY), this->get_project_url(IDS_PROJECT_USER_FRIENDLY_URL).c_str());
+			title = this->stringLoader_(IDS_HELP_DONATE_TITLE);
 			type  = ((type & ~static_cast<unsigned int> (MB_OK)) | MB_OKCANCEL);
 			break;
 		case ID_HELP_TRANSLATION:
-			body.Format(this->LoadString(IDS_HELP_TRANSLATION_BODY), static_cast<LPCTSTR> (get_ui_locale_name()));
-			title = this->LoadString(IDS_HELP_TRANSLATION_TITLE);
+			body.Format(this->stringLoader_(IDS_HELP_TRANSLATION_BODY), static_cast<LPCTSTR> (get_ui_locale_name()));
+			title = this->stringLoader_(IDS_HELP_TRANSLATION_TITLE);
 			type  = ((type & ~static_cast<unsigned int> (MB_OK)) | MB_OKCANCEL);
 			break;
 		case ID_HELP_COPYING:
-			body  = this->LoadString(IDS_HELP_COPYING_BODY);
-			title = this->LoadString(IDS_HELP_COPYING_TITLE);
+			body  = this->stringLoader_(IDS_HELP_COPYING_BODY);
+			title = this->stringLoader_(IDS_HELP_COPYING_TITLE);
 			break;
 		case ID_HELP_NTFSMETADATA:
-			body  = this->LoadString(IDS_HELP_NTFS_METADATA_BODY);
-			title = this->LoadString(IDS_HELP_NTFS_METADATA_TITLE);
+			body  = this->stringLoader_(IDS_HELP_NTFS_METADATA_BODY);
+			title = this->stringLoader_(IDS_HELP_NTFS_METADATA_TITLE);
 			break;
 		case ID_HELP_SEARCHINGBYDEPTH:
-			body  = this->LoadString(IDS_HELP_SEARCHING_BY_DEPTH_BODY);
-			title = this->LoadString(IDS_HELP_SEARCHING_BY_DEPTH_TITLE);
+			body  = this->stringLoader_(IDS_HELP_SEARCHING_BY_DEPTH_BODY);
+			title = this->stringLoader_(IDS_HELP_SEARCHING_BY_DEPTH_TITLE);
 			break;
 		case ID_HELP_SORTINGBYBULKINESS:
-			body  = this->LoadString(IDS_HELP_SORTING_BY_BULKINESS_BODY);
-			title = this->LoadString(IDS_HELP_SORTING_BY_BULKINESS_TITLE);
+			body  = this->stringLoader_(IDS_HELP_SORTING_BY_BULKINESS_BODY);
+			title = this->stringLoader_(IDS_HELP_SORTING_BY_BULKINESS_TITLE);
 			break;
 		case ID_HELP_SORTINGBYDEPTH:
-			body  = this->LoadString(IDS_HELP_SORTING_BY_DEPTH_BODY);
-			title = this->LoadString(IDS_HELP_SORTING_BY_DEPTH_TITLE);
+			body  = this->stringLoader_(IDS_HELP_SORTING_BY_DEPTH_BODY);
+			title = this->stringLoader_(IDS_HELP_SORTING_BY_DEPTH_TITLE);
 			break;
 		case ID_HELP_USINGREGULAREXPRESSIONS:
-			body  = this->LoadString(IDS_HELP_REGEX_BODY);
-			title = this->LoadString(IDS_HELP_REGEX_TITLE);
+			body  = this->stringLoader_(IDS_HELP_REGEX_BODY);
+			title = this->stringLoader_(IDS_HELP_REGEX_TITLE);
 			break;
 		}
 
@@ -1946,12 +1946,12 @@ public:
 		long long
 			const ticks = get_version(&__ImageBase);
 		RefCountedCString body;
-		body.Format(this->LoadString(IDS_TEXT_REPORT_ISSUES), this->get_project_url(IDS_PROJECT_USER_FRIENDLY_URL).c_str());
+		body.Format(this->stringLoader_(IDS_TEXT_REPORT_ISSUES), this->get_project_url(IDS_PROJECT_USER_FRIENDLY_URL).c_str());
 		{
 			body += L"\u2022";  // Unicode bullet character
-			body += this->LoadString(IDS_TEXT_SPACE);
-			body += this->LoadString(IDS_TEXT_UI_LOCALE_NAME);
-			body += this->LoadString(IDS_TEXT_SPACE);
+			body += this->stringLoader_(IDS_TEXT_SPACE);
+			body += this->stringLoader_(IDS_TEXT_UI_LOCALE_NAME);
+			body += this->stringLoader_(IDS_TEXT_SPACE);
 			body += get_ui_locale_name();
 		}
 
@@ -1961,17 +1961,17 @@ public:
 			SystemTimeToString(ticks, buf_localized, false, false);
 			SystemTimeToString(ticks, buf_invariant, true, false);
 			body += L"\u2022";  // Unicode bullet character
-			body += this->LoadString(IDS_TEXT_SPACE);
-			body += this->LoadString(IDS_TEXT_BUILD_DATE);
-			body += this->LoadString(IDS_TEXT_SPACE);
+			body += this->stringLoader_(IDS_TEXT_SPACE);
+			body += this->stringLoader_(IDS_TEXT_BUILD_DATE);
+			body += this->stringLoader_(IDS_TEXT_SPACE);
 			body += buf_localized.c_str();
-			body += this->LoadString(IDS_TEXT_SPACE);
-			body += this->LoadString(IDS_TEXT_PAREN_OPEN);
+			body += this->stringLoader_(IDS_TEXT_SPACE);
+			body += this->stringLoader_(IDS_TEXT_PAREN_OPEN);
 			body += buf_invariant.c_str();
-			body += this->LoadString(IDS_TEXT_PAREN_CLOSE);
+			body += this->stringLoader_(IDS_TEXT_PAREN_CLOSE);
 		}
 
-		if (this->MessageBox(body, this->LoadString(IDS_HELP_BUGS_TITLE), MB_OKCANCEL | MB_ICONINFORMATION) == IDOK)
+		if (this->MessageBox(body, this->stringLoader_(IDS_HELP_BUGS_TITLE), MB_OKCANCEL | MB_ICONINFORMATION) == IDOK)
 		{
 			this->open_project_page();
 		}
@@ -1981,7 +1981,7 @@ public:
 		const id)
 	{
 		RefCountedCString result;
-		result.Format(this->LoadString(id), this->LoadString(IDS_PROJECT_NAME).c_str());
+		result.Format(this->stringLoader_(id), this->stringLoader_(IDS_PROJECT_NAME).c_str());
 		return result;
 	}
 
