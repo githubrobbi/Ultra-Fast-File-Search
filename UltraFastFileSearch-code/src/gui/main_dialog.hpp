@@ -4,6 +4,7 @@
 #include "search_pattern_edit.hpp"
 #include "listview_columns.hpp"
 #include "file_attribute_colors.hpp"
+#include "icon_cache_types.hpp"
 #include "../util/time_utils.hpp"
 
 class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResize < CMainDlg>, public CInvokeImpl < CMainDlg>, private WTL::CMessageFilter
@@ -14,6 +15,7 @@ class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResi
 	};
 
 	// Column indices are now in listview_columns.hpp (uffs::ListViewColumn enum)
+	// Icon cache types are now in icon_cache_types.hpp (CacheInfo, ShellInfoCache, TypeInfoCache)
 
 #ifndef LVN_INCREMENTALSEARCH
 		enum
@@ -31,21 +33,6 @@ class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResi
 		using WTL::CListViewCtrl::Attach;
 	};
 
-	struct CacheInfo
-	{
-		explicit CacheInfo(size_t
-			const counter) : counter(counter), valid(false), iIconSmall(-1), iIconLarge(-1), iIconExtraLarge(-1)
-		{
-			this->szTypeName[0] = _T('\0');
-		}
-
-		size_t counter;
-		bool valid;
-		int iIconSmall, iIconLarge, iIconExtraLarge;
-		TCHAR szTypeName[80];
-		std::tvstring description;
-	};
-
 	static unsigned int WM_TASKBARCREATED()
 	{
 		static unsigned int result = 0;
@@ -61,9 +48,6 @@ class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResi
 	{
 		WM_NOTIFYICON = WM_USER + 100, WM_READY = WM_NOTIFYICON + 1, WM_REFRESHITEMS = WM_READY + 1
 	};
-
-	typedef std::map<std::tvstring, CacheInfo> ShellInfoCache;
-	typedef std::map<std::tvstring, std::tvstring > TypeInfoCache;
 
 	// NOTE: NameComparator template was removed - it was dead code that referenced
 	// non-existent file_name()/stream_name() methods on SearchResult
@@ -2955,8 +2939,12 @@ public:
 
 	LRESULT OnFilesListCustomDraw(LPNMHDR pnmh)
 	{
-		// File attribute colors are now in file_attribute_colors.hpp
-		static constexpr auto colors = uffs::kDefaultFileColors;
+		// Build colors struct from member variables (which may be customized from registry)
+		uffs::FileAttributeColors
+			const colors = { deletedColor, encryptedColor, compressedColor, directoryColor, hiddenColor, systemColor,
+			                 static_cast<COLORREF>(RGB(GetRValue(compressedColor),
+			                     (GetGValue(compressedColor) + GetBValue(compressedColor)) / 2,
+			                     (GetGValue(compressedColor) + GetBValue(compressedColor)) / 2)) };
 		LRESULT result;
 		LPNMLVCUSTOMDRAW
 			const pLV             = (LPNMLVCUSTOMDRAW)pnmh;
