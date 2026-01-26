@@ -2,7 +2,7 @@
 
 > **Status**: In Progress
 > **Created**: 2026-01-25
-> **Last Updated**: 2026-01-26 (Phase 15-16 Complete)
+> **Last Updated**: 2026-01-26 (Phase 15-17 In Progress)
 > **Related**: [Refactoring Milestones](refactoring-milestones.md) (Phases 1-7 Complete)
 
 ---
@@ -31,16 +31,33 @@ The initial 7-phase refactoring is complete, reducing the monolith from 14,155 t
 | Metric | Value | Target | Change |
 |--------|-------|--------|--------|
 | Monolith (`UltraFastFileSearch.cpp`) | **674 lines** | Orchestration only | **-13,481 lines (95% reduction)** |
-| `main_dialog.hpp` | 3,909 lines | Split into multiple files | - |
+| `main_dialog.hpp` | **3,541 lines** | Split into multiple files | **-99 lines (2.7% reduction)** |
 | `ntfs_index.hpp` | **1,556 lines** | Split into .hpp/.cpp | **-384 lines (19.8% reduction)** |
 | `cli_main.hpp` | 1,182 lines | Self-contained | ✅ Made self-contained |
 | `.cpp` compilation units | 5 files | 15+ files | - |
-| Extracted headers in `src/` | **61 files** | - | **+7 new headers** |
+| Extracted headers in `src/` | **64 files** | - | **+10 new headers** |
 | Build configurations | 4 | - | ✅ CLI/GUI separated |
 | Unit tests | 0 | Full coverage | - |
 | Third-party deps in source | 3 (CLI11, boost, wtl) | 0 (use package manager) | - |
 
 ### Recent Accomplishments (2026-01-26)
+
+#### Phase 17: main_dialog.hpp Splitting 🔄 IN PROGRESS
+Extracted **3 new reusable headers** (246 lines total):
+
+| Header | Lines | Description |
+|--------|-------|-------------|
+| `src/gui/listview_columns.hpp` | 106 | `ListViewColumn` enum with helper functions |
+| `src/gui/file_attribute_colors.hpp` | 75 | `FileAttributeColors` struct with `colorForAttributes()` |
+| `src/gui/icon_cache_types.hpp` | 65 | `IconCacheEntry`, `ShellIconCache`, `FileTypeCache` |
+
+**main_dialog.hpp**: 3,640 → 3,541 lines (**99 lines extracted, 2.7% reduction**)
+
+**Analysis**: Most remaining code is tightly coupled to `CMainDlg`:
+- `IconLoaderCallback` (~160 lines) - Uses `this_->cache`, `this_->imgListSmall`
+- `ResultCompareBase` (~105 lines) - Uses `this_->results`, `dlg->SetProgress()`
+- `LockedResults` (~30 lines) - Uses `me->results.item_index()`
+- `RightClick()` (~200 lines) - Uses many CMainDlg members
 
 #### Phase 15: Modern C++ Upgrades ✅ COMPLETE
 Modernized **15 headers** with:
@@ -366,7 +383,8 @@ Mixed naming conventions:
 | 14 | Warning Cleanup | 🟡 Moderate | 4h | ⏳ |
 | 15 | Modern C++ Upgrades | 🟢 Enhancement | 8h | ✅ COMPLETE |
 | 16 | ntfs_index.hpp Splitting | 🟢 Enhancement | 6h | ✅ COMPLETE |
-| **Total** | | | **~55h** | **~25h done** |
+| 17 | main_dialog.hpp Splitting | 🟢 Enhancement | 6h | 🔄 1h done |
+| **Total** | | | **~61h** | **~26h done** |
 
 ---
 
@@ -416,9 +434,10 @@ Mixed naming conventions:
 2. Phase 13: Naming standardization (snake_case everywhere)
 3. Phase 14: Warning cleanup (fix or document suppressions)
 
-### Wave 6: Modern C++ (14 hours) ✅ COMPLETE
+### Wave 6: Modern C++ (20 hours) 🔄 IN PROGRESS
 1. ✅ Phase 15: Modern C++ upgrades (15 headers, ~80 [[nodiscard]], ~110 noexcept)
 2. ✅ Phase 16: ntfs_index.hpp splitting (7 headers extracted, 384 lines, 19.8% reduction)
+3. 🔄 Phase 17: main_dialog.hpp splitting (3 headers extracted, 99 lines, 2.7% reduction)
 
 ---
 
@@ -487,6 +506,46 @@ These types access private members like `names`, `records_lookup`, `nameinfos`, 
 
 ---
 
+## 🔄 IN PROGRESS: Phase 17 - main_dialog.hpp Splitting
+
+### Goal
+Extract reusable types from `main_dialog.hpp` (3,640 lines) into separate headers.
+
+### Completed Extractions
+
+| Header | Lines | Description |
+|--------|-------|-------------|
+| `src/gui/listview_columns.hpp` | 106 | `ListViewColumn` enum with `isAttributeColumn()`, `isNumericColumn()`, `isDateTimeColumn()` helpers |
+| `src/gui/file_attribute_colors.hpp` | 75 | `FileAttributeColors` struct with `colorForAttributes()` method |
+| `src/gui/icon_cache_types.hpp` | 65 | `IconCacheEntry`, `ShellIconCache`, `FileTypeCache` type aliases |
+| **Total** | **246** | **99 lines removed from main_dialog.hpp** |
+
+**main_dialog.hpp**: 3,640 → 3,541 lines (**2.7% reduction**)
+
+### Types That Should Stay (Tightly Coupled)
+
+| Component | Lines | Why It Can't Be Extracted |
+|-----------|-------|---------------------------|
+| `IconLoaderCallback` | ~160 | Uses `this_->cache`, `this_->imgListSmall`, `this_->PostMessage()` |
+| `ResultCompareBase` | ~105 | Uses `this_->results`, `dlg->SetProgress()` |
+| `ResultCompare<>` | ~200 | Uses `base->this_->results` |
+| `LockedResults` | ~30 | Uses `me->results.item_index()` |
+| `RightClick()` | ~200 | Uses many CMainDlg members |
+| `Search()` | ~300 | Uses many CMainDlg members |
+| `OnInitDialog()` | ~350 | Uses many CMainDlg members |
+
+These are all methods or nested classes that access private members of `CMainDlg`. Extracting them would require breaking encapsulation or passing many parameters.
+
+### Alternative Approaches (Future Work)
+
+1. **Split into .cpp files**: Move method implementations to `main_dialog_impl.cpp`
+2. **Use Pimpl idiom**: Hide implementation details behind a pointer
+3. **Extract controller classes**: Create `SearchController`, `IconController` that take `CMainDlg&`
+
+**Status**: 🔄 IN PROGRESS - Extractable types done, remaining code is tightly coupled
+
+---
+
 ## Success Criteria
 
 The codebase is considered "modern" when:
@@ -510,7 +569,7 @@ The codebase is considered "modern" when:
 
 | File | Lines | Status |
 |------|-------|--------|
-| `src/gui/main_dialog.hpp` | 3,909 | 🔴 Needs splitting |
+| `src/gui/main_dialog.hpp` | **3,541** | 🔄 Splitting in progress (-99 lines, 2.7%) |
 | `src/index/ntfs_index.hpp` | **1,556** | ✅ Splitting complete (-384 lines, 19.8%) |
 | `src/cli/cli_main.hpp` | 1,182 | 🟡 Self-contained |
 | `src/search/string_matcher.cpp` | 765 | ✅ OK |
@@ -527,12 +586,12 @@ The codebase is considered "modern" when:
 src/
 ├── cli/      5 files (2,197 lines)
 ├── core/     6 files (ntfs_types, file_attributes_ext, packed_file_size, standard_info, ntfs_record_types, ntfs_key_type)
-├── gui/      8 files (5,383 lines)
+├── gui/     11 files (~5,500 lines) - includes listview_columns, file_attribute_colors, icon_cache_types
 ├── index/    2 files (ntfs_index, mapping_pair_iterator)
 ├── io/       5 files (~1,500 lines)
 ├── search/   4 files (~1,100 lines)
 └── util/    35 files (~3,100 lines) - includes type_traits_ext
-Total: 61 headers, 5 cpp files (+7 new headers from Phase 16)
+Total: 64 headers, 5 cpp files (+10 new headers from Phase 16-17)
 ```
 
 ---
