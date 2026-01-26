@@ -31,33 +31,45 @@ The initial 7-phase refactoring is complete, reducing the monolith from 14,155 t
 | Metric | Value | Target | Change |
 |--------|-------|--------|--------|
 | Monolith (`UltraFastFileSearch.cpp`) | **674 lines** | Orchestration only | **-13,481 lines (95% reduction)** |
-| `main_dialog.hpp` | **3,541 lines** | Split into multiple files | **-99 lines (2.7% reduction)** |
+| `main_dialog.hpp` | **2,132 lines** | Split into multiple files | **-1,508 lines (41.4% reduction)** |
 | `ntfs_index.hpp` | **1,556 lines** | Split into .hpp/.cpp | **-384 lines (19.8% reduction)** |
 | `cli_main.hpp` | 1,182 lines | Self-contained | ✅ Made self-contained |
-| `.cpp` compilation units | 5 files | 15+ files | - |
-| Extracted headers in `src/` | **64 files** | - | **+10 new headers** |
+| `.cpp` compilation units | **6 files** | 15+ files | **+1 (main_dialog.cpp)** |
+| Extracted headers in `src/` | **65 files** | - | **+11 new headers** |
 | Build configurations | 4 | - | ✅ CLI/GUI separated |
 | Unit tests | 0 | Full coverage | - |
 | Third-party deps in source | 3 (CLI11, boost, wtl) | 0 (use package manager) | - |
 
 ### Recent Accomplishments (2026-01-26)
 
-#### Phase 17: main_dialog.hpp Splitting 🔄 IN PROGRESS
-Extracted **3 new reusable headers** (246 lines total):
+#### Phase 17: main_dialog.hpp Splitting ✅ MAJOR PROGRESS
+**Created `main_dialog.cpp` (993 lines)** - Extracted 6 major method implementations:
 
+| Method | Lines | Description |
+|--------|-------|-------------|
+| `OnInitDialog()` | ~200 | Dialog initialization, column setup, image lists |
+| `Search()` | ~190 | Core search implementation with progress dialog |
+| `dump_or_save()` | ~200 | Export results to file/clipboard |
+| `RightClick()` | ~130 | Context menu handling |
+| `GetSubItemText()` | ~80 | Text formatting for list view items |
+| `Refresh()` | ~70 | Refresh volume indices |
+
+**Created `main_dialog_common.hpp` (179 lines)** - Shared dependencies header for both `.hpp` and `.cpp`.
+
+**main_dialog.hpp**: 3,640 → 2,132 lines (**1,508 lines extracted, 41.4% reduction**)
+
+**Previous extractions** (3 reusable headers, 246 lines):
 | Header | Lines | Description |
 |--------|-------|-------------|
 | `src/gui/listview_columns.hpp` | 106 | `ListViewColumn` enum with helper functions |
 | `src/gui/file_attribute_colors.hpp` | 75 | `FileAttributeColors` struct with `colorForAttributes()` |
 | `src/gui/icon_cache_types.hpp` | 65 | `IconCacheEntry`, `ShellIconCache`, `FileTypeCache` |
 
-**main_dialog.hpp**: 3,640 → 3,541 lines (**99 lines extracted, 2.7% reduction**)
-
-**Analysis**: Most remaining code is tightly coupled to `CMainDlg`:
+**Remaining tightly coupled code** (stays in header):
 - `IconLoaderCallback` (~160 lines) - Uses `this_->cache`, `this_->imgListSmall`
 - `ResultCompareBase` (~105 lines) - Uses `this_->results`, `dlg->SetProgress()`
 - `LockedResults` (~30 lines) - Uses `me->results.item_index()`
-- `RightClick()` (~200 lines) - Uses many CMainDlg members
+- Message map macros (WTL requirement)
 
 #### Phase 15: Modern C++ Upgrades ✅ COMPLETE
 Modernized **15 headers** with:
@@ -129,16 +141,16 @@ Large implementation files are still in `.hpp` headers:
 |------|----------|--------|--------|
 | 8.1 Make headers self-contained | High | 2h | ✅ DONE |
 | 8.2 Separate CLI/GUI builds | High | 1h | ✅ DONE |
-| 8.3 Split `main_dialog.hpp` → multiple files | High | 6h | ⏳ |
+| 8.3 Split `main_dialog.hpp` → multiple files | High | 6h | ✅ DONE (41.4% reduction) |
 | 8.4 Split `ntfs_index.hpp` → `.hpp` + `.cpp` | Medium | 4h | ⏳ (complex - many templates) |
 | 8.5 Split `mft_reader.hpp` → `.hpp` + `.cpp` | Medium | 2h | ⏳ |
 | 8.6 Split `io_completion_port.hpp` → `.hpp` + `.cpp` | Low | 2h | ⏳ |
 
-**Estimated Total**: 15 hours (2h complete)
+**Estimated Total**: 15 hours (9h complete)
 
-> **Note (2026-01-26)**: Headers are now self-contained with explicit includes. CLI/GUI builds
-> are separated via conditional compilation (`UFFS_CLI_BUILD`/`UFFS_GUI_BUILD`). The next
-> priority is splitting `main_dialog.hpp` which is the largest file at 3,909 lines.
+> **Note (2026-01-26)**: `main_dialog.hpp` has been split! Created `main_dialog.cpp` (993 lines)
+> with 6 major method implementations extracted. Header reduced from 3,541 to 2,132 lines (41.4%).
+> Also created `main_dialog_common.hpp` for shared dependencies.
 
 ---
 
@@ -383,8 +395,8 @@ Mixed naming conventions:
 | 14 | Warning Cleanup | 🟡 Moderate | 4h | ⏳ |
 | 15 | Modern C++ Upgrades | 🟢 Enhancement | 8h | ✅ COMPLETE |
 | 16 | ntfs_index.hpp Splitting | 🟢 Enhancement | 6h | ✅ COMPLETE |
-| 17 | main_dialog.hpp Splitting | 🟢 Enhancement | 6h | 🔄 1h done |
-| **Total** | | | **~61h** | **~26h done** |
+| 17 | main_dialog.hpp Splitting | 🟢 Enhancement | 6h | ✅ COMPLETE (41.4%) |
+| **Total** | | | **~61h** | **~31h done** |
 
 ---
 
@@ -405,9 +417,9 @@ Mixed naming conventions:
 
 | Task | File | Lines | Effort | Status |
 |------|------|-------|--------|--------|
-| 8.3 | `main_dialog.hpp` → multiple files | 3,909 | 6h | ⏳ NEXT |
+| 8.3 | `main_dialog.hpp` → `.hpp` + `.cpp` | 2,132 | 6h | ✅ DONE (41.4% reduction) |
 | 8.4 | `ntfs_index.hpp` → extract types | 1,556 | 4h | ✅ 19.8% done |
-| 8.5 | `mft_reader.hpp` → .hpp/.cpp | ~500 | 2h | ⏳ |
+| 8.5 | `mft_reader.hpp` → .hpp/.cpp | ~500 | 2h | ⏳ NEXT |
 | 8.6 | `io_completion_port.hpp` → .hpp/.cpp | ~300 | 1h | ⏳ |
 
 **ntfs_index.hpp extraction complete (7 headers, 384 lines extracted):**
@@ -506,43 +518,53 @@ These types access private members like `names`, `records_lookup`, `nameinfos`, 
 
 ---
 
-## 🔄 IN PROGRESS: Phase 17 - main_dialog.hpp Splitting
+## ✅ COMPLETE: Phase 17 - main_dialog.hpp Splitting
 
 ### Goal
-Extract reusable types from `main_dialog.hpp` (3,640 lines) into separate headers.
+Split `main_dialog.hpp` (3,640 lines) into header + implementation files.
 
-### Completed Extractions
+### Completed Work
+
+#### Created `main_dialog.cpp` (993 lines)
+Extracted 6 major method implementations:
+
+| Method | Lines | Description |
+|--------|-------|-------------|
+| `OnInitDialog()` | ~200 | Dialog initialization, column setup, image lists |
+| `Search()` | ~190 | Core search implementation with progress dialog |
+| `dump_or_save()` | ~200 | Export results to file/clipboard |
+| `RightClick()` | ~130 | Context menu handling |
+| `GetSubItemText()` | ~80 | Text formatting for list view items |
+| `Refresh()` | ~70 | Refresh volume indices |
+
+#### Created `main_dialog_common.hpp` (179 lines)
+Shared dependencies header containing all includes needed by both `.hpp` and `.cpp`.
+
+#### Extracted Reusable Headers (246 lines)
 
 | Header | Lines | Description |
 |--------|-------|-------------|
-| `src/gui/listview_columns.hpp` | 106 | `ListViewColumn` enum with `isAttributeColumn()`, `isNumericColumn()`, `isDateTimeColumn()` helpers |
-| `src/gui/file_attribute_colors.hpp` | 75 | `FileAttributeColors` struct with `colorForAttributes()` method |
-| `src/gui/icon_cache_types.hpp` | 65 | `IconCacheEntry`, `ShellIconCache`, `FileTypeCache` type aliases |
-| **Total** | **246** | **99 lines removed from main_dialog.hpp** |
+| `src/gui/listview_columns.hpp` | 106 | `ListViewColumn` enum with helper functions |
+| `src/gui/file_attribute_colors.hpp` | 75 | `FileAttributeColors` struct with `colorForAttributes()` |
+| `src/gui/icon_cache_types.hpp` | 65 | `IconCacheEntry`, `ShellIconCache`, `FileTypeCache` |
 
-**main_dialog.hpp**: 3,640 → 3,541 lines (**2.7% reduction**)
+### Results
 
-### Types That Should Stay (Tightly Coupled)
+**main_dialog.hpp**: 3,640 → 2,132 lines (**1,508 lines extracted, 41.4% reduction**)
 
-| Component | Lines | Why It Can't Be Extracted |
-|-----------|-------|---------------------------|
+### Types That Stay in Header (Tightly Coupled)
+
+| Component | Lines | Why It Stays |
+|-----------|-------|--------------|
 | `IconLoaderCallback` | ~160 | Uses `this_->cache`, `this_->imgListSmall`, `this_->PostMessage()` |
 | `ResultCompareBase` | ~105 | Uses `this_->results`, `dlg->SetProgress()` |
-| `ResultCompare<>` | ~200 | Uses `base->this_->results` |
+| `ResultCompare<>` | ~200 | Template class using `base->this_->results` |
 | `LockedResults` | ~30 | Uses `me->results.item_index()` |
-| `RightClick()` | ~200 | Uses many CMainDlg members |
-| `Search()` | ~300 | Uses many CMainDlg members |
-| `OnInitDialog()` | ~350 | Uses many CMainDlg members |
+| Message map macros | ~50 | WTL requirement - must be in header |
 
-These are all methods or nested classes that access private members of `CMainDlg`. Extracting them would require breaking encapsulation or passing many parameters.
+These are nested classes that access private members of `CMainDlg`. They must stay in the header.
 
-### Alternative Approaches (Future Work)
-
-1. **Split into .cpp files**: Move method implementations to `main_dialog_impl.cpp`
-2. **Use Pimpl idiom**: Hide implementation details behind a pointer
-3. **Extract controller classes**: Create `SearchController`, `IconController` that take `CMainDlg&`
-
-**Status**: 🔄 IN PROGRESS - Extractable types done, remaining code is tightly coupled
+**Status**: ✅ COMPLETE - Major implementations extracted to .cpp file
 
 ---
 
@@ -569,16 +591,16 @@ The codebase is considered "modern" when:
 
 | File | Lines | Status |
 |------|-------|--------|
-| `src/gui/main_dialog.hpp` | **3,541** | 🔄 Splitting in progress (-99 lines, 2.7%) |
+| `src/gui/main_dialog.hpp` | **2,132** | ✅ Split complete (-1,508 lines, 41.4%) |
 | `src/index/ntfs_index.hpp` | **1,556** | ✅ Splitting complete (-384 lines, 19.8%) |
 | `src/cli/cli_main.hpp` | 1,182 | 🟡 Self-contained |
+| `src/gui/main_dialog.cpp` | **993** | ✅ NEW - Extracted implementations |
 | `src/search/string_matcher.cpp` | 765 | ✅ OK |
 | `src/cli/mft_diagnostics.cpp` | 714 | ✅ OK |
 | `UltraFastFileSearch.cpp` | 674 | ✅ Orchestration only |
 | `src/io/mft_reader.hpp` | ~500 | 🟡 Consider splitting |
 | `src/gui/dialog_template.hpp` | 496 | ✅ OK |
 | `src/gui/progress_dialog.hpp` | 345 | ✅ OK |
-| `src/gui/listview_adapter.cpp` | 324 | ✅ OK |
 
 ### Directory Structure
 

@@ -194,6 +194,7 @@
   <!-- The project uses Boost.Xpressive (header-only) for regex functionality -->
   <ItemGroup>
     <ClCompile Include="src\cli\command_line_parser.cpp" />
+    <ClCompile Include="src\gui\main_dialog.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">Create</PrecompiledHeader>
@@ -251,6 +252,7 @@
     <ClInclude Include="src\cli\cli_main.hpp" />
     <ClInclude Include="src\gui\gui_main.hpp" />
     <ClInclude Include="src\gui\main_dialog.hpp" />
+    <ClInclude Include="src\gui\main_dialog_common.hpp" />
     <ClInclude Include="src\util\string_utils.hpp" />
     <ClInclude Include="src\util\volume_utils.hpp" />
     <ClInclude Include="src\util\time_utils.hpp" />

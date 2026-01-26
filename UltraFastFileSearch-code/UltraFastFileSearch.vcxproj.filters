@@ -12,6 +12,9 @@
     <ClCompile Include="src\cli\mft_diagnostics.cpp">
       <Filter>Include Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gui\main_dialog.cpp">
+      <Filter>Include Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Clang-Compile.bat" />

@@ -1,26 +1,49 @@
 # UFFS-MFT Field Enhancements
 
 > **Scope**: `uffs_mft` crate - MftIndex structure, CSV/Parquet exports
-> **Status**: Planning
+> **Status**: In Progress (P1+P2 Complete, P3 Pending)
 > **Created**: 2026-01-26
+> **Last Updated**: 2026-01-26
 
 ## Overview
 
-This document tracks enhancements to the raw MFT fields exported by `uffs_mft`. These fields are stored in the `MftIndex` structure and exported via CSV/Parquet formats.
+This document tracks enhancements to the raw MFT (Master File Table) fields exported by `uffs_mft`. The MFT is the heart of NTFS - every file and directory on an NTFS volume has at least one entry (record) in the MFT. Each record is typically 1024 bytes and contains:
 
-**Design Principle**: `uffs_mft` is a forensic/power-user tool that should be truthful to the raw MFT structure. We export what's actually in the MFT record, plus essential derived fields (path).
+- **File Record Header**: Magic signature, LSN, sequence number, flags
+- **$STANDARD_INFORMATION**: Timestamps, file attributes, security ID, USN
+- **$FILE_NAME**: Name, parent reference, timestamps (can have multiple for DOS/Win32 names)
+- **$DATA**: File content (resident if small, or extent pointers if large)
+- **$REPARSE_POINT**: Symlink/junction target information (if applicable)
+- **Other attributes**: $ATTRIBUTE_LIST, $SECURITY_DESCRIPTOR, $INDEX_ROOT, etc.
+
+### What is `uffs_mft`?
+
+`uffs_mft` is a power-user/forensic tool that reads raw MFT data and exports it to structured formats (CSV, Parquet). Unlike the main `uffs` CLI which focuses on fast file search, `uffs_mft` exposes the raw NTFS metadata for:
+
+- **Forensic analysis**: Timeline reconstruction, deleted file recovery, tampering detection
+- **System administration**: Permission auditing, quota analysis, storage optimization
+- **Development**: Understanding NTFS internals, debugging file system issues
+
+### Design Principles
+
+1. **Truthful to MFT**: Export what's actually in the MFT record, not interpreted values
+2. **Cheap by default**: Include fields with negligible CPU/memory cost always
+3. **Expensive opt-in**: Fields with significant cost (deleted records, extensions) behind `--forensic` flag
+4. **Forensic-grade**: Preserve all information needed for incident response
 
 ---
 
-## Current Export (31 columns)
+## Current Export (37 columns - Index v6)
 
 | Category | Fields |
 |----------|--------|
-| **Identity** | frs, sequence_number, parent_frs, name, namespace, path |
+| **Identity** | frs, sequence_number, lsn, parent_frs, name, namespace, path |
 | **Size** | size, allocated_size |
 | **Timestamps ($SI)** | si_created, si_modified, si_accessed, si_mft_changed |
+| **Forensic (NTFS 3.0+)** | usn, security_id, owner_id |
 | **Timestamps ($FN)** | fn_created, fn_modified, fn_accessed, fn_mft_changed |
 | **Flags** | is_directory, is_readonly, is_hidden, is_system, is_archive, is_compressed, is_encrypted, is_sparse, is_reparse, is_offline, is_not_indexed, is_temporary, flags |
+| **Reparse/Resident** | reparse_tag, is_resident |
 | **Counts** | link_count, stream_count |
 
 ---
@@ -42,10 +65,10 @@ This document tracks enhancements to the raw MFT fields exported by `uffs_mft`. 
 | **is_extension** | 1 byte (packed) | +1 MB | +10 MB |
 | **base_frs** | 8 bytes | +8 MB | +80 MB |
 
-**Current FileRecord size**: 176 bytes
-**After P1**: 200 bytes (+24 bytes, +14%)
-**After P1+P2**: 205 bytes (+29 bytes, +16%)
-**After All**: 222 bytes (+46 bytes, +26%)
+**FileRecord size before P1**: 192 bytes
+**After P1**: 200 bytes (+8 bytes for lsn)
+**Current FileRecord size (P2 complete)**: 216 bytes (+16 bytes for reparse_tag + padding)
+**After All (P3)**: ~232 bytes (+40 bytes, +21%)
 
 ### Speed Impact
 
@@ -173,17 +196,17 @@ Common reparse tag values for reference:
 
 | Field | Status | PR/Commit | Notes |
 |-------|--------|-----------|-------|
-| usn | ⬜ Not Started | | |
-| security_id | ⬜ Not Started | | |
-| owner_id | ⬜ Not Started | | |
-| lsn | ⬜ Not Started | | |
+| usn | ✅ Complete | 2026-01-26 | NTFS 3.0+ `$STANDARD_INFORMATION` offset 0x40 |
+| security_id | ✅ Complete | 2026-01-26 | NTFS 3.0+ `$STANDARD_INFORMATION` offset 0x34 |
+| owner_id | ✅ Complete | 2026-01-26 | NTFS 3.0+ `$STANDARD_INFORMATION` offset 0x30 |
+| lsn | ✅ Complete | 2026-01-26 | MFT record header offset 0x08 |
 
 ### Priority 2: Medium Effort
 
 | Field | Status | PR/Commit | Notes |
 |-------|--------|-----------|-------|
-| reparse_tag | ⬜ Not Started | | |
-| is_resident | ⬜ Not Started | | |
+| reparse_tag | ✅ Complete | 2026-01-26 | `$REPARSE_POINT` attribute (0xC0), first 4 bytes |
+| is_resident | ✅ Complete | 2026-01-26 | `$DATA` attribute header `is_non_resident` field |
 
 ### Priority 3: Architecture Changes
 
@@ -213,4 +236,6 @@ Common reparse tag values for reference:
 | Date | Version | Changes |
 |------|---------|---------|
 | 2026-01-26 | 1.0 | Initial document |
+| 2026-01-26 | 1.1 | P1 complete: lsn, usn, security_id, owner_id (Index v5, 35 columns) |
+| 2026-01-26 | 1.2 | P2 complete: reparse_tag, is_resident (Index v6, 37 columns) |
 
