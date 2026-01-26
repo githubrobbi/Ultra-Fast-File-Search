@@ -267,6 +267,9 @@
     <ClInclude Include="src\util\nt_user_call_hook.hpp" />
     <ClInclude Include="src\search\string_matcher.hpp" />
     <ClInclude Include="src\cli\command_line_parser.hpp" />
+    <ClInclude Include="src\util\pe_utils.hpp" />
+    <ClInclude Include="src\util\x64_launcher.hpp" />
+    <ClInclude Include="src\util\version_info.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

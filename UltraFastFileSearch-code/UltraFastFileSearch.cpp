@@ -1645,21 +1645,10 @@ void autosize_columns(ListViewAdapter list)
 extern "C"
 IMAGE_DOS_HEADER __ImageBase;
 
-unsigned short get_subsystem(IMAGE_DOS_HEADER
-	const* const image_base)
-{
-	return reinterpret_cast<IMAGE_NT_HEADERS
-		const*> (reinterpret_cast<unsigned char
-			const*> (image_base) + image_base->e_lfanew)->OptionalHeader.Subsystem;
-}
-
-unsigned long long get_version(IMAGE_DOS_HEADER
-	const* const image_base)
-{
-	return reinterpret_cast<IMAGE_NT_HEADERS
-		const*> (reinterpret_cast<unsigned char
-			const*> (image_base) + image_base->e_lfanew)->FileHeader.TimeDateStamp * 10000000ULL + 0x019db1ded53e8000ULL;
-}
+// PE utilities extracted to src/util/pe_utils.hpp
+#include "src/util/pe_utils.hpp"
+using uffs::get_subsystem;
+using uffs::get_version;
 
 struct HookedNtUserProps
 {
@@ -1899,38 +1888,20 @@ std::pair<int, std::tstring > extract_and_run_if_needed(HINSTANCE hInstance, int
 // UTF-8/UTF-16 converter extracted to src/util/utf_convert.hpp
 // Use: converter.to_bytes(wide) or converter.from_bytes(narrow)
 
-std::string PACKAGE_VERSION = "0.9.6";
+// Version info extracted to src/util/version_info.hpp
+#include "src/util/version_info.hpp"
+std::string PACKAGE_VERSION = uffs::get_package_version();
 
 // PrintVersion for CLI11 (called from CommandLineParser)
 void PrintVersion()
 {
-	std::cout << "Ultra Fast File Search \t https://github.com/githubrobbi/Ultra-Fast-File-Search\n\nbased on SwiftSearch \t https://sourceforge.net/projects/swiftsearch/\n\n";
-	std::cout << "\tUFFS" << " version:\t" << PACKAGE_VERSION << '\n';
-	std::cout << "\tBuild for:\t" << "x86_64-pc-windows-msvc" << '\n';
-	std::cout << "\n";
-	std::cout << "\tOptimized build";
-	std::cout << "\n\n";
+	uffs::print_version();
 }
 
 // String utilities (drivenames, replaceAll, removeSpaces) moved to src/util/string_utils.cpp
 
-//bool tvreplace(std::tvstring& str, const std::tvstring& from, const std::tvstring& to) {
-//	size_t start_pos = str.find(from);
-//	if (start_pos == std::tvstring::npos)
-//		return false;
-//	str.replace(start_pos, from.length(), to);
-//	return true;
-//}
-
-std::wstring s2ws(const std::string & s)
-{
-	int len;
-	int slength = (int)s.length() + 1;
-	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
-	std::wstring r(len, L'\0');
-	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, &r[0], len);
-	return r;
-}
+// s2ws extracted to src/util/version_info.hpp
+using uffs::s2ws;
 
 // GetLastErrorAsString() extracted to src/util/error_utils.hpp
 
