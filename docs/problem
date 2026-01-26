@@ -6,12 +6,12 @@ File
 Line
 Suppression State
 Details
-Error
-C3668
-'HookedNtUserProps::operator ()': method with override specifier 'override' did not override any base class methods
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
-306
+Message
+VCR003
+Function 'isdevnull' can be made static
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+584
 
 
 Error (active)
@@ -20,6 +20,22 @@ more than one instance of overloaded function "safe_stprintf" matches the argume
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 442
+
+
+Warning
+VCR001
+Function definition for 'HOOK_CONCAT' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+805
+
+
+Warning
+VCR001
+Function definition for 'HOOK_CONCAT' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+819
 
 
 Message
@@ -56,14 +72,6 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFi
 
 Message
 VCR003
-Function 'isdevnull' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-584
-
-
-Message
-VCR003
 Function 'remove_path_stream_and_trailing_sep' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
@@ -92,78 +100,6 @@ Function 'get_cluster_size' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 709
-
-
-Error
-C2065
-'Hook_NtUserGetProp': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
-304
-
-
-Error
-C2923
-'hook_detail::thread_hook_swap': 'Hook_NtUserGetProp' is not a valid template type argument for parameter 'H'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
-304
-
-
-Error
-C2955
-'hook_detail::thread_hook_swap': use of class template requires template argument list
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
-304
-
-
-Error
-C2065
-'Hook_NtUserSetProp': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
-320
-
-
-Error
-C2923
-'hook_detail::thread_hook_swap': 'Hook_NtUserSetProp' is not a valid template type argument for parameter 'H'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
-320
-
-
-Error
-C2955
-'hook_detail::thread_hook_swap': use of class template requires template argument list
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
-320
-
-
-Error
-C3668
-'HookedNtUserProps::operator ()': method with override specifier 'override' did not override any base class methods
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
-322
-
-
-Error
-C2653
-'hook_base_type': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
-312
-
-
-Error
-C2653
-'hook_base_type': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
-326
 
 
 Warning

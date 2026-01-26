@@ -54,7 +54,11 @@ __if_exists(_Module)
 {
 	RefCountedCString appname;
 	(void)appname.LoadString(IDS_APPNAME);
-	HANDLE hEvent = CreateEvent(nullptr, FALSE, FALSE, _T("Local\\") + appname + _T(".") + get_app_guid());
+	std::tstring eventName = _T("Local\\");
+	eventName += static_cast<LPCTSTR>(appname);
+	eventName += _T(".");
+	eventName += get_app_guid();
+	HANDLE hEvent = CreateEvent(nullptr, FALSE, FALSE, eventName.c_str());
 	if (hEvent != nullptr && GetLastError() != ERROR_ALREADY_EXISTS)
 	{
 		WTL::CMessageLoop msgLoop;
