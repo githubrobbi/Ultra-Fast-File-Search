@@ -89,3 +89,6 @@ public:
 
 } // namespace uffs
 
+// Expose at global scope for backward compatibility
+using uffs::Handle;
+

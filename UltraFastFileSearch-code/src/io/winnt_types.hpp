@@ -134,3 +134,6 @@ UFFS_WINNT_FUNC(RtlTimeToTimeFields,
 } // namespace winnt
 } // namespace uffs
 
+// Expose winnt namespace at global scope for backward compatibility
+namespace winnt = uffs::winnt;
+

@@ -136,3 +136,6 @@ inline void swap(IoPriority& a, IoPriority& b)
 
 } // namespace uffs
 
+// Expose at global scope for backward compatibility
+using uffs::IoPriority;
+
