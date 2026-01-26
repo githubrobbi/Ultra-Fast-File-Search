@@ -32,10 +32,10 @@ The initial 7-phase refactoring is complete, reducing the monolith from 14,155 t
 |--------|-------|--------|--------|
 | Monolith (`UltraFastFileSearch.cpp`) | **674 lines** | Orchestration only | **-13,481 lines (95% reduction)** |
 | `main_dialog.hpp` | 3,909 lines | Split into multiple files | - |
-| `ntfs_index.hpp` | **1,679 lines** | Split into .hpp/.cpp | **-261 lines (13.5% reduction)** |
+| `ntfs_index.hpp` | **1,556 lines** | Split into .hpp/.cpp | **-384 lines (19.8% reduction)** |
 | `cli_main.hpp` | 1,182 lines | Self-contained | ✅ Made self-contained |
 | `.cpp` compilation units | 5 files | 15+ files | - |
-| Extracted headers in `src/` | **59 files** | - | **+5 new headers** |
+| Extracted headers in `src/` | **61 files** | - | **+7 new headers** |
 | Build configurations | 4 | - | ✅ CLI/GUI separated |
 | Unit tests | 0 | Full coverage | - |
 | Third-party deps in source | 3 (CLI11, boost, wtl) | 0 (use package manager) | - |
@@ -54,8 +54,8 @@ Modernized **15 headers** with:
 - **io/**: `io_completion_port.hpp`, `io_priority.hpp`, `overlapped.hpp`, `mft_reader.hpp`
 - **gui/**: `main_dialog.hpp`
 
-#### Phase 16: ntfs_index.hpp Splitting 🔄 IN PROGRESS
-Extracted **5 new reusable headers** (367 lines total):
+#### Phase 16: ntfs_index.hpp Splitting ✅ COMPLETE
+Extracted **7 new reusable headers** (567 lines total):
 
 | Header | Lines | Description |
 |--------|-------|-------------|
@@ -64,8 +64,10 @@ Extracted **5 new reusable headers** (367 lines total):
 | `src/core/file_attributes_ext.hpp` | 79 | Extended FILE_ATTRIBUTE_* constants |
 | `src/core/packed_file_size.hpp` | 60 | `file_size_type` (48-bit), `SizeInfo` |
 | `src/core/standard_info.hpp` | 77 | `StandardInfo` bitfield struct |
+| `src/core/ntfs_record_types.hpp` | 97 | `small_t`, `NameInfo`, `LinkInfo`, `StreamInfo`, `ChildInfo` |
+| `src/core/ntfs_key_type.hpp` | 103 | `key_type_internal` packed bitfield key |
 
-**ntfs_index.hpp**: 1,940 → 1,679 lines (**261 lines extracted, 13.5% reduction**)
+**ntfs_index.hpp**: 1,940 → 1,556 lines (**384 lines extracted, 19.8% reduction**)
 
 #### Earlier Accomplishments
 - ✅ **Build restructure**: CLI/GUI entry points now conditionally compiled
