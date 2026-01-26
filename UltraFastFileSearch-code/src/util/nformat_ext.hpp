@@ -12,7 +12,7 @@
 #ifndef UFFS_NFORMAT_EXT_HPP
 #define UFFS_NFORMAT_EXT_HPP
 
-#include "../../nformat.hpp"     // For basic_iterator_ios
+#include "nformat.hpp"           // For basic_iterator_ios
 #include "core_types.hpp"        // For std::tstring, std::tvstring
 
 namespace uffs {

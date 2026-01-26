@@ -15,7 +15,7 @@
 
 #include "../io/overlapped.hpp"      // For value_initialized
 #include "../util/core_types.hpp"    // For std::tstring, std::tvstring
-#include "../../string_matcher.hpp"  // For string_matcher
+#include "string_matcher.hpp"        // For string_matcher
 
 namespace uffs {
 

@@ -16,7 +16,7 @@
 #include "../io/overlapped.hpp"
 #include "../core/ntfs_types.hpp"
 #include "../util/buffer.hpp"
-#include "../../path.hpp"
+#include "../util/path.hpp"
 
 // propagate_const template for const propagation through pointers
 template < class From, class To > struct propagate_const

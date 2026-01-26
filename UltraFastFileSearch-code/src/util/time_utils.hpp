@@ -12,7 +12,7 @@
 #include <Windows.h>
 #include "core_types.hpp"       // For std::tvstring
 #include "../io/winnt_types.hpp" // For winnt::TIME_FIELDS, winnt::RtlTimeToTimeFields
-#include "../../nformat.hpp"    // For basic_conv
+#include "nformat.hpp"          // For basic_conv
 
 namespace uffs {
 

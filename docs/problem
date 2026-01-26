@@ -8,18 +8,42 @@ Suppression State
 Details
 Message
 VCR003
-Function 'LCIDToLocaleName_XPCompatible' can be made static
+Function 'get_subsystem' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-829
+1648
 
 
 Error (active)
 E1696
-cannot open source file "modified_dialog_impl.hpp"
+cannot open source file "../../path.hpp"
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
-9
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+19
+
+
+Error (active)
+E1696
+cannot open source file "../../string_matcher.hpp"
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\match_operation.hpp
+18
+
+
+Error (active)
+E1696
+cannot open source file "../../nformat.hpp"
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nformat_ext.hpp
+15
+
+
+Error (active)
+E1696
+cannot open source file "../../nformat.hpp"
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\time_utils.hpp
+15
 
 
 Warning
@@ -27,7 +51,7 @@ VCR001
 Function definition for 'operator=' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-892
+891
 
 
 Warning
@@ -35,7 +59,7 @@ VCR001
 Function definition for 'HOOK_CONCAT' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-972
+971
 
 
 Warning
@@ -43,7 +67,7 @@ VCR001
 Function definition for 'HOOK_CONCAT' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-977
+976
 
 
 Warning
@@ -51,7 +75,7 @@ VCR001
 Function definition for 'operator<<' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1052
+1051
 
 
 Warning
@@ -59,7 +83,7 @@ VCR001
 Function definition for 'operator=' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1063
+1062
 
 
 Warning
@@ -67,7 +91,7 @@ VCR001
 Function definition for 'operator=' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1165
+1164
 
 
 Warning
@@ -75,7 +99,7 @@ VCR001
 Function definition for 'ClientDC' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1213
+1212
 
 
 Warning
@@ -83,7 +107,7 @@ VCR001
 Function definition for 'operator=' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1215
+1214
 
 
 Warning
@@ -91,7 +115,7 @@ VCR001
 Function definition for 'HOOK_CONCAT' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1831
+1686
 
 
 Warning
@@ -99,7 +123,7 @@ VCR001
 Function definition for 'HOOK_CONCAT' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1848
+1703
 
 
 Message
@@ -107,7 +131,7 @@ VCR003
 Function 'ILIsEmpty' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-156
+155
 
 
 Message
@@ -115,7 +139,7 @@ VCR003
 Function 'ILIsEmpty' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-170
+169
 
 
 Message
@@ -123,7 +147,7 @@ VCR003
 Function 'global_exception_handler' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-445
+444
 
 
 Message
@@ -131,7 +155,7 @@ VCR003
 Function 'is_ascii' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-476
+475
 
 
 Message
@@ -139,7 +163,7 @@ VCR003
 Function 'DisplayError' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-491
+490
 
 
 Message
@@ -147,7 +171,7 @@ VCR003
 Function 'isdevnull' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-650
+649
 
 
 Message
@@ -155,15 +179,7 @@ VCR003
 Function 'isdevnull' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-657
-
-
-Message
-VCR003
-Function 'remove_path_stream_and_trailing_sep' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-672
+656
 
 
 Message
@@ -171,7 +187,7 @@ VCR003
 Function 'NormalizePath' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-723
+722
 
 
 Message
@@ -179,7 +195,7 @@ VCR003
 Function 'GetDisplayName' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-751
+750
 
 
 Message
@@ -187,7 +203,15 @@ VCR003
 Function 'LCIDToLocaleName_XPCompatible' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-767
+766
+
+
+Message
+VCR003
+Function 'LCIDToLocaleName_XPCompatible' can be made static
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+828
 
 
 Message
@@ -195,7 +219,7 @@ VCR003
 Function 'get_ui_locale_name' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-840
+839
 
 
 Message
@@ -203,7 +227,7 @@ VCR003
 Function 'get_cluster_size' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-855
+854
 
 
 Message
@@ -211,15 +235,7 @@ VCR003
 Function 'autosize_columns' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1411
-
-
-Message
-VCR003
-Function 'get_subsystem' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1793
+1410
 
 
 Message
@@ -227,7 +243,7 @@ VCR003
 Function 'get_version' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1801
+1656
 
 
 Message
@@ -235,7 +251,7 @@ VCR003
 Function 'get_app_guid' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1895
+1750
 
 
 Message
@@ -243,7 +259,7 @@ VCR003
 Function 'extract_and_run_if_needed' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1902
+1757
 
 
 Message
@@ -251,94 +267,22 @@ VCR003
 Function 's2ws' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2070
+1925
 
 
 Error
-C2143
-syntax error: missing ';' before '<'
+C1083
+Cannot open include file: 'CLI11.hpp': No such file or directory
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
-52
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\command_line_parser.hpp
+2
 
 
 Error
-C4430
-missing type specifier - int assumed. Note: C++ does not support default-int
+C1083
+Cannot open include file: '../../nformat.hpp': No such file or directory
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
-52
-
-
-Error
-C2238
-unexpected token(s) preceding ';'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
-52
-
-
-Error
-C2065
-'setTopmostWindow': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
-58
-
-
-Error
-C2039
-'setTopmostWindow': is not a member of 'CProgressDialog'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
-63
-
-
-Error
-C2143
-syntax error: missing ';' before '<'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-288
-
-
-Error
-C4430
-missing type specifier - int assumed. Note: C++ does not support default-int
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-288
-
-
-Error
-C2238
-unexpected token(s) preceding ';'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-288
-
-
-Error
-C2065
-'setTopmostWindow': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-461
-
-
-Error
-C2039
-'setTopmostWindow': is not a member of 'CMainDlg'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-725
-
-
-Warning
-C4310
-cast truncates constant value
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-3272
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\time_utils.hpp
+15
 
 
