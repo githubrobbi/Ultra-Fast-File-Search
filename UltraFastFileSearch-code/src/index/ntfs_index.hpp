@@ -17,6 +17,7 @@
 #include "../core/ntfs_types.hpp"
 #include "../util/buffer.hpp"
 #include "../util/path.hpp"
+#include "../util/append_directional.hpp"
 
 // propagate_const template for const propagation through pointers
 template < class From, class To > struct propagate_const
