@@ -313,10 +313,11 @@ Mixed naming conventions:
 1. Phase 8: Split headers into .hpp/.cpp
 2. Phase 9: Complete monolith decomposition
    - ✅ Step 1: Extract string utilities (Task 9.5) - `src/util/string_utils.hpp/.cpp`
-   - ❌ Step 2: Convert `cli_main.hpp` → `cli_main.cpp` (Task 8.5) - **BLOCKED** by namespace conflicts
-   - ❌ Step 3: Convert `gui_main.hpp` → `gui_main.cpp` (Task 8.6) - **BLOCKED** by namespace conflicts
-   - 🔜 Step 4: Consolidate NTFS types (Task 8.1) - Move monolith's `namespace ntfs` to `ntfs_types.hpp`
-   - ⏳ Step 5: Extract CProgressDialog (Task 9.1)
+   - ✅ Step 4: Consolidate NTFS types (Task 8.1) - Moved ~375 lines to `ntfs_types.hpp`
+   - ✅ Step 5: Decouple CLI from GUI - Extracted `SystemTimeToString` to `time_utils.hpp`
+   - 🔄 Step 2: Convert `cli_main.hpp` → `cli_main.cpp` (Task 8.5) - **PARTIAL**: CLI decoupled from GUI, full separation deferred
+   - ⏳ Step 3: Convert `gui_main.hpp` → `gui_main.cpp` (Task 8.6) - Pending
+   - ⏳ Step 6: Extract CProgressDialog (Task 9.1)
 
 ### Wave 3: Infrastructure (16 hours)
 1. Phase 10: Dependency management
