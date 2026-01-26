@@ -2,6 +2,8 @@
 
 // Extracted components
 #include "search_pattern_edit.hpp"
+#include "listview_columns.hpp"
+#include "file_attribute_colors.hpp"
 #include "../util/time_utils.hpp"
 
 class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResize < CMainDlg>, public CInvokeImpl < CMainDlg>, private WTL::CMessageFilter
@@ -11,36 +13,7 @@ class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResi
 		IDC_STATUS_BAR = 1100 + 0
 	};
 
-	//enum { 	COLUMN_INDEX_NAME, COLUMN_INDEX_PATH, COLUMN_INDEX_TYPE, COLUMN_INDEX_SIZE, COLUMN_INDEX_SIZE_ON_DISK, COLUMN_INDEX_CREATION_TIME, COLUMN_INDEX_MODIFICATION_TIME, COLUMN_INDEX_ACCESS_TIME, COLUMN_INDEX_DESCENDENTS, COLUMN_INDEX_DESCENDENTS2};
-
-	enum
-	{
-		COLUMN_INDEX_NAME,
-		COLUMN_INDEX_PATH,
-		COLUMN_INDEX_TYPE,
-		COLUMN_INDEX_SIZE,
-		COLUMN_INDEX_SIZE_ON_DISK,
-		COLUMN_INDEX_CREATION_TIME,
-		COLUMN_INDEX_MODIFICATION_TIME,
-		COLUMN_INDEX_ACCESS_TIME,
-		COLUMN_INDEX_DESCENDENTS,
-		COLUMN_INDEX_is_readonly,
-		COLUMN_INDEX_is_archive,
-		COLUMN_INDEX_is_system,
-		COLUMN_INDEX_is_hidden,
-		COLUMN_INDEX_is_offline,
-		COLUMN_INDEX_is_notcontentidx,
-		COLUMN_INDEX_is_noscrubdata,
-		COLUMN_INDEX_is_integretystream,
-		COLUMN_INDEX_is_pinned,
-		COLUMN_INDEX_is_unpinned,
-		COLUMN_INDEX_is_directory,
-		COLUMN_INDEX_is_compressed,
-		COLUMN_INDEX_is_encrypted,
-		COLUMN_INDEX_is_sparsefile,
-		COLUMN_INDEX_is_reparsepoint,
-		COLUMN_INDEX_ATTRIBUTE
-	};
+	// Column indices are now in listview_columns.hpp (uffs::ListViewColumn enum)
 
 #ifndef LVN_INCREMENTALSEARCH
 		enum
@@ -2982,24 +2955,9 @@ public:
 
 	LRESULT OnFilesListCustomDraw(LPNMHDR pnmh)
 	{
-		//deletedColor(RGB(0xC0, 0xC0, 0xC0)), encryptedColor(RGB(0, 0xFF, 0)), compressedColor(RGB(0, 0, 0xFF)), directoryColor(RGB(0xFF, 0x99, 0x33)), hiddenColor(RGB(0xFF, 0x99, 0x99)), systemColor(RGB(0xFF, 0, 0))
+		// File attribute colors are now in file_attribute_colors.hpp
+		static constexpr auto colors = uffs::kDefaultFileColors;
 		LRESULT result;
-		COLORREF
-			const deletedColor    = RGB(0xC0, 0xC0, 0xC0);
-		COLORREF
-			const encryptedColor  = RGB(0   , 0xFF, 0   );
-		COLORREF
-			const compressedColor = RGB(0   , 0   , 0xFF);
-		COLORREF
-			const directoryColor  = RGB(0xFF, 0x99, 0x33);
-		COLORREF
-			const hiddenColor     = RGB(0xFF, 0x99, 0x99);
-		COLORREF
-			const systemColor     = RGB(0xFF, 0   , 0   );
-		BYTE
-			const sparseGreenBlue = static_cast<BYTE>((static_cast<unsigned int>(GetGValue(compressedColor)) + static_cast<unsigned int>(GetBValue(compressedColor))) / 2);
-		COLORREF
-			const sparseColor     = RGB(GetRValue(compressedColor), sparseGreenBlue, sparseGreenBlue);
 		LPNMLVCUSTOMDRAW
 			const pLV             = (LPNMLVCUSTOMDRAW)pnmh;
 		if (pLV->nmcd.dwItemSpec < this->results.size())
@@ -3030,33 +2988,11 @@ public:
 				}
 				else
 				{
-					if ((attrs & 0x40000000)                      != 0)
+					// Use the centralized color lookup from file_attribute_colors.hpp
+					COLORREF attrColor = colors.colorForAttributes(attrs);
+					if (attrColor != 0)
 					{
-						pLV->clrText = deletedColor;
-					}
-					else if ((attrs & FILE_ATTRIBUTE_SYSTEM)      != 0)
-					{
-						pLV->clrText = systemColor;
-					}
-					else if ((attrs & FILE_ATTRIBUTE_HIDDEN)      != 0)
-					{
-						pLV->clrText = hiddenColor;
-					}
-					else if ((attrs & FILE_ATTRIBUTE_DIRECTORY)   != 0)
-					{
-						pLV->clrText = directoryColor;
-					}
-					else if ((attrs & FILE_ATTRIBUTE_COMPRESSED)  != 0)
-					{
-						pLV->clrText = compressedColor;
-					}
-					else if ((attrs & FILE_ATTRIBUTE_ENCRYPTED)   != 0)
-					{
-						pLV->clrText = encryptedColor;
-					}
-					else if ((attrs & FILE_ATTRIBUTE_SPARSE_FILE) != 0)
-					{
-						pLV->clrText = sparseColor;
+						pLV->clrText = attrColor;
 					}
 
 					result = CDRF_DODEFAULT;
@@ -3107,33 +3043,11 @@ public:
 							CHARFORMAT format = { sizeof(format), CFM_COLOR, 0, 0, 0, 0
 						};
 
-						if ((attrs & 0x40000000)                      != 0)
+						// Use centralized color lookup from file_attribute_colors.hpp
+						COLORREF attrColor = colors.colorForAttributes(attrs);
+						if (attrColor != 0)
 						{
-							format.crTextColor = deletedColor;
-						}
-						else if ((attrs & FILE_ATTRIBUTE_SYSTEM)      != 0)
-						{
-							format.crTextColor = systemColor;
-						}
-						else if ((attrs & FILE_ATTRIBUTE_HIDDEN)      != 0)
-						{
-							format.crTextColor = hiddenColor;
-						}
-						else if ((attrs & FILE_ATTRIBUTE_DIRECTORY)   != 0)
-						{
-							format.crTextColor = directoryColor;
-						}
-						else if ((attrs & FILE_ATTRIBUTE_COMPRESSED)  != 0)
-						{
-							format.crTextColor = compressedColor;
-						}
-						else if ((attrs & FILE_ATTRIBUTE_ENCRYPTED)   != 0)
-						{
-							format.crTextColor = encryptedColor;
-						}
-						else if ((attrs & FILE_ATTRIBUTE_SPARSE_FILE) != 0)
-						{
-							format.crTextColor = sparseColor;
+							format.crTextColor = attrColor;
 						}
 						else
 						{
