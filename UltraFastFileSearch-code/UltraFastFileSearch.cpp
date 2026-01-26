@@ -126,14 +126,14 @@
 // Project Headers
 // ============================================================================
 #include "resource.h"
-#include "BackgroundWorker.hpp"
+#include "src/util/background_worker.hpp"
 #include "src/gui/modified_dialog_impl.hpp"
-#include "CommandLineParser.hpp"
-#include "nformat.hpp"
-#include "NtUserCallHook.hpp"
-#include "path.hpp"
-#include "ShellItemIDList.hpp"
-#include "string_matcher.hpp"
+#include "src/cli/command_line_parser.hpp"
+#include "src/util/nformat.hpp"
+#include "src/util/nt_user_call_hook.hpp"
+#include "src/util/path.hpp"
+#include "src/util/shell_item_id_list.hpp"
+#include "src/search/string_matcher.hpp"
 #include "src/util/handle.hpp"
 // Note: intrusive_ptr.hpp not included - conflicts with existing RefCounted ADL functions
 #include "src/io/winnt_types.hpp"

@@ -190,14 +190,14 @@
   <!-- Boost.Regex source files removed - Boost 1.90.0 made Regex header-only -->
   <!-- The project uses Boost.Xpressive (header-only) for regex functionality -->
   <ItemGroup>
-    <ClCompile Include="CommandLineParser.cpp" />
+    <ClCompile Include="src\cli\command_line_parser.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='COM|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="string_matcher.cpp" />
+    <ClCompile Include="src\search\string_matcher.cpp" />
     <ClCompile Include="src\cli\mft_diagnostics.cpp" />
     <ClCompile Include="src\util\string_utils.cpp" />
     <ClCompile Include="UltraFastFileSearch.cpp" />
@@ -260,6 +260,13 @@
     <ClInclude Include="src\gui\progress_dialog.hpp" />
     <ClInclude Include="src\gui\modified_dialog_impl.hpp" />
     <ClInclude Include="src\gui\dialog_template.hpp" />
+    <ClInclude Include="src\util\background_worker.hpp" />
+    <ClInclude Include="src\util\shell_item_id_list.hpp" />
+    <ClInclude Include="src\util\nformat.hpp" />
+    <ClInclude Include="src\util\path.hpp" />
+    <ClInclude Include="src\util\nt_user_call_hook.hpp" />
+    <ClInclude Include="src\search\string_matcher.hpp" />
+    <ClInclude Include="src\cli\command_line_parser.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

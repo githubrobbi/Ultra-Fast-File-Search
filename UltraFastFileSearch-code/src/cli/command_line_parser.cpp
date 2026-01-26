@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "CommandLineParser.hpp"
+#include "../../stdafx.h"
+#include "command_line_parser.hpp"
 #include <algorithm>
 #include <map>
 
