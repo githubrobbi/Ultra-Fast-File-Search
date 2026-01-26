@@ -58,16 +58,22 @@ Almost all code is in `.hpp` files with full implementations:
 
 ### Solution: Phase 8 - Split Headers into .hpp/.cpp
 
-| Task | Priority | Effort |
-|------|----------|--------|
-| 8.1 Split `ntfs_index.hpp` → `.hpp` + `.cpp` | High | 4h |
-| 8.2 Split `mft_reader.hpp` → `.hpp` + `.cpp` | High | 2h |
-| 8.3 Split `io_completion_port.hpp` → `.hpp` + `.cpp` | Medium | 2h |
-| 8.4 Split `main_dialog.hpp` → multiple files | High | 6h |
-| 8.5 Convert `cli_main.hpp` → `cli_main.cpp` | Medium | 1h |
-| 8.6 Convert `gui_main.hpp` → `gui_main.cpp` | Medium | 1h |
+| Task | Priority | Effort | Status |
+|------|----------|--------|--------|
+| 8.1 Split `ntfs_index.hpp` → `.hpp` + `.cpp` | High | 4h | ⏳ BLOCKING 8.5/8.6 |
+| 8.2 Split `mft_reader.hpp` → `.hpp` + `.cpp` | High | 2h | ⏳ |
+| 8.3 Split `io_completion_port.hpp` → `.hpp` + `.cpp` | Medium | 2h | ⏳ |
+| 8.4 Split `main_dialog.hpp` → multiple files | High | 6h | ⏳ |
+| 8.5 Convert `cli_main.hpp` → `cli_main.cpp` | Medium | 1h | ❌ BLOCKED (needs 8.1) |
+| 8.6 Convert `gui_main.hpp` → `gui_main.cpp` | Medium | 1h | ❌ BLOCKED (needs 8.1) |
 
 **Estimated Total**: 16 hours
+
+> **Note (2026-01-26)**: Task 8.5 was attempted but failed. The issue is that `cli_main.hpp`
+> includes `ntfs_index.hpp`, which depends on types from the monolith's `namespace ntfs`
+> (e.g., `ATTRIBUTE_RECORD_HEADER`, `FILE_RECORD_SEGMENT_HEADER`). These types are NOT in
+> the extracted `uffs::ntfs` namespace in `ntfs_types.hpp`. To unblock 8.5/8.6, we must first
+> consolidate the NTFS types by moving the monolith's `namespace ntfs` content to `ntfs_types.hpp`.
 
 ---
 
@@ -307,8 +313,10 @@ Mixed naming conventions:
 1. Phase 8: Split headers into .hpp/.cpp
 2. Phase 9: Complete monolith decomposition
    - ✅ Step 1: Extract string utilities (Task 9.5) - `src/util/string_utils.hpp/.cpp`
-   - 🔜 Step 2: Convert `cli_main.hpp` → `cli_main.cpp` (Task 8.5)
-   - ⏳ Step 3: Convert `gui_main.hpp` → `gui_main.cpp` (Task 8.6)
+   - ❌ Step 2: Convert `cli_main.hpp` → `cli_main.cpp` (Task 8.5) - **BLOCKED** by namespace conflicts
+   - ❌ Step 3: Convert `gui_main.hpp` → `gui_main.cpp` (Task 8.6) - **BLOCKED** by namespace conflicts
+   - 🔜 Step 4: Consolidate NTFS types (Task 8.1) - Move monolith's `namespace ntfs` to `ntfs_types.hpp`
+   - ⏳ Step 5: Extract CProgressDialog (Task 9.1)
 
 ### Wave 3: Infrastructure (16 hours)
 1. Phase 10: Dependency management
