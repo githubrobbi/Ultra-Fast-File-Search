@@ -1,5 +1,9 @@
 #pragma once
 
+// Extracted components
+#include "search_pattern_edit.hpp"
+#include "../util/time_utils.hpp"
+
 class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResize < CMainDlg>, public CInvokeImpl < CMainDlg>, private WTL::CMessageFilter
 {
 	enum
@@ -54,116 +58,6 @@ class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResi
 		using WTL::CListViewCtrl::Attach;
 	};
 
-	class CSearchPattern : public ATL::CWindowImpl<CSearchPattern, WTL::CEdit>
-	{
-#pragma warning(suppress: 4555)
-			BEGIN_MSG_MAP_EX(CCustomDialogCode)
-			MSG_WM_MOUSEMOVE(OnMouseMove)
-			MSG_WM_MOUSELEAVE(OnMouseLeave)
-			MSG_WM_MOUSEHOVER(OnMouseHover)
-			MESSAGE_HANDLER_EX(EM_REPLACESEL, OnReplaceSel)
-			MESSAGE_RANGE_HANDLER_EX(WM_KEYDOWN, WM_KEYUP, OnKey)
-			END_MSG_MAP()
-		bool tracking;
-		StringLoader LoadString;
-	public: CSearchPattern() : tracking() {}
-
-		  struct KeyNotify
-		  {
-			  NMHDR hdr;
-			  WPARAM vkey;
-			  LPARAM lParam;
-		  };
-
-		  enum
-		  {
-			  CUN_KEYDOWN, CUN_KEYUP
-		  };
-
-		  LRESULT OnReplaceSel(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam)
-		  {
-			  int start = 0, end = 0;
-			  this->GetSel(start, end);
-			  TCHAR
-				  const* const sz = reinterpret_cast<TCHAR
-				  const*> (lParam);
-			  if ((!sz || !*sz) && start == 0 && end == this->GetWindowTextLength())
-			  {
-				  this->PostMessage(EM_SETSEL, start, end);
-			  }
-			  else
-			  {
-				  this->SetMsgHandled(FALSE);
-			  }
-
-			  return 0;
-		  }
-
-		  LRESULT OnKey(UINT uMsg, WPARAM wParam, LPARAM lParam)
-		  {
-			  if ((wParam == VK_UP || wParam == VK_DOWN) || (wParam == VK_PRIOR || wParam == VK_NEXT))
-			  {
-				  int id = this->GetWindowLong(GWL_ID);
-				  KeyNotify msg = {
-		  {*this, static_cast<unsigned int> (id), static_cast<unsigned int> (uMsg == WM_KEYUP ? CUN_KEYUP : CUN_KEYDOWN)
-					  }, wParam, lParam
-				  };
-
-				  HWND hWndParent = this->GetParent();
-				  return hWndParent == nullptr || this->SendMessage(hWndParent, WM_NOTIFY, id, (LPARAM)&msg) ? this->DefWindowProc(uMsg, wParam, lParam) : 0;
-			  }
-			  else
-			  {
-				  return this->DefWindowProc(uMsg, wParam, lParam);
-			  }
-		  }
-
-		  void EnsureTrackingMouseHover()
-		  {
-			  if (!this->tracking)
-			  {
-				  TRACKMOUSEEVENT tme = { sizeof(tme), TME_HOVER | TME_LEAVE, this->m_hWnd, 0
-				  };
-
-				  this->tracking = !!TrackMouseEvent(&tme);
-			  }
-		  }
-
-		  void OnMouseMove(UINT /*nFlags*/, WTL::CPoint /*point*/)
-		  {
-			  this->SetMsgHandled(FALSE);
-			  this->EnsureTrackingMouseHover();
-		  }
-
-		  void OnMouseLeave()
-		  {
-			  this->SetMsgHandled(FALSE);
-			  this->tracking = false;
-			  this->HideBalloonTip();
-		  }
-
-		  void OnMouseHover(WPARAM /*wParam*/, WTL::CPoint /*ptPos*/)
-		  {
-			  this->SetMsgHandled(FALSE);
-			  WTL::CString sysdir;
-			  {
-				  LPTSTR buf = sysdir.GetBufferSetLength(SHRT_MAX);
-				  unsigned int
-					  const cch = GetWindowsDirectory(buf, sysdir.GetAllocLength());
-				  sysdir.Delete(cch, sysdir.GetLength() - static_cast<int> (cch));
-			  }
-
-			  WTL::CString
-				  const
-				  title = this->LoadString(IDS_SEARCH_PATTERN_TITLE),
-				  body = this->LoadString(IDS_SEARCH_PATTERN_BODY) + _T("\r\n") + sysdir + getdirsep() + _T("**") + getdirsep() + _T("*.exe") + _T("\r\n") + _T("Picture*.jpg");
-			  EDITBALLOONTIP tip = { sizeof(tip), title, body, TTI_INFO
-			  };
-
-			  this->ShowBalloonTip(&tip);
-		  }
-	};
-
 	struct CacheInfo
 	{
 		explicit CacheInfo(size_t
@@ -198,47 +92,8 @@ class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResi
 	typedef std::map<std::tvstring, CacheInfo> ShellInfoCache;
 	typedef std::map<std::tvstring, std::tvstring > TypeInfoCache;
 
-	template < class StrCmp>
-	class NameComparator
-	{
-		StrCmp less;
-	public:
-		NameComparator(StrCmp
-			const& less) : less(less) {}
-
-		bool operator()(Results::value_type
-			const& a, Results::value_type
-			const& b)
-		{
-			bool less = this->less(a.file_name(), b.file_name());
-			if (!less && !this->less(b.file_name(), a.file_name()))
-			{
-				less = this->less(a.stream_name(), b.stream_name());
-			}
-
-			return less;
-		}
-
-		bool operator()(Results::value_type
-			const& a, Results::value_type
-			const& b) const
-		{
-			bool less = this->less(a.file_name(), b.file_name());
-			if (!less && !this->less(b.file_name(), a.file_name()))
-			{
-				less = this->less(a.stream_name(), b.stream_name());
-			}
-
-			return less;
-		}
-	};
-
-	template < class StrCmp>
-	static NameComparator<StrCmp> name_comparator(StrCmp
-		const& cmp)
-	{
-		return NameComparator<StrCmp>(cmp);
-	}
+	// NOTE: NameComparator template was removed - it was dead code that referenced
+	// non-existent file_name()/stream_name() methods on SearchResult
 
 	CSearchPattern txtPattern;
 	WTL::CButton btnOK, btnBrowse;
@@ -320,140 +175,13 @@ public:
 		this->time_zone_bias = get_time_zone_bias();
 	}
 
+	// Wrapper that uses member variables for time zone and locale
+	// The actual implementation is in time_utils.hpp (uffs::SystemTimeToString)
 	void SystemTimeToString(long long system_time /*UTC */, std::tvstring& buffer, bool
 		const sortable, bool
 		const include_time = true) const
 	{
-		return SystemTimeToStringImpl(system_time, buffer, sortable, include_time, this->time_zone_bias, this->lcid);
-	}
-
-	static void SystemTimeToStringImpl(long long system_time /*UTC */, std::tvstring& buffer, bool
-		const sortable, bool
-		const include_time, long long
-		const time_zone_bias, LCID
-		const lcid)
-	{
-		long long local_time = system_time + time_zone_bias;
-		winnt::TIME_FIELDS tf = {};
-		winnt::RtlTimeToTimeFields(&reinterpret_cast<LARGE_INTEGER&> (local_time), &tf);
-		if (sortable)
-		{
-			TCHAR buf[64], * p = buf;
-			size_t cch_zero;
-			basic_conv<TCHAR>::to_string(0, p, 10);
-			cch_zero = std::char_traits<TCHAR>::length(p);
-			p += static_cast<ptrdiff_t> (cch_zero);
-			size_t cch_year;
-			basic_conv<TCHAR>::to_string(tf.Year, p, 10);
-			cch_year = std::char_traits<TCHAR>::length(p);
-			p += static_cast<ptrdiff_t> (cch_year);
-			size_t cch_month;
-			basic_conv<TCHAR>::to_string(tf.Month, p, 10);
-			cch_month = std::char_traits<TCHAR>::length(p);
-			p += static_cast<ptrdiff_t> (cch_month);
-			size_t cch_day;
-			basic_conv<TCHAR>::to_string(tf.Day, p, 10);
-			cch_day = std::char_traits<TCHAR>::length(p);
-			p += static_cast<ptrdiff_t> (cch_day);
-			size_t cch_hour;
-			basic_conv<TCHAR>::to_string(tf.Hour, p, 10);
-			cch_hour = std::char_traits<TCHAR>::length(p);
-			p += static_cast<ptrdiff_t> (cch_hour);
-			size_t cch_minute;
-			basic_conv<TCHAR>::to_string(tf.Minute, p, 10);
-			cch_minute = std::char_traits<TCHAR>::length(p);
-			p += static_cast<ptrdiff_t> (cch_minute);
-			size_t cch_second;
-			basic_conv<TCHAR>::to_string(tf.Second, p, 10);
-			cch_second = std::char_traits<TCHAR>::length(p);
-			p += static_cast<ptrdiff_t> (cch_second);
-			TCHAR zero = buf[0];
-			size_t i = cch_zero;
-			{
-				size_t
-					const cch = cch_year;
-				buffer.append(4 - cch, zero);
-				buffer.append(&buf[i], cch);
-				i += cch;
-			}
-
-			buffer.push_back(_T('-'));
-			{
-				size_t
-					const cch = cch_month;
-				buffer.append(2 - cch, zero);
-				buffer.append(&buf[i], cch);
-				i += cch;
-			}
-
-			buffer.push_back(_T('-'));
-			{
-				size_t
-					const cch = cch_day;
-				buffer.append(2 - cch, zero);
-				buffer.append(&buf[i], cch);
-				i += cch;
-			}
-
-			if (include_time)
-			{
-				buffer.push_back(_T(' '));
-				{
-					size_t
-						const cch = cch_hour;
-					buffer.append(2 - cch, zero);
-					buffer.append(&buf[i], cch);
-					i += cch;
-				}
-
-				buffer.push_back(_T(':'));
-				{
-					size_t
-						const cch = cch_minute;
-					buffer.append(2 - cch, zero);
-					buffer.append(&buf[i], cch);
-					i += cch;
-				}
-
-				buffer.push_back(_T(':'));
-				{
-					size_t
-						const cch = cch_second;
-					buffer.append(2 - cch, zero);
-					buffer.append(&buf[i], cch);
-					i += cch;
-				}
-			}
-		}
-		else
-		{
-			SYSTEMTIME sysTime = { static_cast<WORD> (tf.Year),
-				static_cast<WORD> (tf.Month),
-				static_cast<WORD> (tf.Weekday),
-				static_cast<WORD> (tf.Day),
-				static_cast<WORD> (tf.Hour),
-				static_cast<WORD> (tf.Minute),
-				static_cast<WORD> (tf.Second),
-				static_cast<WORD> (tf.Milliseconds)
-			};
-
-			TCHAR buf[64];
-			size_t
-				const buffer_size = sizeof(buf) / sizeof(*buf);
-			size_t cch = 0;
-			size_t
-				const cchDate = static_cast<size_t> (GetDateFormat(lcid, 0, &sysTime, nullptr, &buf[0], static_cast<int> (buffer_size)));
-			cch += cchDate - !!cchDate /*null terminator */;
-			if (cchDate > 0 && include_time)
-			{
-				buf[cch++] = _T(' ');
-				size_t
-					const cchTime = static_cast<size_t> (GetTimeFormat(lcid, 0, &sysTime, nullptr, &buf[cchDate], static_cast<int> (buffer_size - cchDate)));
-				cch += cchTime - !!cchTime;
-			}
-
-			buffer.append(buf, cch);
-		}
+		return uffs::SystemTimeToString(system_time, buffer, sortable, include_time, this->time_zone_bias, this->lcid);
 	}
 
 	void OnDestroy()
