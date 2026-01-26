@@ -28,13 +28,13 @@ namespace uffs {
 class DynamicAllocator
 {
 protected:
-    ~DynamicAllocator() { }
+    ~DynamicAllocator() = default;
 public:
     typedef void *pointer;
     typedef void const *const_pointer;
-    virtual void deallocate(pointer const p, size_t const n) = 0;
-    virtual pointer allocate(size_t const n, pointer const hint = nullptr) = 0;
-    virtual pointer reallocate(pointer const p, size_t const n, bool const allow_movement) = 0;
+    virtual void deallocate(pointer p, size_t n) = 0;
+    [[nodiscard]] virtual pointer allocate(size_t n, pointer hint = nullptr) = 0;
+    [[nodiscard]] virtual pointer reallocate(pointer p, size_t n, bool allow_movement) = 0;
 };
 
 // ============================================================================
@@ -56,12 +56,12 @@ public:
     typedef typename base_type::reference reference;
     typedef typename base_type::size_type size_type;
     
-    dynamic_allocator() : base_type(), _alloc() {}
+    dynamic_allocator() noexcept : base_type(), _alloc() {}
 
-    explicit dynamic_allocator(dynamic_allocator_type* const alloc) : base_type(), _alloc(alloc) {}
+    explicit dynamic_allocator(dynamic_allocator_type* alloc) noexcept : base_type(), _alloc(alloc) {}
 
     template <class U>
-    dynamic_allocator(dynamic_allocator<U> const& other) : base_type(other.base()), _alloc(other.dynamic_alloc()) {}
+    dynamic_allocator(dynamic_allocator<U> const& other) noexcept : base_type(other.base()), _alloc(other.dynamic_alloc()) {}
 
     template <class U>
     struct rebind
@@ -69,22 +69,22 @@ public:
         typedef dynamic_allocator<U> other;
     };
 
-    dynamic_allocator_type* dynamic_alloc() const
+    [[nodiscard]] dynamic_allocator_type* dynamic_alloc() const noexcept
     {
         return this->_alloc;
     }
 
-    base_type& base()
+    [[nodiscard]] base_type& base() noexcept
     {
         return static_cast<base_type&>(*this);
     }
 
-    base_type const& base() const
+    [[nodiscard]] base_type const& base() const noexcept
     {
         return static_cast<base_type const&>(*this);
     }
 
-    pointer allocate(size_type const n, void* const p = nullptr)
+    [[nodiscard]] pointer allocate(size_type n, void* p = nullptr)
     {
         pointer r;
         if (this->_alloc)
@@ -98,7 +98,7 @@ public:
         return r;
     }
 
-    void deallocate(pointer const p, size_type const n)
+    void deallocate(pointer p, size_type n)
     {
         if (this->_alloc)
         {
@@ -110,7 +110,7 @@ public:
         }
     }
 
-    pointer reallocate(pointer const p, size_t const n, bool const allow_movement)
+    [[nodiscard]] pointer reallocate(pointer p, size_t n, bool allow_movement)
     {
         if (this->_alloc)
         {
@@ -122,12 +122,12 @@ public:
         }
     }
 
-    bool operator==(this_type const& other) const
+    [[nodiscard]] bool operator==(this_type const& other) const noexcept
     {
         return static_cast<base_type const&>(*this) == static_cast<base_type const&>(other);
     }
 
-    bool operator!=(this_type const& other) const
+    [[nodiscard]] bool operator!=(this_type const& other) const noexcept
     {
         return static_cast<base_type const&>(*this) != static_cast<base_type const&>(other);
     }
@@ -149,8 +149,9 @@ public:
 // ============================================================================
 class SingleMovableGlobalAllocator : public DynamicAllocator
 {
-    SingleMovableGlobalAllocator(SingleMovableGlobalAllocator const&);
-    SingleMovableGlobalAllocator& operator=(SingleMovableGlobalAllocator const&);
+    // Non-copyable
+    SingleMovableGlobalAllocator(SingleMovableGlobalAllocator const&) = delete;
+    SingleMovableGlobalAllocator& operator=(SingleMovableGlobalAllocator const&) = delete;
     HGLOBAL _recycled;
 public:
     ~SingleMovableGlobalAllocator()
@@ -161,9 +162,9 @@ public:
         }
     }
 
-    SingleMovableGlobalAllocator() : _recycled() {}
+    SingleMovableGlobalAllocator() noexcept : _recycled() {}
 
-    bool disown(HGLOBAL const h)
+    [[nodiscard]] bool disown(HGLOBAL h) noexcept
     {
         bool const same = h == this->_recycled;
         if (same)
@@ -173,7 +174,7 @@ public:
         return same;
     }
 
-    void deallocate(pointer const p, size_t const n)
+    void deallocate(pointer p, size_t n) override
     {
         if (n)
         {
@@ -192,8 +193,9 @@ public:
         }
     }
 
-    pointer allocate(size_t const n, pointer const hint = nullptr)
+    [[nodiscard]] pointer allocate(size_t n, pointer hint = nullptr) override
     {
+        (void)hint;  // Unused parameter
         HGLOBAL mem = nullptr;
         if (n)
         {
@@ -221,7 +223,7 @@ public:
         return p;
     }
 
-    pointer reallocate(pointer const p, size_t const n, bool const allow_movement)
+    [[nodiscard]] pointer reallocate(pointer p, size_t n, bool allow_movement) override
     {
         pointer result = nullptr;
         if (HGLOBAL h = GlobalHandle(p))

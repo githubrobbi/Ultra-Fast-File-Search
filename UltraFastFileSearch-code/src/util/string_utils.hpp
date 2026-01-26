@@ -13,7 +13,7 @@
 // ============================================================================
 
 /// Returns a string containing all logical drive letters on the system
-std::string drivenames(void);
+[[nodiscard]] std::string drivenames();
 
 // ============================================================================
 // String Manipulation
@@ -23,5 +23,5 @@ std::string drivenames(void);
 void replaceAll(std::string& str, const std::string& from, const std::string& to);
 
 /// Removes all null characters from a string
-std::string removeSpaces(std::string str);
+[[nodiscard]] std::string removeSpaces(std::string str);
 

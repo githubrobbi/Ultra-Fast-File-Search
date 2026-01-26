@@ -40,10 +40,13 @@ class lock_ptr : atomic_namespace::unique_lock<atomic_namespace::recursive_mutex
     typedef atomic_namespace::unique_lock<atomic_namespace::recursive_mutex> base_type;
     typedef lock_ptr this_type;
     T* me;
-    lock_ptr(this_type const&);
-    this_type& operator=(this_type const&);
+
+    // Non-copyable
+    lock_ptr(this_type const&) = delete;
+    this_type& operator=(this_type const&) = delete;
+
 public:
-    ~lock_ptr() {}
+    ~lock_ptr() = default;
 
     lock_ptr(T volatile* const me, bool const do_lock = true) : base_type(), me(const_cast<T*>(me))
     {
@@ -65,19 +68,19 @@ public:
         }
     }
 
-    lock_ptr() : base_type(), me() {}
+    lock_ptr() noexcept : base_type(), me() {}
 
-    T* operator->() const
+    [[nodiscard]] T* operator->() const noexcept
     {
         return me;
     }
 
-    T& operator*() const
+    [[nodiscard]] T& operator*() const noexcept
     {
         return *me;
     }
 
-    void swap(this_type& other)
+    void swap(this_type& other) noexcept
     {
         using std::swap;
         swap(static_cast<base_type&>(*this), static_cast<base_type&>(other));
