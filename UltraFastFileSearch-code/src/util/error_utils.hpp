@@ -17,11 +17,14 @@
 // Windows and ATL headers (expected to be included via stdafx.h in the project)
 #include <Windows.h>
 #include <tchar.h>
+#include <strsafe.h>
 #include <atlbase.h>
 #include <atlexcept.h>
 #include <ProvExce.h>  // For CStructured_Exception
 
 #include <cstdarg>
+#include <cstdio>
+#include <climits>
 #include <string>
 
 namespace uffs {
@@ -153,6 +156,69 @@ inline void CheckAndThrow(int const success)
 	return message;
 }
 
+/**
+ * @brief Display a Windows error message for the last error code
+ * @param lpszFunction Name of the function that failed
+ *
+ * Retrieves and outputs the system error message for the last-error code.
+ */
+inline void DisplayError(LPTSTR lpszFunction)
+{
+    LPVOID lpMsgBuf = nullptr;
+    LPVOID lpDisplayBuf = nullptr;
+    DWORD dw = GetLastError();
+
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr,
+        dw,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR)&lpMsgBuf,
+        0,
+        nullptr);
+
+    lpDisplayBuf =
+        (LPVOID)LocalAlloc(LMEM_ZEROINIT,
+            (lstrlen((LPCTSTR)lpMsgBuf) +
+                lstrlen((LPCTSTR)lpszFunction) +
+                40)  // account for format string
+            *
+            sizeof(TCHAR));
+
+    if (lpDisplayBuf && FAILED(StringCchPrintf((LPTSTR)lpDisplayBuf,
+        LocalSize(lpDisplayBuf) / sizeof(TCHAR),
+        TEXT("%s failed with error code %d as follows:\n%s"),
+        lpszFunction,
+        dw,
+        (LPTSTR)lpMsgBuf)))
+    {
+        printf("FATAL ERROR: Unable to output error code.\n");
+    }
+
+    _tprintf(TEXT("ERROR: %s\n"), (LPCTSTR)lpDisplayBuf);
+
+    LocalFree(lpMsgBuf);
+    LocalFree(lpDisplayBuf);
+}
+
+/**
+ * @brief Check if a string contains only ASCII characters
+ * @param s Pointer to wide character string
+ * @param n Length of string
+ * @return true if all characters are ASCII (SCHAR_MIN to SCHAR_MAX)
+ */
+[[nodiscard]] inline bool is_ascii(wchar_t const* const s, size_t const n)
+{
+    bool result = true;
+    for (size_t i = 0; i != n; ++i)
+    {
+        wchar_t const ch = s[i];
+        result &= (SCHAR_MIN <= static_cast<long long>(ch)) & (ch <= SCHAR_MAX);
+    }
+    return result;
+}
+
 } // namespace error
 } // namespace uffs
 
@@ -162,6 +228,8 @@ using uffs::error::CppRaiseException;
 using uffs::error::CheckAndThrow;
 using uffs::error::GetAnyErrorText;
 using uffs::error::GetLastErrorAsString;
+using uffs::error::DisplayError;
+using uffs::error::is_ascii;
 
 #endif // UFFS_ERROR_UTILS_HPP
 

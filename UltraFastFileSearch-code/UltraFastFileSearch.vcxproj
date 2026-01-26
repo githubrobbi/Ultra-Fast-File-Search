@@ -270,6 +270,7 @@
     <ClInclude Include="src\util\pe_utils.hpp" />
     <ClInclude Include="src\util\x64_launcher.hpp" />
     <ClInclude Include="src\util\version_info.hpp" />
+    <ClInclude Include="src\util\locale_utils.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

@@ -472,62 +472,7 @@ long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo)
 }
 
 
-[[nodiscard]] bool is_ascii(wchar_t
-	const* const s, size_t
-	const n)
-{
-	bool result = true;
-	for (size_t i = 0; i != n; ++i)
-	{
-		wchar_t
-			const ch = s[i];
-		result &= (SCHAR_MIN <= static_cast<long long> (ch)) & (ch <= SCHAR_MAX);
-	}
-
-	return result;
-}
-
-void DisplayError(LPTSTR lpszFunction)
-// Routine Description:
-// Retrieve and output the system error message for the last-error code
-{
-	LPVOID lpMsgBuf = nullptr;
-	LPVOID lpDisplayBuf = nullptr;
-	DWORD dw = GetLastError();
-
-	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-		FORMAT_MESSAGE_FROM_SYSTEM |
-		FORMAT_MESSAGE_IGNORE_INSERTS,
-		nullptr,
-		dw,
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR)&lpMsgBuf,
-		0,
-		nullptr);
-
-	lpDisplayBuf =
-		(LPVOID)LocalAlloc(LMEM_ZEROINIT,
-			(lstrlen((LPCTSTR)lpMsgBuf) +
-				lstrlen((LPCTSTR)lpszFunction) +
-				40)	// account for format string
-			*
-			sizeof(TCHAR));
-
-	if (lpDisplayBuf && FAILED(StringCchPrintf((LPTSTR)lpDisplayBuf,
-		LocalSize(lpDisplayBuf) / sizeof(TCHAR),
-		TEXT("%s failed with error code %d as follows:\n%s"),
-		lpszFunction,
-		dw,
-		(LPTSTR)lpMsgBuf)))
-	{
-		printf("FATAL ERROR: Unable to output error code.\n");
-	}
-
-	_tprintf(TEXT("ERROR: %s\n"), (LPCTSTR)lpDisplayBuf);
-
-	LocalFree(lpMsgBuf);
-	LocalFree(lpDisplayBuf);
-}
+// is_ascii and DisplayError extracted to src/util/error_utils.hpp
 
 static void append_directional(std::tvstring& str, TCHAR
 	const sz[], size_t
@@ -763,83 +708,10 @@ std::tstring GetDisplayName(HWND hWnd, const std::tstring& path, DWORD shgdn)
 	return result;
 }
 
-int LCIDToLocaleName_XPCompatible(LCID lcid, LPTSTR name, int name_length)
-{
-	HMODULE hKernel32 = nullptr;
-	if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCTSTR> (&GetSystemInfo), &hKernel32))
-	{
-		hKernel32 = nullptr;
-	}
-
-	typedef int WINAPI LCIDToLocaleName_t(LCID Locale, LPTSTR lpName, int cchName, DWORD dwFlags);
-	if (hKernel32)
-	if (LCIDToLocaleName_t* const LCIDToLocaleName = reinterpret_cast<LCIDToLocaleName_t*> (GetProcAddress(hKernel32, _CRT_STRINGIZE(LCIDToLocaleName))))
-	{
-		name_length = (*LCIDToLocaleName)(lcid, name, name_length, 0);
-		name_length -= !!name_length;
-	}
-	else
-	{
-		ATL::CRegKey key;
-		if (key.Open(HKEY_CLASSES_ROOT, TEXT("MIME\\Database\\Rfc1766"), KEY_QUERY_VALUE) == 0)
-		{
-			TCHAR value_data[64 + MAX_PATH] = {};
-			TCHAR value_name[16] = {};
-			value_name[0] = _T('\0');
-			safe_stprintf(value_name, _T("%04lX"), lcid);
-			unsigned long value_data_length = sizeof(value_data) / sizeof(*value_data);
-			LRESULT
-				const result = key.QueryValue(value_data, value_name, &value_data_length);
-			if (result == 0)
-			{
-				unsigned long i;
-				for (i = 0; i != value_data_length; ++i)
-				{
-					if (value_data[i] == _T(';'))
-					{
-						break;
-					}
-
-					if (name_length >= 0 && i < static_cast<unsigned long> (name_length))
-					{
-						TCHAR ch = value_data[static_cast<ptrdiff_t> (i)];
-						name[static_cast<ptrdiff_t> (i)] = ch;
-					}
-				}
-
-				name_length = static_cast<int> (i);
-			}
-			else
-			{
-				name_length = 0;
-			}
-		}
-		else
-		{
-			name_length = 0;
-		}
-	}
-
-	return name_length;
-}
-
-
-
-WTL::CString LCIDToLocaleName_XPCompatible(LCID lcid)
-{
-	WTL::CString result;
-	LPTSTR
-		const buf = result.GetBufferSetLength(64);
-	int
-		const n = LCIDToLocaleName_XPCompatible(lcid, buf, result.GetLength());
-	result.Delete(n, result.GetLength() - n);
-	return result;
-}
-
-WTL::CString get_ui_locale_name()
-{
-	return LCIDToLocaleName_XPCompatible(MAKELCID(GetUserDefaultUILanguage(), SORT_DEFAULT));
-}
+// Locale utilities extracted to src/util/locale_utils.hpp
+#include "src/util/locale_utils.hpp"
+using uffs::LCIDToLocaleName_XPCompatible;
+using uffs::get_ui_locale_name;
 
 // Use extracted Handle and IoPriority classes from src/util/handle.hpp and src/io/io_priority.hpp
 using uffs::Handle;
