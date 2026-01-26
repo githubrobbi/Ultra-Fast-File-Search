@@ -14,8 +14,6 @@
 #include "../util/handle.hpp"
 #include "../util/containers.hpp"
 #include "../io/overlapped.hpp"
-#include "../io/winnt_types.hpp"
-#include "../io/io_priority.hpp"
 #include "../core/ntfs_types.hpp"
 #include "../util/buffer.hpp"
 #include "../../path.hpp"

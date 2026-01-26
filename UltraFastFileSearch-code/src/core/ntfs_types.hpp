@@ -395,6 +395,3 @@ struct ReparseMountPointBuffer
 } // namespace ntfs
 } // namespace uffs
 
-// Expose ntfs namespace at global scope for backward compatibility
-namespace ntfs = uffs::ntfs;
-

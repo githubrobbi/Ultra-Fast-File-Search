@@ -3638,8 +3638,8 @@ using uffs::dump_mft_extents;
 using uffs::benchmark_mft_read;
 using uffs::benchmark_index_build;
 
-// Command Line Version - now compiled separately in src/cli/cli_main.cpp
-// The main() function is defined there.
+// Command Line Version
+#include "src/cli/cli_main.hpp"
 
 #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 

@@ -6,12 +6,12 @@ File
 Line
 Suppression State
 Details
-Message
-VCR003
-Function 'get_subsystem' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2510
+Error
+C2065
+'frsh': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+852
 
 
 Warning
@@ -856,6 +856,14 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFi
 
 Message
 VCR003
+Function 'get_subsystem' can be made static
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+2510
+
+
+Message
+VCR003
 Function 'get_version' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
@@ -887,43 +895,11 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFi
 
 
 Error
-C3646
-'_volume': unknown override specifier
+C2039
+'ATTRIBUTE_RECORD_HEADER': is not a member of 'uffs::ntfs'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-331
-
-
-Error
-C4430
-missing type specifier - int assumed. Note: C++ does not support default-int
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-331
-
-
-Error
-C3646
-'_finished_event': unknown override specifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-338
-
-
-Error
-C4430
-missing type specifier - int assumed. Note: C++ does not support default-int
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-338
-
-
-Error
-C2653
-'ntfs': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-434
+436
 
 
 Error
@@ -931,23 +907,7 @@ C2061
 syntax error: identifier 'ATTRIBUTE_RECORD_HEADER'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-434
-
-
-Error
-C2065
-'ah': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-439
-
-
-Error
-C2065
-'ah': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-439
+436
 
 
 Error
@@ -961,30 +921,6 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\n
 Error
 C2065
 'ah': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-441
-
-
-Error
-C2065
-'max_length': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-441
-
-
-Error
-C2065
-'ah': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-441
-
-
-Error
-C2065
-'max_length': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
 441
@@ -996,6 +932,46 @@ C2065
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
 443
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+443
+
+
+Error
+C2065
+'max_length': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+443
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+443
+
+
+Error
+C2065
+'max_length': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+443
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+445
 
 
 Error
@@ -1003,231 +979,15 @@ C2065
 'current_lcn': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-443
-
-
-Error
-C2614
-'NtfsIndex': illegal member initialization: '_finished_event' is not a base or member
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-644
-
-
-Error
-C2065
-'Handle': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-665
-
-
-Error
-C2146
-syntax error: missing ';' before identifier 'volume'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-665
-
-
-Error
-C2660
-'NtfsIndex::volume': function does not take 1 arguments
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-665
-
-
-Error
-C2653
-'winnt': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-666
-
-
-Error
-C2065
-'IO_STATUS_BLOCK': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-666
-
-
-Error
-C2146
-syntax error: missing ';' before identifier 'iosb'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-666
-
-
-Error
-C2065
-'iosb': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-666
-
-
-Error
-C2653
-'winnt': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-667
-
-
-Error
-C2504
-'FILE_FS_ATTRIBUTE_INFORMATION': base class undefined
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-667
-
-
-Error
-C2653
-'winnt': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-674
-
-
-Error
-C2653
-'winnt': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-674
-
-
-Error
-C2065
-'iosb': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-674
-
-
-Error
-C3861
-'NtQueryVolumeInformationFile': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-674
-
-
-Error
-C2653
-'winnt': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-677
-
-
-Error
-C3861
-'RtlNtStatusToDosError': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-677
+445
 
 
 Error
 C2039
-'FileSystemNameLength': is not a member of 'NtfsIndex::init::<unnamed-type-info>'
+'FILE_RECORD_SEGMENT_HEADER': is not a member of 'uffs::ntfs'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-680
-
-
-Error
-C2039
-'FileSystemName': is not a member of 'NtfsIndex::init::<unnamed-type-info>'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-680
-
-
-Error
-C2039
-'FileSystemName': is not a member of 'NtfsIndex::init::<unnamed-type-info>'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-680
-
-
-Error
-C2653
-'IoPriority': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-687
-
-
-Error
-C2653
-'winnt': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-687
-
-
-Error
-C2065
-'IoPriorityLow': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-687
-
-
-Error
-C3861
-'set': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-687
-
-
-Error
-C2039
-'_volume': is not a member of 'NtfsIndex'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-690
-
-
-Error
-C2039
-'_finished_event': is not a member of 'NtfsIndex'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-697
-
-
-Error
-C2039
-'_volume': is not a member of 'NtfsIndex'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-754
-
-
-Error
-C2039
-'_finished_event': is not a member of 'NtfsIndex'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-795
-
-
-Error
-C2653
-'ntfs': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-844
+846
 
 
 Error
@@ -1235,7 +995,7 @@ C2065
 'FILE_RECORD_SEGMENT_HEADER': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-844
+846
 
 
 Error
@@ -1243,23 +1003,15 @@ C2059
 syntax error: 'const'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-844
+846
 
 
 Error
-C2653
-'ntfs': is not a class or namespace name
+C2039
+'FILE_RECORD_SEGMENT_HEADER': is not a member of 'uffs::ntfs'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-844
-
-
-Error
-C2065
-'frsh': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-845
+846
 
 
 Error
@@ -1275,7 +1027,7 @@ C2065
 'frsh': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-850
+849
 
 
 Error
@@ -1283,7 +1035,7 @@ C2065
 'frsh': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-850
+852
 
 
 Error
@@ -1291,7 +1043,7 @@ C2737
 'frs_base': const object must be initialized
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-850
+852
 
 
 Error
@@ -1299,7 +1051,7 @@ C2065
 'frsh': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-858
+860
 
 
 Error
@@ -1307,15 +1059,15 @@ C3861
 'lock': identifier not found
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-866
+868
 
 
 Error
-C2653
-'ntfs': is not a class or namespace name
+C2039
+'FILE_RECORD_SEGMENT_HEADER': is not a member of 'uffs::ntfs'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-910
+912
 
 
 Error
@@ -1323,7 +1075,7 @@ C2065
 'FILE_RECORD_SEGMENT_HEADER': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-910
+912
 
 
 Error
@@ -1331,23 +1083,15 @@ C2059
 syntax error: 'const'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-910
+912
 
 
 Error
-C2653
-'ntfs': is not a class or namespace name
+C2039
+'FILE_RECORD_SEGMENT_HEADER': is not a member of 'uffs::ntfs'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-910
-
-
-Error
-C2065
-'frsh': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-911
+912
 
 
 Error
@@ -1355,23 +1099,7 @@ C2065
 'frsh': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-911
-
-
-Error
-C2653
-'ntfs': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-911
-
-
-Error
-C2065
-'FRH_IN_USE': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-911
+913
 
 
 Error
@@ -1379,7 +1107,7 @@ C2065
 'frsh': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-914
+913
 
 
 Error
@@ -1387,7 +1115,15 @@ C2065
 'frsh': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-914
+916
+
+
+Error
+C2065
+'frsh': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+916
 
 
 Error
@@ -1395,7 +1131,7 @@ C2737
 'frs_base': const object must be initialized
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-914
+916
 
 
 Error
@@ -1403,7 +1139,7 @@ C2065
 'frsh': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-917
+919
 
 
 Error
@@ -1411,15 +1147,15 @@ C2737
 'frsh_end': const object must be initialized
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-917
+919
 
 
 Error
-C2653
-'ntfs': is not a class or namespace name
+C2039
+'ATTRIBUTE_RECORD_HEADER': is not a member of 'uffs::ntfs'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-918
+920
 
 
 Error
@@ -1427,7 +1163,7 @@ C2065
 'ATTRIBUTE_RECORD_HEADER': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-918
+920
 
 
 Error
@@ -1435,7 +1171,7 @@ C2143
 syntax error: missing ';' before 'const'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-919
+921
 
 
 Error
@@ -1443,7 +1179,7 @@ C2065
 'ah': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
+922
 
 
 Error
@@ -1451,7 +1187,7 @@ C2065
 'frsh': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
+922
 
 
 Error
@@ -1459,7 +1195,7 @@ C2065
 'ah': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
+922
 
 
 Error
@@ -1467,15 +1203,15 @@ C2065
 'ah': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
+922
 
 
 Error
-C2653
-'ntfs': is not a class or namespace name
+C2838
+'AttributeNone': illegal qualified name in member declaration
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
+922
 
 
 Error
@@ -1483,7 +1219,7 @@ C2065
 'AttributeNone': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
+922
 
 
 Error
@@ -1491,23 +1227,7 @@ C2065
 'ah': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
-
-
-Error
-C2653
-'ntfs': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
-
-
-Error
-C2065
-'AttributeEnd': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
+922
 
 
 Error
@@ -1515,7 +1235,7 @@ C2146
 syntax error: missing ')' before identifier 'ah'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
+922
 
 
 Error
@@ -1523,7 +1243,7 @@ C2059
 syntax error: ';'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
+922
 
 
 Error
@@ -1531,7 +1251,7 @@ C2065
 'ah': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
+922
 
 
 Error
@@ -1539,7 +1259,7 @@ C2065
 'ah': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
+922
 
 
 Error
@@ -1547,7 +1267,7 @@ C2059
 syntax error: ')'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-920
+922
 
 
 Error
@@ -1555,7 +1275,7 @@ C2059
 syntax error: 'switch'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-922
+924
 
 
 Error
@@ -1563,23 +1283,7 @@ C2143
 syntax error: missing ';' before '{'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-923
-
-
-Error
-C2653
-'ntfs': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-924
-
-
-Error
-C2065
-'AttributeStandardInformation': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-924
+925
 
 
 Error
@@ -1587,15 +1291,15 @@ C2046
 case statement not within a switch statement
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-924
+926
 
 
 Error
-C2653
-'ntfs': is not a class or namespace name
+C2039
+'STANDARD_INFORMATION': is not a member of 'uffs::ntfs'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-925
+927
 
 
 Error
@@ -1603,7 +1307,7 @@ C2065
 'STANDARD_INFORMATION': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-925
+927
 
 
 Error
@@ -1611,7 +1315,7 @@ C2143
 syntax error: missing ')' before 'const'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-926
+928
 
 
 Error
@@ -1619,15 +1323,15 @@ C4430
 missing type specifier - int assumed. Note: C++ does not support default-int
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-926
+928
 
 
 Error
-C2653
-'ntfs': is not a class or namespace name
+C2039
+'STANDARD_INFORMATION': is not a member of 'uffs::ntfs'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-926
+928
 
 
 Error
@@ -1635,7 +1339,7 @@ C2061
 syntax error: identifier 'STANDARD_INFORMATION'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-926
+928
 
 
 Error
@@ -1643,28 +1347,12 @@ C2059
 syntax error: ')'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-927
+929
 
 
 Error
 C2143
 syntax error: missing ';' before '{'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-928
-
-
-Error
-C2065
-'fn': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-929
-
-
-Error
-C2065
-'fn': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
 930
@@ -1688,26 +1376,330 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\n
 
 Error
 C2065
-'frsh': undeclared identifier
+'fn': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-932
-
-
-Error
-C2653
-'ntfs': is not a class or namespace name
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-932
+933
 
 
 Error
 C2065
-'FRH_DIRECTORY': undeclared identifier
+'fn': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-932
+934
+
+
+Error
+C2065
+'frsh': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+934
+
+
+Error
+C2046
+case statement not within a switch statement
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+938
+
+
+Error
+C2039
+'FILENAME_INFORMATION': is not a member of 'uffs::ntfs'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+939
+
+
+Error
+C2065
+'FILENAME_INFORMATION': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+939
+
+
+Error
+C2143
+syntax error: missing ')' before 'const'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+940
+
+
+Error
+C4430
+missing type specifier - int assumed. Note: C++ does not support default-int
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+940
+
+
+Error
+C2039
+'FILENAME_INFORMATION': is not a member of 'uffs::ntfs'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+940
+
+
+Error
+C2061
+syntax error: identifier 'FILENAME_INFORMATION'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+940
+
+
+Error
+C2059
+syntax error: ')'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+941
+
+
+Error
+C2143
+syntax error: missing ';' before '{'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+942
+
+
+Error
+C2065
+'fn': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+944
+
+
+Error
+C2737
+'frs_parent': const object must be initialized
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+944
+
+
+Error
+C2065
+'fn': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+945
+
+
+Error
+C2065
+'fn': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+957
+
+
+Error
+C2065
+'fn': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+959
+
+
+Error
+C2065
+'fn': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+959
+
+
+Error
+C3861
+'is_ascii': identifier not found
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+959
+
+
+Error
+C2065
+'fn': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+962
+
+
+Error
+C2065
+'fn': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+962
+
+
+Error
+C3861
+'append_directional': identifier not found
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+962
+
+
+Error
+C2046
+case statement not within a switch statement
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+985
+
+
+Error
+C2046
+case statement not within a switch statement
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+987
+
+
+Error
+C2046
+case statement not within a switch statement
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+988
+
+
+Error
+C2046
+case statement not within a switch statement
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+989
+
+
+Error
+C2046
+case statement not within a switch statement
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+990
+
+
+Error
+C2046
+case statement not within a switch statement
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+991
+
+
+Error
+C2046
+case statement not within a switch statement
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+992
+
+
+Error
+C2046
+case statement not within a switch statement
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+993
+
+
+Error
+C2046
+case statement not within a switch statement
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+994
+
+
+Error
+C2047
+default statment not within a switch statement
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+995
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+997
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+999
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1001
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1031
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1031
+
+
+Error
+C2737
+'is_primary_attribute': const object must be initialized
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1031
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1035
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1035
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+1035
 
 
 Error
@@ -1715,7 +1707,15 @@ C1003
 error count exceeds 100; stopping compilation
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-932
+1035
+
+
+Error
+C2757
+'ntfs': a symbol with this name already exists and therefore this name cannot be used as a namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+670
 
 
 Warning

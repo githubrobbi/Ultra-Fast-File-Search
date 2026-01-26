@@ -191,7 +191,6 @@
   <!-- The project uses Boost.Xpressive (header-only) for regex functionality -->
   <ItemGroup>
     <ClCompile Include="CommandLineParser.cpp" />
-    <ClCompile Include="src\cli\cli_main.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">Create</PrecompiledHeader>
