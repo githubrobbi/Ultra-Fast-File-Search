@@ -76,7 +76,7 @@ protected: struct RetPtr
          atomic_namespace::atomic < unsigned int > valid_records;
          Bitmap mft_bitmap;	// may be unavailable -- don't fail in that case!
          intrusive_ptr < NtfsIndex volatile > p;
-public: class ReadOperation; ~OverlappedNtfsMftReadPayload() {}
+public: class ReadOperation; ~OverlappedNtfsMftReadPayload() override = default;
 
       OverlappedNtfsMftReadPayload(IoCompletionPort volatile& iocp, intrusive_ptr < NtfsIndex volatile > p, Handle
           const& closing_event) : Overlapped(), iocp(&iocp), closing_event(closing_event), cluster_size(), read_block_size(1 << 20), jbitmap(0), nbitmap_chunks_left(0), jdata(0), valid_records(0)
@@ -86,9 +86,7 @@ public: class ReadOperation; ~OverlappedNtfsMftReadPayload() {}
       }
 
       void queue_next() volatile;
-      int operator()(size_t
-          const /*size*/, uintptr_t
-          const /*key*/);
+      int operator()(size_t /*size*/, uintptr_t /*key*/) override;
       virtual void preopen() {}
 };
 
@@ -166,53 +164,47 @@ public:
 		const& q, bool
 		const is_bitmap) : Overlapped(), _voffset(), _skipped_begin(), _skipped_end(), _time(clock()), _is_bitmap(is_bitmap), q(q) {}
 
-	unsigned long long voffset()
+	[[nodiscard]] unsigned long long voffset() const noexcept
 	{
 		return this->_voffset;
 	}
 
-	void voffset(unsigned long long
-		const value)
+	void voffset(unsigned long long value) noexcept
 	{
 		this->_voffset = value;
 	}
 
-	unsigned long long skipped_begin()
+	[[nodiscard]] unsigned long long skipped_begin() const noexcept
 	{
 		return this->_skipped_begin;
 	}
 
-	void skipped_begin(unsigned long long
-		const value)
+	void skipped_begin(unsigned long long value) noexcept
 	{
 		this->_skipped_begin = value;
 	}
 
-	unsigned long long skipped_end()
+	[[nodiscard]] unsigned long long skipped_end() const noexcept
 	{
 		return this->_skipped_end;
 	}
 
-	void skipped_end(unsigned long long
-		const value)
+	void skipped_end(unsigned long long value) noexcept
 	{
 		this->_skipped_end = value;
 	}
 
-	clock_t time()
+	[[nodiscard]] clock_t time() const noexcept
 	{
 		return this->_time;
 	}
 
-	void time(clock_t
-		const value)
+	void time(clock_t value) noexcept
 	{
 		this->_time = value;
 	}
 
-	int operator()(size_t
-		const size, uintptr_t
-		const /*key*/)
+	int operator()(size_t size, uintptr_t /*key*/) override
 	{
 		OverlappedNtfsMftReadPayload* const q = const_cast<OverlappedNtfsMftReadPayload*> (static_cast<OverlappedNtfsMftReadPayload volatile*> (this->q.get()));
 		if (!q->p->cancelled())
@@ -397,9 +389,7 @@ void OverlappedNtfsMftReadPayload::queue_next() volatile
 }
 
 
-int OverlappedNtfsMftReadPayload::operator()(size_t
-	const /*size*/, uintptr_t
-	const key)
+int OverlappedNtfsMftReadPayload::operator()(size_t /*size*/, uintptr_t key)
 {
 	int result = -1;
 	intrusive_ptr<NtfsIndex> p = this->p->unvolatile();
