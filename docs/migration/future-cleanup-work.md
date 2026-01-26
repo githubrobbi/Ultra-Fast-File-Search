@@ -363,8 +363,8 @@ Mixed naming conventions:
 | 13 | Standardize Naming | 🟡 Moderate | 2h | 🔄 0.5h done |
 | 14 | Warning Cleanup | 🟡 Moderate | 4h | ⏳ |
 | 15 | Modern C++ Upgrades | 🟢 Enhancement | 8h | ✅ COMPLETE |
-| 16 | ntfs_index.hpp Splitting | 🟢 Enhancement | 6h | 🔄 IN PROGRESS |
-| **Total** | | | **~55h** | **~20h done** |
+| 16 | ntfs_index.hpp Splitting | 🟢 Enhancement | 6h | ✅ COMPLETE |
+| **Total** | | | **~55h** | **~25h done** |
 
 ---
 
@@ -386,17 +386,18 @@ Mixed naming conventions:
 | Task | File | Lines | Effort | Status |
 |------|------|-------|--------|--------|
 | 8.3 | `main_dialog.hpp` → multiple files | 3,909 | 6h | ⏳ NEXT |
-| 8.4 | `ntfs_index.hpp` → extract types | 1,679 | 4h | 🔄 13.5% done |
+| 8.4 | `ntfs_index.hpp` → extract types | 1,556 | 4h | ✅ 19.8% done |
 | 8.5 | `mft_reader.hpp` → .hpp/.cpp | ~500 | 2h | ⏳ |
 | 8.6 | `io_completion_port.hpp` → .hpp/.cpp | ~300 | 1h | ⏳ |
 
-**ntfs_index.hpp extraction progress:**
+**ntfs_index.hpp extraction complete (7 headers, 384 lines extracted):**
 - ✅ `type_traits_ext.hpp` - `propagate_const`, `fast_subscript`
 - ✅ `mapping_pair_iterator.hpp` - NTFS VCN/LCN run decoder
 - ✅ `file_attributes_ext.hpp` - Extended FILE_ATTRIBUTE_*
 - ✅ `packed_file_size.hpp` - `file_size_type`, `SizeInfo`
 - ✅ `standard_info.hpp` - `StandardInfo` bitfield struct
-- 🔄 `NameInfo`, `LinkInfo`, `StreamInfo`, `ChildInfo` - Next candidates
+- ✅ `ntfs_record_types.hpp` - `small_t`, `NameInfo`, `LinkInfo`, `StreamInfo`, `ChildInfo`
+- ✅ `ntfs_key_type.hpp` - `key_type_internal` packed bitfield key
 
 **Recommended approach for `main_dialog.hpp`:**
 1. Extract event handlers to `main_dialog_events.cpp`
@@ -415,7 +416,7 @@ Mixed naming conventions:
 
 ### Wave 6: Modern C++ (14 hours) ✅ COMPLETE
 1. ✅ Phase 15: Modern C++ upgrades (15 headers, ~80 [[nodiscard]], ~110 noexcept)
-2. 🔄 Phase 16: ntfs_index.hpp splitting (5 headers extracted, 261 lines)
+2. ✅ Phase 16: ntfs_index.hpp splitting (7 headers extracted, 384 lines, 19.8% reduction)
 
 ---
 
@@ -466,26 +467,21 @@ Extract reusable types from `ntfs_index.hpp` (1,940 lines) into separate headers
 | `src/core/file_attributes_ext.hpp` | 79 | Extended FILE_ATTRIBUTE_* |
 | `src/core/packed_file_size.hpp` | 60 | `file_size_type`, `SizeInfo` |
 | `src/core/standard_info.hpp` | 77 | `StandardInfo` bitfield struct |
-| **Total** | **367** | **261 lines removed from ntfs_index.hpp** |
+| `src/core/ntfs_record_types.hpp` | 97 | `small_t`, `NameInfo`, `LinkInfo`, `StreamInfo`, `ChildInfo` |
+| `src/core/ntfs_key_type.hpp` | 103 | `key_type_internal` packed bitfield key |
+| **Total** | **567** | **384 lines removed from ntfs_index.hpp** |
 
-**ntfs_index.hpp**: 1,940 → 1,679 lines (**13.5% reduction**)
+**ntfs_index.hpp**: 1,940 → 1,556 lines (**19.8% reduction**)
 
-### Next Extraction Candidates
+### Types That Should Stay (Tightly Coupled)
+- `ParentIterator` (~250 lines) - Uses NtfsIndex private members and methods
+- `Matcher` template (~200 lines) - Uses NtfsIndex private members and methods
+- `file_pointers` (~15 lines) - Uses NtfsIndex nested types
+- `Record` (~15 lines) - Depends on all other types
 
-| Type | Lines | Notes |
-|------|-------|-------|
-| `NameInfo` | ~35 | Name offset/length with ASCII flag |
-| `LinkInfo` | ~15 | Hard link information |
-| `StreamInfo` | ~15 | NTFS stream information |
-| `ChildInfo` | ~10 | Child directory entry |
-| `key_type_internal` | ~70 | Packed key with bitfields |
+These types access private members like `names`, `records_lookup`, `nameinfos`, `streaminfos`, `childinfos` and private methods like `find()`, `nameinfo()`, `streaminfo()`, `childinfo()`. Extracting them would require breaking encapsulation.
 
-### Types That Should Stay
-- `ParentIterator` - Tightly coupled to NtfsIndex internals
-- `Matcher` template - Uses NtfsIndex private members
-- `Record` - Depends on all other types
-
-**Estimated Remaining**: 3 hours
+**Status**: ✅ COMPLETE - All extractable types have been extracted
 
 ---
 
@@ -513,7 +509,7 @@ The codebase is considered "modern" when:
 | File | Lines | Status |
 |------|-------|--------|
 | `src/gui/main_dialog.hpp` | 3,909 | 🔴 Needs splitting |
-| `src/index/ntfs_index.hpp` | **1,679** | 🔄 Splitting in progress (-261 lines) |
+| `src/index/ntfs_index.hpp` | **1,556** | ✅ Splitting complete (-384 lines, 19.8%) |
 | `src/cli/cli_main.hpp` | 1,182 | 🟡 Self-contained |
 | `src/search/string_matcher.cpp` | 765 | ✅ OK |
 | `src/cli/mft_diagnostics.cpp` | 714 | ✅ OK |
@@ -528,13 +524,13 @@ The codebase is considered "modern" when:
 ```
 src/
 ├── cli/      5 files (2,197 lines)
-├── core/     4 files (ntfs_types, file_attributes_ext, packed_file_size, standard_info)
+├── core/     6 files (ntfs_types, file_attributes_ext, packed_file_size, standard_info, ntfs_record_types, ntfs_key_type)
 ├── gui/      8 files (5,383 lines)
 ├── index/    2 files (ntfs_index, mapping_pair_iterator)
 ├── io/       5 files (~1,500 lines)
 ├── search/   4 files (~1,100 lines)
 └── util/    35 files (~3,100 lines) - includes type_traits_ext
-Total: 59 headers, 5 cpp files (+5 new headers from Phase 16)
+Total: 61 headers, 5 cpp files (+7 new headers from Phase 16)
 ```
 
 ---
