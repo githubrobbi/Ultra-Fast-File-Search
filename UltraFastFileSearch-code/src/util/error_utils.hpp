@@ -19,6 +19,7 @@
 #include <tchar.h>
 #include <atlbase.h>
 #include <atlexcept.h>
+#include <ProvExce.h>  // For CStructured_Exception
 
 #include <cstdarg>
 #include <string>

@@ -336,7 +336,7 @@ public:
 namespace std
 {
 	typedef basic_string<TCHAR> tstring;
-	typedef basic_vector_based_string<TCHAR, std::char_traits<TCHAR>, dynamic_allocator<TCHAR>> tvstring;
+	typedef basic_vector_based_string<TCHAR, std::char_traits<TCHAR>, ::uffs::dynamic_allocator<TCHAR>> tvstring;
 }
 
 #endif // UFFS_CORE_TYPES_HPP
