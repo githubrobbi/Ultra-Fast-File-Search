@@ -1,6 +1,30 @@
 #pragma once
 
+// ============================================================================
+// CLI Entry Point - main()
+// ============================================================================
+// This header contains the main() function for the command-line interface.
+// It is included at the end of UltraFastFileSearch.cpp where all dependencies
+// are already defined.
+//
+// Dependencies (provided by including translation unit):
+// - NtfsIndex, IoCompletionPort, OverlappedNtfsMftReadPayload
+// - MatchOperation, Handle, intrusive_ptr
+// - NFormat, format_filetime, GetAnyErrorText
+// - get_volume_path_names, drivenames, replaceAll, removeSpaces
+// - adddirsep, deldirsep, isdevnull
+// - CommandLineParser, COL_* constants
+// - boost::to_upper
+// ============================================================================
+
 #include "mft_diagnostics.hpp"
+#include "command_line_parser.hpp"
+#include "../util/string_utils.hpp"
+#include "../util/volume_utils.hpp"
+#include "../util/nformat_ext.hpp"
+#include "../util/time_utils.hpp"
+#include "../util/devnull_check.hpp"
+#include "../search/match_operation.hpp"
 
 int main(int argc, char* argv[])
 	{
