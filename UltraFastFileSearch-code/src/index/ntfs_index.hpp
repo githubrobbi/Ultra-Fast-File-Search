@@ -23,6 +23,8 @@
 #include "../io/io_priority.hpp"
 #include "../util/type_traits_ext.hpp"
 #include "../core/file_attributes_ext.hpp"
+#include "../core/packed_file_size.hpp"
+#include "../core/standard_info.hpp"
 #include "mapping_pair_iterator.hpp"
 
 class NtfsIndex : public RefCounted < NtfsIndex>
@@ -32,137 +34,19 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 	{
 		typedef unsigned int type;
 	};
-#pragma pack(push, 1)
-	class file_size_type
-	{
-		unsigned int low;
-		unsigned short high;
-		typedef file_size_type this_type;
-	public:
-		file_size_type() noexcept : low(), high() {}
-
-		file_size_type(unsigned long long
-			const value) noexcept : low(static_cast<unsigned int> (value)), high(static_cast<unsigned short> (value >> (sizeof(low) * CHAR_BIT))) {}
-
-		[[nodiscard]] operator unsigned long long() const noexcept
-		{
-			return static_cast<unsigned long long> (this->low) | (static_cast<unsigned long long> (this->high) << (sizeof(this->low) * CHAR_BIT));
-		}
-
-		file_size_type operator+=(this_type
-			const value) noexcept
-		{
-			return *this = static_cast<unsigned long long> (*this) + static_cast<unsigned long long> (value);
-		}
-
-		file_size_type operator-=(this_type
-			const value) noexcept
-		{
-			return *this = static_cast<unsigned long long> (*this) - static_cast<unsigned long long> (value);
-		}
-
-		[[nodiscard]] bool operator!() const noexcept
-		{
-			return !this->low && !this->high;
-		}
-	};
+	// file_size_type is now in packed_file_size.hpp
+	using ::uffs::file_size_type;
 
 	static unsigned int IsWow64Process_()
 	{
 		return ::IsWow64Process(GetCurrentProcess(), &(BOOL&) value_initialized<BOOL>()) && ((BOOL&) value_initialized<BOOL>());
 	}
 
-	struct StandardInfo
-	{
-		unsigned long long
-			created,
-			written,
-			accessed           : 0x40 - 6,
-			//is_system        : 1,
-			//is_directory     : 1,
-			//is_sparse        : 1,
-			//is_compressed    : 1,
-			//is_encrypted     : 1,
-			//is_reparse       : 1,
-			is_readonly        : 1,
-			is_archive         : 1,
-			is_system          : 1,
-			is_hidden          : 1,
-			is_offline         : 1,
-			is_notcontentidx   : 1,
-			is_noscrubdata     : 1,
-			is_integretystream : 1,
-			is_pinned          : 1,
-			is_unpinned        : 1,
-			is_directory       : 1,
-			is_compressed      : 1,
-			is_encrypted       : 1,
-			is_sparsefile      : 1,
-			is_reparsepoint    : 1;
+	// StandardInfo is now in standard_info.hpp
+	using ::uffs::StandardInfo;
 
-		// FILE_ATTRIBUTE_* constants are in file_attributes_ext.hpp
-
-		[[nodiscard]] unsigned long attributes() const noexcept
-		{
-			//return (this->is_system     ? FILE_ATTRIBUTE_SYSTEM              : 0U) |
-			//	(this->is_directory       ? FILE_ATTRIBUTE_DIRECTORY           : 0U) |
-			//	(this->is_sparse          ? FILE_ATTRIBUTE_SPARSE_FILE         : 0U) |
-			//	(this->is_compressed      ? FILE_ATTRIBUTE_COMPRESSED          : 0U) |
-			//	(this->is_encrypted       ? FILE_ATTRIBUTE_ENCRYPTED           : 0U) |
-			//	(this->is_reparse         ? FILE_ATTRIBUTE_REPARSE_POINT       : 0U);
-
-			// #####
-			return (this->is_readonly     ? FILE_ATTRIBUTE_READONLY            : 0U) |
-				(this->is_archive         ? FILE_ATTRIBUTE_ARCHIVE             : 0U) |
-				(this->is_system          ? FILE_ATTRIBUTE_SYSTEM              : 0U) |
-				(this->is_hidden          ? FILE_ATTRIBUTE_HIDDEN              : 0U) |
-				(this->is_offline         ? FILE_ATTRIBUTE_OFFLINE             : 0U) |
-				(this->is_notcontentidx   ? FILE_ATTRIBUTE_NOT_CONTENT_INDEXED : 0U) |
-				(this->is_noscrubdata     ? FILE_ATTRIBUTE_NO_SCRUB_DATA       : 0U) |
-				(this->is_integretystream ? FILE_ATTRIBUTE_INTEGRITY_STREAM    : 0U) |
-				(this->is_pinned          ? FILE_ATTRIBUTE_PINNED              : 0U) |
-				(this->is_unpinned        ? FILE_ATTRIBUTE_UNPINNED            : 0U) |
-				(this->is_directory       ? FILE_ATTRIBUTE_DIRECTORY           : 0U) |
-				(this->is_compressed      ? FILE_ATTRIBUTE_COMPRESSED          : 0U) |
-				(this->is_encrypted       ? FILE_ATTRIBUTE_ENCRYPTED           : 0U) |
-				(this->is_sparsefile      ? FILE_ATTRIBUTE_SPARSE_FILE         : 0U) |
-				(this->is_reparsepoint    ? FILE_ATTRIBUTE_REPARSE_POINT       : 0U);
-		}
-
-		void attributes(unsigned long
-			const value) noexcept
-		{
-			//this->is_system        = !!(value & FILE_ATTRIBUTE_SYSTEM);
-			//this->is_directory     = !!(value & FILE_ATTRIBUTE_DIRECTORY);
-			//this->is_sparse        = !!(value & FILE_ATTRIBUTE_SPARSE_FILE);
-			//this->is_compressed    = !!(value & FILE_ATTRIBUTE_COMPRESSED);
-			//this->is_encrypted     = !!(value & FILE_ATTRIBUTE_ENCRYPTED);
-			//this->is_reparse       = !!(value & FILE_ATTRIBUTE_REPARSE_POINT);
-
-			this->is_readonly        = !!(value & FILE_ATTRIBUTE_READONLY);
-			this->is_archive         = !!(value & FILE_ATTRIBUTE_ARCHIVE);
-			this->is_system          = !!(value & FILE_ATTRIBUTE_SYSTEM);
-			this->is_hidden          = !!(value & FILE_ATTRIBUTE_HIDDEN);
-			this->is_offline         = !!(value & FILE_ATTRIBUTE_OFFLINE);
-			this->is_notcontentidx   = !!(value & FILE_ATTRIBUTE_NOT_CONTENT_INDEXED);
-			this->is_noscrubdata     = !!(value & FILE_ATTRIBUTE_NO_SCRUB_DATA);
-			this->is_integretystream = !!(value & FILE_ATTRIBUTE_INTEGRITY_STREAM);
-			this->is_pinned          = !!(value & FILE_ATTRIBUTE_PINNED);
-			this->is_unpinned        = !!(value & FILE_ATTRIBUTE_UNPINNED);
-			this->is_directory       = !!(value & FILE_ATTRIBUTE_DIRECTORY);
-			this->is_compressed      = !!(value & FILE_ATTRIBUTE_COMPRESSED);
-			this->is_encrypted       = !!(value & FILE_ATTRIBUTE_ENCRYPTED);
-			this->is_sparsefile      = !!(value & FILE_ATTRIBUTE_SPARSE_FILE);
-			this->is_reparsepoint    = !!(value & FILE_ATTRIBUTE_REPARSE_POINT);
-		}
-	};
-
-
-	struct SizeInfo
-	{
-		file_size_type length, allocated, bulkiness;
-		value_initialized < unsigned int>::type treesize;
-	};
+	// SizeInfo is now in packed_file_size.hpp
+	using ::uffs::SizeInfo;
 
 	friend struct std::is_scalar<StandardInfo>;
 	struct NameInfo
