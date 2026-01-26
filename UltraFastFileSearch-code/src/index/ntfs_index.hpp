@@ -35,7 +35,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 		typedef unsigned int type;
 	};
 	// file_size_type is now in packed_file_size.hpp
-	using ::uffs::file_size_type;
+	typedef ::uffs::file_size_type file_size_type;
 
 	static unsigned int IsWow64Process_()
 	{
@@ -43,11 +43,12 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 	}
 
 	// StandardInfo is now in standard_info.hpp
-	using ::uffs::StandardInfo;
+	typedef ::uffs::StandardInfo StandardInfo;
 
 	// SizeInfo is now in packed_file_size.hpp
-	using ::uffs::SizeInfo;
+	typedef ::uffs::SizeInfo SizeInfo;
 
+#pragma pack(push, 1)
 	friend struct std::is_scalar<StandardInfo>;
 	struct NameInfo
 	{
