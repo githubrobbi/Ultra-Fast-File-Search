@@ -21,34 +21,7 @@
 #include "../util/error_utils.hpp"
 #include "../io/winnt_types.hpp"
 #include "../io/io_priority.hpp"
-
-// propagate_const template for const propagation through pointers
-template < class From, class To > struct propagate_const
-{
-	typedef To type;
-};
-
-template < class From, class To > struct propagate_const < From
-	const, To> : propagate_const<From, To
-	const > {};
-
-template < class From, class To > struct propagate_const < From&, To> : propagate_const<From, To> {};
-
-// fast_subscript template for optimized array subscripting
-template < class It>
-typename propagate_const < typename std::iterator_traits<It>::reference, typename std::iterator_traits<It>::value_type>::type* fast_subscript(It
-	const it, size_t
-	const i)
-{
-	return
-
-#if 1
-		&*(it + static_cast<ptrdiff_t> (i))
-#else
-		reinterpret_cast<typename propagate_const < typename std::iterator_traits<It>::reference, typename std::iterator_traits<It>::value_type >::type*> (reinterpret_cast<typename propagate_const < typename std::iterator_traits<It>::reference, unsigned char >::type*> (&*it) + i * constant<sizeof(*it) >())
-#endif
-		;
-}
+#include "../util/type_traits_ext.hpp"
 
 class NtfsIndex : public RefCounted < NtfsIndex>
 {
@@ -64,29 +37,29 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 		unsigned short high;
 		typedef file_size_type this_type;
 	public:
-		file_size_type() : low(), high() {}
+		file_size_type() noexcept : low(), high() {}
 
 		file_size_type(unsigned long long
-			const value) : low(static_cast<unsigned int> (value)), high(static_cast<unsigned short> (value >> (sizeof(low) * CHAR_BIT))) {}
+			const value) noexcept : low(static_cast<unsigned int> (value)), high(static_cast<unsigned short> (value >> (sizeof(low) * CHAR_BIT))) {}
 
-		operator unsigned long long() const
+		[[nodiscard]] operator unsigned long long() const noexcept
 		{
 			return static_cast<unsigned long long> (this->low) | (static_cast<unsigned long long> (this->high) << (sizeof(this->low) * CHAR_BIT));
 		}
 
 		file_size_type operator+=(this_type
-			const value)
+			const value) noexcept
 		{
 			return *this = static_cast<unsigned long long> (*this) + static_cast<unsigned long long> (value);
 		}
 
 		file_size_type operator-=(this_type
-			const value)
+			const value) noexcept
 		{
 			return *this = static_cast<unsigned long long> (*this) - static_cast<unsigned long long> (value);
 		}
 
-		bool operator!() const
+		[[nodiscard]] bool operator!() const noexcept
 		{
 			return !this->low && !this->high;
 		}
@@ -171,7 +144,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 #define FILE_ATTRIBUTE_RECALL_ON_OPEN        0x00040000
 #define FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS 0x00400000
 
-			unsigned long attributes() const
+		[[nodiscard]] unsigned long attributes() const noexcept
 		{
 			//return (this->is_system     ? FILE_ATTRIBUTE_SYSTEM              : 0U) |
 			//	(this->is_directory       ? FILE_ATTRIBUTE_DIRECTORY           : 0U) |
@@ -199,7 +172,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 		}
 
 		void attributes(unsigned long
-			const value)
+			const value) noexcept
 		{
 			//this->is_system        = !!(value & FILE_ATTRIBUTE_SYSTEM);
 			//this->is_directory     = !!(value & FILE_ATTRIBUTE_DIRECTORY);
@@ -237,18 +210,18 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 	struct NameInfo
 	{
 		small_t<size_t>::type _offset;
-		bool ascii() const
+		[[nodiscard]] bool ascii() const noexcept
 		{
 			return !!(this->_offset & 1U);
 		}
 
 		void ascii(bool
-			const value)
+			const value) noexcept
 		{
 			this->_offset = static_cast<small_t<size_t>::type> ((this->_offset & static_cast<small_t<size_t>::type> (~static_cast<small_t<size_t>::type> (1U))) | (value ? 1U : small_t<size_t>::type()));
 		}
 
-		small_t<size_t>::type offset() const
+		[[nodiscard]] small_t<size_t>::type offset() const noexcept
 		{
 			small_t<size_t>::type result = this->_offset >> 1;
 			if (result == (static_cast<small_t<size_t>::type> (negative_one) >> 1))
@@ -260,7 +233,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 		}
 
 		void offset(small_t<size_t>::type
-			const value)
+			const value) noexcept
 		{
 			this->_offset = (value << 1) | (this->_offset & 1U);
 		}
@@ -361,21 +334,21 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 		typedef unsigned short name_info_type;
 		typedef unsigned short stream_info_type;
 		typedef unsigned short index_type;
-		frs_type frs() const
+		[[nodiscard]] frs_type frs() const noexcept
 		{
 			frs_type
 				const result = this->_frs;
 			return result;
 		}
 
-		name_info_type name_info() const
+		[[nodiscard]] name_info_type name_info() const noexcept
 		{
 			name_info_type
 				const result = this->_name_info;
 			return result == ((static_cast<name_info_type> (1) << name_info_bits) - 1) ? ~name_info_type() : result;
 		}
 
-		name_info_type stream_info() const
+		[[nodiscard]] name_info_type stream_info() const noexcept
 		{
 
 			stream_info_type
@@ -384,12 +357,12 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 		}
 
 		void stream_info(name_info_type
-			const value)
+			const value) noexcept
 		{
 			this->_stream_info = value;
 		}
 
-		index_type index() const
+		[[nodiscard]] index_type index() const noexcept
 		{
 			index_type
 				const result = this->_index;
@@ -397,7 +370,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 		}
 
 		void index(name_info_type
-			const value)
+			const value) noexcept
 		{
 			this->_index = value;
 		}
@@ -405,10 +378,10 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 		explicit key_type_internal(frs_type
 			const frs, name_info_type
 			const name_info, stream_info_type
-			const stream_info) : _frs(frs), _name_info(name_info), _stream_info(stream_info), _index(negative_one) {}
+			const stream_info) noexcept : _frs(frs), _name_info(name_info), _stream_info(stream_info), _index(negative_one) {}
 
-		bool operator==(key_type_internal
-			const& other) const
+		[[nodiscard]] bool operator==(key_type_internal
+			const& other) const noexcept
 		{
 			return this->_frs == other._frs && this->_name_info == other._name_info && this->_stream_info == other._stream_info;
 		}
@@ -429,7 +402,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 		{
 			value_type(vcn_type
 				const next_vcn, lcn_type
-				const current_lcn) : next_vcn(next_vcn), current_lcn(current_lcn) {}
+				const current_lcn) noexcept : next_vcn(next_vcn), current_lcn(current_lcn) {}
 
 			vcn_type next_vcn;
 			lcn_type current_lcn;
@@ -438,7 +411,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 		explicit mapping_pair_iterator(ntfs::ATTRIBUTE_RECORD_HEADER
 			const* const ah, size_t
 			const max_length = ~size_t(), lcn_type
-			const current_lcn = lcn_type()) :
+			const current_lcn = lcn_type()) noexcept :
 			mapping_pairs(reinterpret_cast<unsigned char
 				const*> (ah) + static_cast<ptrdiff_t> (ah->NonResident.MappingPairsOffset)),
 			ah_end(reinterpret_cast<unsigned char
@@ -446,24 +419,24 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 			j(0),
 			value(ah->NonResident.LowestVCN, current_lcn) {}
 
-		bool is_final() const
+		[[nodiscard]] bool is_final() const noexcept
 		{
 			return !(mapping_pairs[j] && &mapping_pairs[j] < ah_end);
 		}
 
-		value_type
-			const& operator* ()const
+		[[nodiscard]] value_type
+			const& operator* () const noexcept
 		{
 			return this->value;
 		}
 
-		value_type
-			const* operator->() const
+		[[nodiscard]] value_type
+			const* operator->() const noexcept
 		{
 			return &**this;
 		}
 
-		this_type& operator++()
+		this_type& operator++() noexcept
 		{
 			unsigned char
 				const lv = mapping_pairs[j++];
@@ -648,7 +621,7 @@ public: typedef key_type_internal key_type;
 	  NtfsIndex(std::tvstring value) : _root_path(value), _finished_event(CreateEvent(nullptr, TRUE, FALSE, nullptr)), _finished(), _total_names_and_streams(0), _cancelled(false), _records_so_far(0), _preprocessed_so_far(0), _perf_reports_circ(1 << 6), _perf_avg_speed(Speed()), reserved_clusters(0) {}
 	  ~NtfsIndex() {}
 
-	  bool init_called() const
+	  [[nodiscard]] bool init_called() const noexcept
 	  {
 		  return this->_init_called;
 	  }
@@ -702,99 +675,99 @@ public: typedef key_type_internal key_type;
 		  this->_finished = result;
 	  }
 
-	  NtfsIndex* unvolatile() volatile
+	  [[nodiscard]] NtfsIndex* unvolatile() volatile noexcept
 	  {
 		  return const_cast<NtfsIndex*> (this);
 	  }
 
-	  NtfsIndex
-		  const* unvolatile() const volatile
+	  [[nodiscard]] NtfsIndex
+		  const* unvolatile() const volatile noexcept
 	  {
 		  return const_cast<NtfsIndex*> (this);
 	  }
 
-	  size_t total_names_and_streams() const
+	  [[nodiscard]] size_t total_names_and_streams() const noexcept
 	  {
 		  return this->_total_names_and_streams.load(atomic_namespace::memory_order_relaxed);
 	  }
 
-	  size_t total_names_and_streams() const volatile
+	  [[nodiscard]] size_t total_names_and_streams() const volatile noexcept
 	  {
 		  return this->_total_names_and_streams.load(atomic_namespace::memory_order_acquire);
 	  }
 
-	  size_t total_names() const
+	  [[nodiscard]] size_t total_names() const noexcept
 	  {
 		  return this->nameinfos.size();
 	  }
 
-	  size_t expected_records() const
+	  [[nodiscard]] size_t expected_records() const noexcept
 	  {
 		  return this->_expected_records;
 	  }
 
-	  size_t preprocessed_so_far() const volatile
+	  [[nodiscard]] size_t preprocessed_so_far() const volatile noexcept
 	  {
 		  return this->_preprocessed_so_far.load(atomic_namespace::memory_order_acquire);
 	  }
 
-	  size_t preprocessed_so_far() const
+	  [[nodiscard]] size_t preprocessed_so_far() const noexcept
 	  {
 		  return this->_preprocessed_so_far.load(atomic_namespace::memory_order_relaxed);
 	  }
 
-	  size_t records_so_far() const volatile
+	  [[nodiscard]] size_t records_so_far() const volatile noexcept
 	  {
 		  return this->_records_so_far.load(atomic_namespace::memory_order_acquire);
 	  }
 
-	  size_t records_so_far() const
+	  [[nodiscard]] size_t records_so_far() const noexcept
 	  {
 		  return this->_records_so_far.load(atomic_namespace::memory_order_relaxed);
 	  }
 
-	  void* volume() const volatile
+	  [[nodiscard]] void* volume() const volatile noexcept
 	  {
 		  return this->_volume.value;
 	  }
 
-	  atomic_namespace::recursive_mutex& get_mutex() const volatile
+	  [[nodiscard]] atomic_namespace::recursive_mutex& get_mutex() const volatile noexcept
 	  {
 		  return this->unvolatile()->_mutex;
 	  }
 
-	  Speed speed() const volatile
+	  [[nodiscard]] Speed speed() const volatile noexcept
 	  {
 		  Speed total;
 		  total = this->_perf_avg_speed.load(atomic_namespace::memory_order_acquire);
 		  return total;
 	  }
 
-	  std::tvstring const& root_path() const volatile
+	  [[nodiscard]] std::tvstring const& root_path() const volatile noexcept
 	  {
 		  return const_cast<std::tvstring
 			  const&> (this->_root_path);
 	  }
 
-	  unsigned int get_finished() const volatile
+	  [[nodiscard]] unsigned int get_finished() const volatile noexcept
 	  {
 		  return this->_finished.load();
 	  }
 
-	  bool cancelled() const volatile
+	  [[nodiscard]] bool cancelled() const volatile noexcept
 	  {
 		  this_type
 			  const* const me = this->unvolatile();
 		  return me->_cancelled.load(atomic_namespace::memory_order_acquire);
 	  }
 
-	  void cancel() volatile
+	  void cancel() volatile noexcept
 	  {
 		  this_type* const me = this->unvolatile();
 		  me->_cancelled.store(true, atomic_namespace::memory_order_release);
 	  }
 
-	  uintptr_t finished_event() const
+	  [[nodiscard]] uintptr_t finished_event() const noexcept
 	  {
 		  return reinterpret_cast<uintptr_t> (this->_finished_event.value);
 	  }
@@ -1342,13 +1315,13 @@ public: typedef key_type_internal key_type;
 			  const* link;
 		  StreamInfos::value_type
 			  const* stream;
-		  key_type parent() const
+		  [[nodiscard]] key_type parent() const noexcept
 		  {
 			  return key_type(link->parent /*... | 0 | 0 (since we want the first name of all ancestors)*/, static_cast<key_type::name_info_type> (~key_type::name_info_type()), static_cast<key_type::stream_info_type> (~key_type::stream_info_type()));
 		  }
 	  };
 
-	  file_pointers get_file_pointers(key_type key) const
+	  [[nodiscard]] file_pointers get_file_pointers(key_type key) const
 	  {
 		  bool wait_for_finish = false;	// has performance penalty
 		  if (wait_for_finish && WaitForSingleObject(this->_finished_event, 0) == WAIT_TIMEOUT)
@@ -1415,12 +1388,12 @@ public: typedef key_type_internal key_type;
 		  unsigned short iteration;
 		  file_pointers ptrs;
 		  value_type_internal result;
-		  bool is_root() const
+		  [[nodiscard]] bool is_root() const noexcept
 		  {
 			  return key.frs() == 0x000000000005;
 		  }
 
-		  bool is_attribute() const
+		  [[nodiscard]] bool is_attribute() const noexcept
 		  {
 			  return ptrs.stream->type_name_id && (ptrs.stream->type_name_id << (CHAR_BIT / 2)) != static_cast<int>(ntfs::AttributeTypeCode::AttributeData);
 		  }
@@ -1483,14 +1456,14 @@ public: typedef key_type_internal key_type;
 
 		explicit ParentIterator(NtfsIndex
 			const* const index, key_type
-			const& key) : index(index), key(key), state(0), iteration(0) {}
+			const& key) noexcept : index(index), key(key), state(0), iteration(0) {}
 
-		unsigned int attributes()
+		[[nodiscard]] unsigned int attributes() const noexcept
 		{
 			return ptrs.record->stdinfo.attributes();
 		}
 
-		bool empty() const
+		[[nodiscard]] bool empty() const noexcept
 		{
 			return !this->index;
 		}
@@ -1500,31 +1473,31 @@ public: typedef key_type_internal key_type;
 			return ++ * this, !this->empty();
 		}
 
-		value_type
-			const& operator* ()const
+		[[nodiscard]] value_type
+			const& operator* () const noexcept
 		{
 			return this->result;
 		}
 
-		value_type
-			const* operator->() const
+		[[nodiscard]] value_type
+			const* operator->() const noexcept
 		{
 			return &this->result;
 		}
 
-		unsigned short icomponent() const
+		[[nodiscard]] unsigned short icomponent() const noexcept
 		{
 			return this->iteration;
 		}
 
-		bool operator==(this_type
-			const& other) const
+		[[nodiscard]] bool operator==(this_type
+			const& other) const noexcept
 		{
 			return this->index == other.index && this->key == other.key && this->state == other.state;
 		}
 
-		bool operator!=(this_type
-			const& other) const
+		[[nodiscard]] bool operator!=(this_type
+			const& other) const noexcept
 		{
 			return !(*this == other);
 		}
@@ -1679,7 +1652,7 @@ public: typedef key_type_internal key_type;
 		  return result.size() - old_size;
 	  }
 
-	  size_info const& get_sizes(key_type
+	  [[nodiscard]] size_info const& get_sizes(key_type
 		  const& key) const
 	  {
 		  StreamInfos::value_type
@@ -1699,7 +1672,7 @@ public: typedef key_type_internal key_type;
 		  return *k;
 	  }
 
-	  standard_info const& get_stdinfo(unsigned int
+	  [[nodiscard]] standard_info const& get_stdinfo(unsigned int
 		  const frn) const
 	  {
 		  return this->find(frn)->stdinfo;
