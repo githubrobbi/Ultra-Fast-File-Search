@@ -1,11 +1,11 @@
 // ============================================================================
-// MFT Diagnostic Tools - Forward Declarations
+// MFT Diagnostic Tools - Declarations
 // ============================================================================
-// These functions are defined in UltraFastFileSearch.cpp and provide
-// diagnostic and benchmarking capabilities for NTFS MFT operations.
-// 
-// TODO: Extract implementations to mft_diagnostics.cpp once dependencies
-//       on the monolith are resolved.
+// These functions provide diagnostic and benchmarking capabilities for NTFS MFT.
+//
+// Implementations:
+// - dump_raw_mft, dump_mft_extents, benchmark_mft_read: mft_diagnostics.cpp
+// - benchmark_index_build: UltraFastFileSearch.cpp (depends on NtfsIndex)
 // ============================================================================
 
 #pragma once

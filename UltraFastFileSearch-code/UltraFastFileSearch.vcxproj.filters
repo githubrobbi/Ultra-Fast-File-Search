@@ -9,6 +9,9 @@
     <ClCompile Include="string_matcher.cpp">
       <Filter>Include Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\cli\mft_diagnostics.cpp">
+      <Filter>Include Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Clang-Compile.bat" />

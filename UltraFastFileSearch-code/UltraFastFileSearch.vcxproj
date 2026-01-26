@@ -198,6 +198,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='COM DEBUG|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="string_matcher.cpp" />
+    <ClCompile Include="src\cli\mft_diagnostics.cpp" />
     <ClCompile Include="src\util\string_utils.cpp" />
     <ClCompile Include="UltraFastFileSearch.cpp" />
   </ItemGroup>
