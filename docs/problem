@@ -6,12 +6,12 @@ File
 Line
 Suppression State
 Details
-Error
-C2446
-'!=': no conversion from 'uffs::File::handle_type *' to 'uffs::File *'
+Warning
+C4865
+'<unnamed-enum-DISPLAYCONFIG_SCALING_IDENTITY>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\file_handle.hpp
-35
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
+2874
 
 
 Error (active)
@@ -63,35 +63,643 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFi
 
 
 Warning
-C4834
-discarding return value of function with [[nodiscard]] attribute
+C4865
+'<unnamed-enum-DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER>': the underlying type will change from 'int' to '__int64' when '/Zc:enumTypes' is specified on the command line
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
-119
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
+2806
 
 
 Warning
-C4834
-discarding return value of function with [[nodiscard]] attribute
+C4865
+'<unnamed-enum-DISPLAYCONFIG_SCANLINE_ORDERING_UNSPECIFIED>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
-195
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
+2831
 
 
 Warning
-C4834
-discarding return value of function with [[nodiscard]] attribute
+C4865
+'<unnamed-enum-DISPLAYCONFIG_ROTATION_IDENTITY>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
-269
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
+2885
+
+
+Warning
+C4865
+'<unnamed-enum-DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
+2894
+
+
+Warning
+C4865
+'<unnamed-enum-DISPLAYCONFIG_PIXELFORMAT_8BPP>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
+2902
+
+
+Warning
+C4865
+'DISPLAYCONFIG_TOPOLOGY_ID': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
+3022
+
+
+Warning
+C4865
+'<unnamed-enum-DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
+3033
+
+
+Warning
+C4865
+'_DISPLAYCONFIG_COLOR_ENCODING': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
+3157
+
+
+Warning
+C4865
+'tagCLSCTX': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\wtypesbase.h
+367
+
+
+Warning
+C4865
+'CO_MARSHALING_CONTEXT_ATTRIBUTES': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\objidlbase.h
+7906
+
+
+Warning
+C4865
+'__MIDL_IBindStatusCallback_0003': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\urlmon.h
+1362
+
+
+Warning
+C4865
+'__MIDL_IBindStatusCallbackEx_0001': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\urlmon.h
+1806
+
+
+Warning
+C4865
+'ATL::_DialogSplitHelper::<unnamed-enum-ATL_WM_OCC_LOADFROMSTREAM>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\atlmfc\include\atlwin.h
+394
+
+
+Warning
+C4865
+'DXGI_COLOR_SPACE_TYPE': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\dxgicommon.h
+27
+
+
+Warning
+C4865
+'DXGI_FORMAT': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\dxgiformat.h
+11
+
+
+Warning
+C4865
+'_FINDTEXT_FLAGS': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\MsHTML.h
+13279
+
+
+Warning
+C4865
+'BrowserNavConstants': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\ExDisp.h
+397
+
+
+Warning
+C4865
+'PROPDESC_TYPE_FLAGS': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\propsys.h
+1840
+
+
+Warning
+C4865
+'FOLDERFLAGS': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\shobjidl_core.h
+5253
+
+
+Warning
+C4865
+'_SVGIO': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\shobjidl_core.h
+5356
+
+
+Warning
+C4865
+'_FILEOPENDIALOGOPTIONS': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\shobjidl_core.h
+19640
+
+
+Warning
+C4865
+'<unnamed-enum-KF_FLAG_DEFAULT>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\shlobj_core.h
+947
+
+
+Warning
+C5267
+definition of implicit copy constructor for 'WTL::CDCT<false>' is deprecated because it has a user-provided destructor
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlgdi.h
+1150
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\command_line_parser.cpp
+1
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\command_line_parser.hpp
+2
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\mft_diagnostics.cpp
+24
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\volume_utils.hpp
+21
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\mft_diagnostics.cpp
+27
+
+
+Warning
+C5219
+implicit conversion from 'uint64_t' to 'double', possible loss of data
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\mft_diagnostics.cpp
+669
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\volume_utils.hpp
+21
+
+
+Warning
+C5267
+definition of implicit copy constructor for 'boost::algorithm::boyer_moore_horspool<tracking_iterator<const wchar_t *>,boost::algorithm::detail::BM_traits<patIter>>' is deprecated because it has a user-provided destructor        with        [            patIter=tracking_iterator<const wchar_t *>        ]
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp
+66
+
+
+Warning
+C5267
+definition of implicit copy constructor for 'boost::algorithm::boyer_moore_horspool<tracking_iterator<case_insensitive_iterator<const wchar_t *>>,boost::algorithm::detail::BM_traits<patIter>>' is deprecated because it has a user-provided destructor        with        [            patIter=tracking_iterator<case_insensitive_iterator<const wchar_t *>>        ]
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp
+66
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\time_utils.hpp
+14
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\match_operation.hpp
+16
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\overlapped.hpp
+17
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\match_operation.hpp
+17
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\command_line_parser.hpp
+2
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\devnull_check.hpp
+17
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+12
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+13
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+14
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+15
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+16
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+17
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+18
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+19
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+20
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+21
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+22
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+23
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+24
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+25
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+8
 
 
 Error
-C3445
-copy-list-initialization of 'uffs::File' cannot use an explicit constructor
+C2039
+'ATTRIBUTE_RECORD_HEADER': is not a member of 'uffs::ntfs'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+28
+
+
+Error
+C2061
+syntax error: identifier 'ATTRIBUTE_RECORD_HEADER'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+28
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+31
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+32
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+33
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+34
+
+
+Error
+C2065
+'max_length': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+34
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+34
+
+
+Error
+C2065
+'max_length': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+34
+
+
+Error
+C2065
+'ah': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+36
+
+
+Error
+C2065
+'current_lcn': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+36
+
+
+Error
+C2661
+'uffs::mapping_pair_iterator::mapping_pair_iterator': no overloaded function takes 2 arguments
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+855
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
+26
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
+27
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\mft_reader.hpp
+27
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\mft_reader.hpp
+28
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\mft_reader.hpp
+29
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_hooks.hpp
+11
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\listview_adapter.hpp
+21
+
+
+Warning
+C5267
+definition of implicit copy constructor for 'WTL::CImageListT<false>' is deprecated because it has a user-provided destructor
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrls.h
+1866
+
+
+Warning
+C5219
+implicit conversion from '__int64' to 'double', possible loss of data
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
+313
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\search_pattern_edit.hpp
+12
+
+
+Warning
+C4464
+relative include path contains '..'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2281
+5
+
+
+Warning
+C5267
+definition of implicit assignment operator for 'WTL::CImageListT<false>' is deprecated because it has a user-provided destructor
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrls.h
+1866
+
+
+Warning
+C5219
+implicit conversion from 'const ptrdiff_t' to 'double', possible loss of data
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+1262
+
+
+Warning
+C5219
+implicit conversion from '_Ty1' to 'double', possible loss of data        with        [            _Ty1=unsigned __int64        ]
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+1674
+
+
+Warning
+C4834
+discarding return value of function with [[nodiscard]] attribute
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+2516
 
 
 Warning
@@ -103,10 +711,18 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\mai
 
 
 Warning
-C4834
-discarding return value of function with [[nodiscard]] attribute
+C4464
+relative include path contains '..'
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-3572
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\x64_launcher.hpp
+17
+
+
+Warning
+C5219
+implicit conversion from 'unsigned __int64' to 'double', possible loss of data
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+618
 
 

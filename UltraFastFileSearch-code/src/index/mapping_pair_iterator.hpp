@@ -25,7 +25,7 @@ struct mapping_pair_iterator
 		lcn_type current_lcn;
 	};
 
-	explicit mapping_pair_iterator(ntfs::ATTRIBUTE_RECORD_HEADER const* const ah,
+	explicit mapping_pair_iterator(::ntfs::ATTRIBUTE_RECORD_HEADER const* const ah,
 		size_t const max_length = ~size_t(),
 		lcn_type const current_lcn = lcn_type()) noexcept
 		: mapping_pairs(reinterpret_cast<unsigned char const*>(ah) +

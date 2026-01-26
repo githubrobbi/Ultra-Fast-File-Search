@@ -2513,7 +2513,7 @@ public:
 							std::tvstring(line_buffer.get_allocator()).swap(line_buffer);
 							if (result == resized)
 							{
-								global_alloc.disown(result);
+								(void)global_alloc.disown(result);
 							}
 						}
 					}

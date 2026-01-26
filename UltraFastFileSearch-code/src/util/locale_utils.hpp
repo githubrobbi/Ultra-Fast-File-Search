@@ -14,9 +14,7 @@
 #include <atlbase.h>
 #include <atlstr.h>
 
-// Forward declaration for safe_stprintf (from error_utils.hpp)
-template <size_t N>
-int safe_stprintf(TCHAR(&s)[N], TCHAR const* const format, ...);
+#include "error_utils.hpp"
 
 namespace uffs {
 
