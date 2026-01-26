@@ -14,7 +14,7 @@
 #include <fcntl.h>
 #include <cstdio>
 
-#include "src/io/winnt_types.hpp"
+#include "../io/winnt_types.hpp"
 
 namespace uffs {
 
