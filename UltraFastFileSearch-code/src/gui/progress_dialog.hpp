@@ -4,10 +4,13 @@
 // ============================================================================
 // Extracted from UltraFastFileSearch.cpp
 // A WTL-based progress dialog with marquee support and cancel functionality.
+//
+// Dependencies (must be included before this header):
+// - CModifiedDialogImpl (from modified_dialog_impl.hpp or monolith)
+// - TempSwap (from temp_swap.hpp or monolith)
+// - WTL::CDialogResize, WTL::CButton, WTL::CProgressBarCtrl
+// - StringLoader, topmostWindow global
 // ============================================================================
-
-#include "modified_dialog_impl.hpp"
-#include "../util/temp_swap.hpp"
 
 class CProgressDialog : private CModifiedDialogImpl<CProgressDialog>, private WTL::CDialogResize<CProgressDialog>
 {
