@@ -287,3 +287,51 @@ int Hook::unset_hook()
 #define HOOK_DEFINE_DEFAULT(ReturnType, Name, Params, XArgs)  \
 	HOOK_DECLARE(void, Name, ReturnType Params, HOOK_EMPTY_XARGS);  \
 	template<> HOOK_TYPE(Name) HOOK_IMPLEMENT(Name, ReturnType Params, XArgs)
+
+// ============================================================================
+// HookedNtUserProps - Caches Get/SetProp results for performance
+// ============================================================================
+// Hooks NtUserGetProp and NtUserSetProp to cache property lookups,
+// avoiding repeated expensive calls for the same window/property.
+// ============================================================================
+struct HookedNtUserProps
+{
+	typedef HookedNtUserProps hook_type;
+	HWND prev_hwnd;
+	ATOM prev_atom;
+	HANDLE prev_result;
+
+	struct : hook_detail::thread_hook_swap<HOOK_TYPE(NtUserGetProp)>
+	{
+		HANDLE operator()(HWND hWnd, ATOM PropId) override
+		{
+			hook_type* const self = CONTAINING_RECORD(this, hook_type,
+				HOOK_CONCAT(hook_, NtUserGetProp));
+			if (self->prev_hwnd != hWnd || self->prev_atom != PropId)
+			{
+				self->prev_result = this->hook_base_type::operator()(hWnd, PropId);
+				self->prev_hwnd = hWnd;
+				self->prev_atom = PropId;
+			}
+			return self->prev_result;
+		}
+	} HOOK_CONCAT(hook_, NtUserGetProp);
+
+	struct : hook_detail::thread_hook_swap<HOOK_TYPE(NtUserSetProp)>
+	{
+		BOOL operator()(HWND hWnd, ATOM PropId, HANDLE value) override
+		{
+			hook_type* const self = CONTAINING_RECORD(this, hook_type,
+				HOOK_CONCAT(hook_, NtUserSetProp));
+			BOOL const result = this->hook_base_type::operator()(hWnd, PropId, value);
+			if (result && self->prev_hwnd == hWnd && self->prev_atom == PropId)
+			{
+				self->prev_result = value;
+			}
+			return result;
+		}
+	} HOOK_CONCAT(hook_, NtUserSetProp);
+
+	HookedNtUserProps() : prev_hwnd(), prev_atom(), prev_result() {}
+	~HookedNtUserProps() {}
+};

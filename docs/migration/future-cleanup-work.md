@@ -28,13 +28,21 @@ The initial 7-phase refactoring is complete, reducing the monolith from 14,155 t
 
 | Metric | Value | Target | Change |
 |--------|-------|--------|--------|
-| Monolith (`UltraFastFileSearch.cpp`) | **2,077 lines** | < 500 lines | **-1,787 lines (46% reduction)** |
+| Monolith (`UltraFastFileSearch.cpp`) | **995 lines** | < 500 lines | **-3,311 lines (77% reduction)** |
 | `main_dialog.hpp` | 3,910 lines | Split into multiple files | - |
 | `ntfs_index.hpp` | 1,936 lines | Split into .hpp/.cpp | - |
-| `.cpp` compilation units | 6 files | 15+ files | +2 (string_utils.cpp, mft_diagnostics.cpp) |
-| Extracted utility headers | 15 files | - | +5 NEW |
+| `.cpp` compilation units | 7 files | 15+ files | +3 (string_utils.cpp, mft_diagnostics.cpp, listview_adapter.cpp) |
+| Extracted utility headers | 20 files | - | +10 NEW |
 | Unit tests | 0 | Full coverage | - |
 | Third-party deps in source | 3 (CLI11, boost, wtl) | 0 (use package manager) | - |
+
+### Recent Extractions (2026-01-26)
+- ✅ Removed duplicate code (ILIsEmpty, WTL namespace) - saved 17 lines
+- ✅ `src/gui/listview_adapter.hpp/.cpp` - ImageListAdapter, ListViewAdapter, autosize_columns (~520 lines)
+- ✅ `src/util/x64_launcher.hpp` - get_app_guid, extract_and_run_if_needed (~145 lines)
+- ✅ `src/gui/string_loader.hpp` - RefCountedCString, StringLoader (~110 lines)
+- ✅ `src/gui/listview_hooks.hpp` - CDisableListViewUnnecessaryMessages, CSetRedraw (~105 lines)
+- ✅ `src/util/nt_user_call_hook.hpp` - Added HookedNtUserProps (~43 lines)
 
 ---
 
@@ -103,33 +111,30 @@ Almost all code is in `.hpp` files with full implementations:
 | 9.9 Extract UTF converter | `src/util/utf_convert.hpp` | ~55 | ✅ DONE |
 | 9.10 Extract MatchOperation | `src/search/match_operation.hpp` | ~130 | ✅ DONE |
 | 9.11 Extract volume utilities | `src/util/volume_utils.hpp` | ~80 | ✅ DONE |
-| 9.12 Reduce monolith to entry point only | `UltraFastFileSearch.cpp` | < 500 | 🔄 IN PROGRESS (2,077 lines) |
+| 9.12 Reduce monolith to entry point only | `UltraFastFileSearch.cpp` | < 500 | 🔄 IN PROGRESS (995 lines) |
+| 9.13 Extract ListViewAdapter + autosize_columns | `src/gui/listview_adapter.hpp/.cpp` | ~520 | ✅ DONE |
+| 9.14 Extract x64 launcher | `src/util/x64_launcher.hpp` | ~145 | ✅ DONE |
+| 9.15 Extract RefCountedCString + StringLoader | `src/gui/string_loader.hpp` | ~110 | ✅ DONE |
+| 9.16 Extract listview hooks | `src/gui/listview_hooks.hpp` | ~105 | ✅ DONE |
+| 9.17 Move HookedNtUserProps | `src/util/nt_user_call_hook.hpp` | ~43 | ✅ DONE |
 
-**Estimated Total**: 8 hours (~2h remaining)
+**Estimated Total**: 8 hours (~1h remaining)
 
-### Remaining Monolith Content (~2,077 lines)
+### Remaining Monolith Content (~995 lines)
 
 | Lines | Content | Extraction Target | Priority |
 |-------|---------|-------------------|----------|
 | 1-150 | Includes, config, macros | Keep (entry point setup) | - |
-| 150-670 | Utility functions (ILIsEmpty, DisplayError, isdevnull, NormalizePath, etc.) | `src/util/misc_utils.hpp` | Medium |
-| 670-900 | Locale/cluster utilities | `src/util/locale_utils.hpp` | Low |
-| 900-1100 | Hook macros, CInvokeImpl | `src/gui/invoke_impl.hpp` | Medium |
-| 1100-1420 | CModifiedDialogImpl, autosize_columns | `src/gui/modified_dialog_impl.hpp` | Medium |
-| 1420-1640 | Includes for extracted headers | Keep (orchestration) | - |
-| 1646-1707 | get_subsystem, get_version, HookedNtUserProps | `src/util/pe_utils.hpp` | Low |
-| 1710-1750 | main_dialog include, My_Stable_sort | Keep (GUI entry) | - |
-| 1751-1896 | get_app_guid, extract_and_run_if_needed | `src/util/x64_launcher.hpp` | Low |
-| 1903-1934 | PACKAGE_VERSION, PrintVersion, s2ws | `src/util/version_info.hpp` | Low |
-| 1955-2065 | benchmark_index_build | Keep (depends on NtfsIndex) | - |
-| 2071-2078 | CLI/GUI includes | Keep (entry points) | - |
+| 150-500 | Utility functions (ILIsEmpty, DisplayError, isdevnull, NormalizePath, etc.) | `src/util/misc_utils.hpp` | Medium |
+| 500-740 | Locale/cluster utilities, hook includes | Keep (orchestration) | - |
+| 740-790 | Extracted header includes | Keep (orchestration) | - |
+| 790-870 | My_Stable_sort, main_dialog include | Keep (GUI entry) | - |
+| 870-940 | PACKAGE_VERSION, PrintVersion, s2ws | `src/util/version_info.hpp` | Low |
+| 940-995 | benchmark_index_build, CLI/GUI includes | Keep (entry points) | - |
 
 **Next extraction candidates (in order):**
-1. **CModifiedDialogImpl** (~200 lines) - Already has header, move to `src/gui/`
-2. **CInvokeImpl** (~100 lines) - GUI utility class
-3. **Utility functions** (~300 lines) - Miscellaneous helpers
-4. **HookedNtUserProps** (~50 lines) - Windows hook utilities
-5. **extract_and_run_if_needed** (~140 lines) - x64 launcher logic
+1. **Utility functions** (~200 lines) - Miscellaneous helpers to `src/util/misc_utils.hpp`
+2. **PACKAGE_VERSION/PrintVersion** (~70 lines) - Version info to `src/util/version_info.hpp`
 
 ---
 
