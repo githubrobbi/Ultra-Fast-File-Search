@@ -62,17 +62,17 @@ public:
 		this->n = static_cast<size_type>(std::uninitialized_copy(other.begin(), other.end(), this->begin()) - this->begin());
 	}
 
-	pointer get() const
+	[[nodiscard]] pointer get() const noexcept
 	{
 		return this->p;
 	}
 
-	size_type size() const
+	[[nodiscard]] size_type size() const noexcept
 	{
 		return this->n;
 	}
 
-	size_type capacity() const
+	[[nodiscard]] size_type capacity() const noexcept
 	{
 		return this->c;
 	}
@@ -82,17 +82,17 @@ public:
 		return other.swap(*this), *this;
 	}
 
-	pointer tail()
+	[[nodiscard]] pointer tail() noexcept
 	{
 		return static_cast<unsigned char*>(this->p) + static_cast<ptrdiff_t>(this->n);
 	}
 
-	const_pointer tail() const
+	[[nodiscard]] const_pointer tail() const noexcept
 	{
 		return static_cast<unsigned char const*>(this->p) + static_cast<ptrdiff_t>(this->n);
 	}
 
-	void swap(this_type& other)
+	void swap(this_type& other) noexcept
 	{
 		using std::swap;
 		swap(this->p, other.p);
@@ -100,32 +100,32 @@ public:
 		swap(this->n, other.n);
 	}
 
-	friend void swap(this_type& a, this_type& b)
+	friend void swap(this_type& a, this_type& b) noexcept
 	{
 		return a.swap(b);
 	}
 
-	iterator begin()
+	[[nodiscard]] iterator begin() noexcept
 	{
 		return static_cast<iterator>(this->get());
 	}
 
-	const_iterator begin() const
+	[[nodiscard]] const_iterator begin() const noexcept
 	{
 		return static_cast<const_iterator>(this->get());
 	}
 
-	iterator end()
+	[[nodiscard]] iterator end() noexcept
 	{
 		return static_cast<iterator>(this->tail());
 	}
 
-	const_iterator end() const
+	[[nodiscard]] const_iterator end() const noexcept
 	{
 		return static_cast<const_iterator>(this->tail());
 	}
 
-	bool empty() const
+	[[nodiscard]] bool empty() const noexcept
 	{
 		return !this->n;
 	}

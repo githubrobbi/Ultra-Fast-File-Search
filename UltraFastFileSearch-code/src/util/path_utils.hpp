@@ -68,7 +68,7 @@ inline void remove_path_stream_and_trailing_sep(std::tvstring& path)
 // ============================================================================
 // NormalizePath - Normalize a path (collapse separators, make absolute)
 // ============================================================================
-inline std::tvstring NormalizePath(std::tvstring const& path)
+[[nodiscard]] inline std::tvstring NormalizePath(std::tvstring const& path)
 {
 	std::tvstring result;
 	bool wasSep = false;
@@ -98,7 +98,7 @@ inline std::tvstring NormalizePath(std::tvstring const& path)
 // ============================================================================
 // GetDisplayName - Get shell display name for a path
 // ============================================================================
-inline std::tstring GetDisplayName(HWND hWnd, const std::tstring& path, DWORD shgdn)
+[[nodiscard]] inline std::tstring GetDisplayName(HWND hWnd, const std::tstring& path, DWORD shgdn)
 {
 	ATL::CComPtr<IShellFolder> desktop;
 	STRRET ret = {};

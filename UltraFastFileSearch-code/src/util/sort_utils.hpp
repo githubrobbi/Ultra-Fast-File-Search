@@ -16,7 +16,7 @@ namespace uffs {
 // is_sorted_ex - Check if range is sorted (with optional reverse check)
 // ============================================================================
 template <class It, class Less>
-bool is_sorted_ex(It begin, It const end, Less less, bool const reversed = false)
+[[nodiscard]] bool is_sorted_ex(It begin, It const end, Less less, bool const reversed = false)
 {
 	if (begin != end)
 	{

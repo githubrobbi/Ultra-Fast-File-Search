@@ -24,7 +24,7 @@ struct intrusive_ptr
 
     void ref() { if (this->p) { intrusive_ptr_add_ref(this->p); } }
 
-    pointer detach() { pointer p_ = this->p; this->p = nullptr; return p_; }
+    [[nodiscard]] pointer detach() noexcept { pointer p_ = this->p; this->p = nullptr; return p_; }
 
     intrusive_ptr(pointer const p = nullptr, bool const addref = true) : p(p)
     { if (addref) { this->ref(); } }
@@ -35,37 +35,41 @@ struct intrusive_ptr
 
     intrusive_ptr(this_type const& other) : p(other.p) { this->ref(); }
 
-    this_type& operator=(this_type other) { return other.swap(*this), *this; }
+    // Move constructor
+    intrusive_ptr(this_type&& other) noexcept : p(other.p) { other.p = nullptr; }
 
-    pointer operator->() const { return this->p; }
-    pointer get() const { return this->p; }
+    this_type& operator=(this_type other) noexcept { return other.swap(*this), *this; }
+
+    [[nodiscard]] pointer operator->() const noexcept { return this->p; }
+    [[nodiscard]] pointer get() const noexcept { return this->p; }
+    [[nodiscard]] explicit operator bool() const noexcept { return this->p != nullptr; }
 
     void reset(pointer const p = nullptr, bool const add_ref = true)
     { this_type(p, add_ref).swap(*this); }
 
-    operator pointer() { return this->p; }
-    operator const_pointer() const { return this->p; }
+    operator pointer() noexcept { return this->p; }
+    operator const_pointer() const noexcept { return this->p; }
 
-    void swap(this_type& other) { using std::swap; swap(this->p, other.p); }
-    friend void swap(this_type& a, this_type& b) { return a.swap(b); }
+    void swap(this_type& other) noexcept { using std::swap; swap(this->p, other.p); }
+    friend void swap(this_type& a, this_type& b) noexcept { return a.swap(b); }
 
-    bool operator==(const_pointer const p) const { return this->p == p; }
-    friend bool operator==(const_pointer const p, this_type const& me) { return p == me.get(); }
+    [[nodiscard]] bool operator==(const_pointer const p) const noexcept { return this->p == p; }
+    [[nodiscard]] friend bool operator==(const_pointer const p, this_type const& me) noexcept { return p == me.get(); }
 
-    bool operator!=(const_pointer const p) const { return this->p != p; }
-    friend bool operator!=(const_pointer const p, this_type const& me) { return p != me.get(); }
+    [[nodiscard]] bool operator!=(const_pointer const p) const noexcept { return this->p != p; }
+    [[nodiscard]] friend bool operator!=(const_pointer const p, this_type const& me) noexcept { return p != me.get(); }
 
-    bool operator<=(const_pointer const p) const { return this->p <= p; }
-    friend bool operator<=(const_pointer const p, this_type const& me) { return p <= me.get(); }
+    [[nodiscard]] bool operator<=(const_pointer const p) const noexcept { return this->p <= p; }
+    [[nodiscard]] friend bool operator<=(const_pointer const p, this_type const& me) noexcept { return p <= me.get(); }
 
-    bool operator>=(const_pointer const p) const { return this->p >= p; }
-    friend bool operator>=(const_pointer const p, this_type const& me) { return p >= me.get(); }
+    [[nodiscard]] bool operator>=(const_pointer const p) const noexcept { return this->p >= p; }
+    [[nodiscard]] friend bool operator>=(const_pointer const p, this_type const& me) noexcept { return p >= me.get(); }
 
-    bool operator<(const_pointer const p) const { return this->p < p; }
-    friend bool operator<(const_pointer const p, this_type const& me) { return p < me.get(); }
+    [[nodiscard]] bool operator<(const_pointer const p) const noexcept { return this->p < p; }
+    [[nodiscard]] friend bool operator<(const_pointer const p, this_type const& me) noexcept { return p < me.get(); }
 
-    bool operator>(const_pointer const p) const { return this->p > p; }
-    friend bool operator>(const_pointer const p, this_type const& me) { return p > me.get(); }
+    [[nodiscard]] bool operator>(const_pointer const p) const noexcept { return this->p > p; }
+    [[nodiscard]] friend bool operator>(const_pointer const p, this_type const& me) noexcept { return p > me.get(); }
 };
 
 // ============================================================================

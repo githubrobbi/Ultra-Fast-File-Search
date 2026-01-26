@@ -21,6 +21,26 @@ struct File
 	typedef int handle_type;
 	handle_type f;
 
+	File() noexcept : f(0) {}
+	explicit File(handle_type fd) noexcept : f(fd) {}
+
+	// Non-copyable (file descriptors shouldn't be implicitly copied)
+	File(const File&) = delete;
+	File& operator=(const File&) = delete;
+
+	// Movable
+	File(File&& other) noexcept : f(other.f) { other.f = 0; }
+	File& operator=(File&& other) noexcept
+	{
+		if (this != &other)
+		{
+			if (f) { _close(f); }
+			f = other.f;
+			other.f = 0;
+		}
+		return *this;
+	}
+
 	~File()
 	{
 		if (f)
@@ -29,19 +49,25 @@ struct File
 		}
 	}
 
-	operator handle_type&()
+	[[nodiscard]] handle_type get() const noexcept { return f; }
+	[[nodiscard]] bool valid() const noexcept { return f != 0; }
+	[[nodiscard]] explicit operator bool() const noexcept { return valid(); }
+
+	operator handle_type&() noexcept { return this->f; }
+	[[nodiscard]] operator handle_type() const noexcept { return this->f; }
+	handle_type* operator&() noexcept { return &this->f; }
+
+	handle_type release() noexcept
 	{
-		return this->f;
+		handle_type tmp = f;
+		f = 0;
+		return tmp;
 	}
 
-	operator handle_type() const
+	void reset(handle_type fd = 0) noexcept
 	{
-		return this->f;
-	}
-
-	handle_type* operator&()
-	{
-		return &this->f;
+		if (f) { _close(f); }
+		f = fd;
 	}
 };
 

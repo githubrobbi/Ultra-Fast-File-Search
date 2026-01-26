@@ -22,14 +22,14 @@ namespace uffs {
 class Handle
 {
 public:
-    static bool valid(void* const value)
+    [[nodiscard]] static constexpr bool valid(void* const value) noexcept
     {
         return value && value != reinterpret_cast<void*>(-1);
     }
 
     void* value;
 
-    Handle() : value() {}
+    constexpr Handle() noexcept : value(nullptr) {}
 
     explicit Handle(void* const value) : value(value)
     {
@@ -43,13 +43,19 @@ public:
     {
         if (valid(this->value))
         {
-            if (!DuplicateHandle(GetCurrentProcess(), this->value, 
-                                 GetCurrentProcess(), &this->value, 
+            if (!DuplicateHandle(GetCurrentProcess(), this->value,
+                                 GetCurrentProcess(), &this->value,
                                  MAXIMUM_ALLOWED, TRUE, DUPLICATE_SAME_ACCESS))
             {
                 throw std::runtime_error("DuplicateHandle failed");
             }
         }
+    }
+
+    // Move constructor
+    Handle(Handle&& other) noexcept : value(other.value)
+    {
+        other.value = nullptr;
     }
 
     ~Handle()
@@ -60,30 +66,52 @@ public:
         }
     }
 
-    Handle& operator=(Handle other)
+    Handle& operator=(Handle other) noexcept
     {
         return other.swap(*this), *this;
     }
 
-    operator void*() const volatile
+    [[nodiscard]] operator void*() const volatile noexcept
     {
         return this->value;
     }
 
-    operator void*() const
+    [[nodiscard]] operator void*() const noexcept
     {
         return this->value;
     }
 
-    void swap(Handle& other)
+    [[nodiscard]] void* get() const noexcept { return value; }
+    [[nodiscard]] bool is_valid() const noexcept { return valid(value); }
+    [[nodiscard]] explicit operator bool() const noexcept { return is_valid(); }
+
+    void swap(Handle& other) noexcept
     {
         using std::swap;
         swap(this->value, other.value);
     }
 
-    friend void swap(Handle& a, Handle& b)
+    friend void swap(Handle& a, Handle& b) noexcept
     {
         return a.swap(b);
+    }
+
+    // Release ownership without closing
+    [[nodiscard]] void* release() noexcept
+    {
+        void* tmp = value;
+        value = nullptr;
+        return tmp;
+    }
+
+    // Close current handle and take ownership of new one
+    void reset(void* new_value = nullptr)
+    {
+        if (valid(value))
+        {
+            CloseHandle(value);
+        }
+        value = new_value;
     }
 };
 
