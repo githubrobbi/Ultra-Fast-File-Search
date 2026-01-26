@@ -6,124 +6,28 @@ File
 Line
 Suppression State
 Details
+Error
+C3668
+'HookedNtUserProps::operator ()': method with override specifier 'override' did not override any base class methods
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
+306
+
+
+Error (active)
+E0308
+more than one instance of overloaded function "safe_stprintf" matches the argument list:
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+442
+
+
 Message
-VCR003
-Function 'get_subsystem' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1648
-
-
-Error (active)
-E1696
-cannot open source file "../../path.hpp"
+lnt-uninitialized-local
+Local variable is not initialized.
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-19
-
-
-Error (active)
-E1696
-cannot open source file "../../string_matcher.hpp"
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\search\match_operation.hpp
-18
-
-
-Error (active)
-E1696
-cannot open source file "../../nformat.hpp"
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nformat_ext.hpp
-15
-
-
-Error (active)
-E1696
-cannot open source file "../../nformat.hpp"
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\time_utils.hpp
-15
-
-
-Warning
-VCR001
-Function definition for 'operator=' not found.
-
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-891
-
-
-Warning
-VCR001
-Function definition for 'HOOK_CONCAT' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-971
-
-
-Warning
-VCR001
-Function definition for 'HOOK_CONCAT' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-976
-
-
-Warning
-VCR001
-Function definition for 'operator<<' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1051
-
-
-Warning
-VCR001
-Function definition for 'operator=' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1062
-
-
-Warning
-VCR001
-Function definition for 'operator=' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1164
-
-
-Warning
-VCR001
-Function definition for 'ClientDC' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1212
-
-
-Warning
-VCR001
-Function definition for 'operator=' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1214
-
-
-Warning
-VCR001
-Function definition for 'HOOK_CONCAT' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1686
-
-
-Warning
-VCR001
-Function definition for 'HOOK_CONCAT' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1703
+441
 
 
 Message
@@ -131,15 +35,7 @@ VCR003
 Function 'ILIsEmpty' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-155
-
-
-Message
-VCR003
-Function 'ILIsEmpty' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-169
+158
 
 
 Message
@@ -147,23 +43,7 @@ VCR003
 Function 'global_exception_handler' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-444
-
-
-Message
-VCR003
-Function 'is_ascii' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-475
-
-
-Message
-VCR003
-Function 'DisplayError' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-490
+427
 
 
 Message
@@ -171,7 +51,7 @@ VCR003
 Function 'isdevnull' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-649
+577
 
 
 Message
@@ -179,7 +59,15 @@ VCR003
 Function 'isdevnull' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-656
+584
+
+
+Message
+VCR003
+Function 'remove_path_stream_and_trailing_sep' can be made static
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+599
 
 
 Message
@@ -187,7 +75,7 @@ VCR003
 Function 'NormalizePath' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-722
+650
 
 
 Message
@@ -195,31 +83,7 @@ VCR003
 Function 'GetDisplayName' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-750
-
-
-Message
-VCR003
-Function 'LCIDToLocaleName_XPCompatible' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-766
-
-
-Message
-VCR003
-Function 'LCIDToLocaleName_XPCompatible' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-828
-
-
-Message
-VCR003
-Function 'get_ui_locale_name' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-839
+678
 
 
 Message
@@ -227,62 +91,102 @@ VCR003
 Function 'get_cluster_size' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-854
-
-
-Message
-VCR003
-Function 'autosize_columns' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1410
-
-
-Message
-VCR003
-Function 'get_version' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1656
-
-
-Message
-VCR003
-Function 'get_app_guid' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1750
-
-
-Message
-VCR003
-Function 'extract_and_run_if_needed' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1757
-
-
-Message
-VCR003
-Function 's2ws' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1925
+709
 
 
 Error
-C1083
-Cannot open include file: 'CLI11.hpp': No such file or directory
+C2065
+'Hook_NtUserGetProp': undeclared identifier
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\command_line_parser.hpp
-2
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
+304
 
 
 Error
-C1083
-Cannot open include file: '../../nformat.hpp': No such file or directory
+C2923
+'hook_detail::thread_hook_swap': 'Hook_NtUserGetProp' is not a valid template type argument for parameter 'H'
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\time_utils.hpp
-15
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
+304
+
+
+Error
+C2955
+'hook_detail::thread_hook_swap': use of class template requires template argument list
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
+304
+
+
+Error
+C2065
+'Hook_NtUserSetProp': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
+320
+
+
+Error
+C2923
+'hook_detail::thread_hook_swap': 'Hook_NtUserSetProp' is not a valid template type argument for parameter 'H'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
+320
+
+
+Error
+C2955
+'hook_detail::thread_hook_swap': use of class template requires template argument list
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
+320
+
+
+Error
+C3668
+'HookedNtUserProps::operator ()': method with override specifier 'override' did not override any base class methods
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
+322
+
+
+Error
+C2653
+'hook_base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
+312
+
+
+Error
+C2653
+'hook_base_type': is not a class or namespace name
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\nt_user_call_hook.hpp
+326
+
+
+Warning
+C4310
+cast truncates constant value
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+3272
+
+
+Error
+C2678
+binary '+': no operator found which takes a left-hand operand of type 'ATL::CStringT<wchar_t,ATL::StrTraitATL<wchar_t,ATL::ChTraitsCRT<wchar_t>>>' (or there is no acceptable conversion)
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\gui_main.hpp
+57
+
+
+Error
+C2660
+'CreateEventW': function does not take 3 arguments
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\gui_main.hpp
+57
 
 
