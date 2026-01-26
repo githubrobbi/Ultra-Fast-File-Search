@@ -254,6 +254,7 @@
     <ClInclude Include="src\util\nformat_ext.hpp" />
     <ClInclude Include="src\util\utf_convert.hpp" />
     <ClInclude Include="src\search\match_operation.hpp" />
+    <ClInclude Include="src\search\search_results.hpp" />
     <ClInclude Include="src\cli\mft_diagnostics.hpp" />
     <ClInclude Include="src\util\devnull_check.hpp" />
     <ClInclude Include="src\gui\progress_dialog.hpp" />
