@@ -179,13 +179,13 @@ struct AttributeRecordHeader
         inline void* GetValue()
         {
             return reinterpret_cast<void*>(
-                reinterpret_cast<char*>(CONTAINING_RECORD(this, AttributeRecordHeader, resident)) + this->ValueOffset);
+                reinterpret_cast<char*>(CONTAINING_RECORD(this, AttributeRecordHeader, Resident)) + this->ValueOffset);
         }
 
         inline void const* GetValue() const
         {
             return reinterpret_cast<const void*>(
-                reinterpret_cast<const char*>(CONTAINING_RECORD(this, AttributeRecordHeader, resident)) + this->ValueOffset);
+                reinterpret_cast<const char*>(CONTAINING_RECORD(this, AttributeRecordHeader, Resident)) + this->ValueOffset);
         }
     };
 
@@ -204,8 +204,8 @@ struct AttributeRecordHeader
 
     union
     {
-        Resident resident;
-        NonResident nonResident;
+        struct Resident Resident;
+        struct NonResident NonResident;
     };
 
     AttributeRecordHeader* next()
@@ -238,7 +238,7 @@ struct AttributeRecordHeader
 // ============================================================================
 struct FileRecordSegmentHeader
 {
-    MultiSectorHeader multiSectorHeader;
+    struct MultiSectorHeader MultiSectorHeader;
     unsigned long long LogFileSequenceNumber;
     unsigned short SequenceNumber;
     unsigned short LinkCount;
@@ -468,7 +468,10 @@ using REPARSE_MOUNT_POINT_BUFFER = uffs::ntfs::ReparseMountPointBuffer;
 
 // Note: AttributeTypeCode is an enum class, so values are accessed via
 // ntfs::AttributeTypeCode::AttributeFileName etc.
-// FileRecordHeaderFlags and ReparseTypeFlags are plain enums, values accessible directly.
+
+// FileRecordHeaderFlags enum values (plain enum, accessible directly)
+constexpr auto FRH_IN_USE = uffs::ntfs::FRH_IN_USE;
+constexpr auto FRH_DIRECTORY = uffs::ntfs::FRH_DIRECTORY;
 
 } // namespace ntfs
 
