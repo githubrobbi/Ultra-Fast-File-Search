@@ -6,28 +6,12 @@ File
 Line
 Suppression State
 Details
-Warning
-VCR001
-Function definition for 'operator=' not found.
+Message
+VCR003
+Function 'get_version' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-1436
-
-
-Error (active)
-E0276
-name followed by '::' must be a class or namespace name
-UltraFastFileSearch
-C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xmemory
-661
-
-
-Error (active)
-E0864
-dynamic_allocator is not a template
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\core_types.hpp
-339
+2518
 
 
 Warning
@@ -60,6 +44,14 @@ Function definition for 'operator<<' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 1425
+
+
+Warning
+VCR001
+Function definition for 'operator=' not found.
+
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
+1436
 
 
 Warning
@@ -872,14 +864,6 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFi
 
 Message
 VCR003
-Function 'get_version' can be made static
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-2518
-
-
-Message
-VCR003
 Function 'get_app_guid' can be made static
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
@@ -903,11 +887,11 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFi
 
 
 Error
-C2440
-'initializing': cannot convert from 'std::vector<uffs::tstring,std::allocator<uffs::tstring>>' to 'std::vector<std::tvstring,std::allocator<std::tvstring>>'
+C1083
+Cannot open include file: 'stdafx.h': No such file or directory
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1058
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\cli_main.cpp
+8
 
 
 Warning
@@ -916,13 +900,5 @@ cast truncates constant value
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
 3272
-
-
-Error
-C2664
-'void std::vector<uffs::tstring,std::allocator<uffs::tstring>>::swap(std::vector<uffs::tstring,std::allocator<uffs::tstring>> &) noexcept': cannot convert argument 1 from 'std::vector<std::tvstring,std::allocator<std::tvstring>>' to 'std::vector<uffs::tstring,std::allocator<uffs::tstring>> &'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\cli\cli_main.hpp
-487
 
 

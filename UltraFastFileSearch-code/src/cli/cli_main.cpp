@@ -5,7 +5,7 @@
 // It includes all necessary dependencies before including the implementation.
 // ============================================================================
 
-#include "stdafx.h"
+#include "../../stdafx.h"
 
 // ============================================================================
 // Standard Library Headers
@@ -24,30 +24,30 @@
 #include <boost/algorithm/string.hpp>
 
 // ============================================================================
-// Project Headers - Utilities
+// Project Headers - Utilities (relative paths from src/cli/)
 // ============================================================================
-#include "src/util/core_types.hpp"
-#include "src/util/allocators.hpp"
-#include "src/util/error_utils.hpp"
-#include "src/util/string_utils.hpp"
-#include "src/util/time_utils.hpp"
-#include "src/util/volume_utils.hpp"
-#include "src/util/utf_convert.hpp"
-#include "src/util/nformat_ext.hpp"
-#include "src/util/devnull_check.hpp"
-#include "src/util/intrusive_ptr.hpp"
-#include "src/util/buffer.hpp"
-#include "src/util/containers.hpp"
+#include "../util/core_types.hpp"
+#include "../util/allocators.hpp"
+#include "../util/error_utils.hpp"
+#include "../util/string_utils.hpp"
+#include "../util/time_utils.hpp"
+#include "../util/volume_utils.hpp"
+#include "../util/utf_convert.hpp"
+#include "../util/nformat_ext.hpp"
+#include "../util/devnull_check.hpp"
+#include "../util/intrusive_ptr.hpp"
+#include "../util/buffer.hpp"
+#include "../util/containers.hpp"
 
 // ============================================================================
-// Project Headers - Core Components
+// Project Headers - Core Components (relative paths from src/cli/)
 // ============================================================================
-#include "path.hpp"
-#include "CommandLineParser.hpp"
-#include "src/index/ntfs_index.hpp"
-#include "src/io/io_completion_port.hpp"
-#include "src/search/match_operation.hpp"
-#include "src/cli/mft_diagnostics.hpp"
+#include "../../path.hpp"
+#include "../../CommandLineParser.hpp"
+#include "../index/ntfs_index.hpp"
+#include "../io/io_completion_port.hpp"
+#include "../search/match_operation.hpp"
+#include "mft_diagnostics.hpp"
 
 // ============================================================================
 // CLI Main Implementation
@@ -56,5 +56,5 @@
 // This will be refactored to inline the code here in a future cleanup.
 // ============================================================================
 
-#include "src/cli/cli_main.hpp"
+#include "cli_main.hpp"
 
