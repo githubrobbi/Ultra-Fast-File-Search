@@ -655,10 +655,20 @@ int benchmark_index_build(char drive_letter, std::ostream& OS)
 using uffs::benchmark_index_build;
 // dump_raw_mft, dump_mft_extents, benchmark_mft_read are in mft_diagnostics.cpp
 
-// Command Line Version
+// ============================================================================
+// Entry Points - Conditionally compiled based on build configuration
+// ============================================================================
+// UFFS_CLI_BUILD: Defined for COM configurations (console subsystem)
+// UFFS_GUI_BUILD: Defined for EXE configurations (Windows subsystem)
+// ============================================================================
+
+#ifdef UFFS_CLI_BUILD
+// Command Line Version - main()
 #include "src/cli/cli_main.hpp"
+#endif
 
+#ifdef UFFS_GUI_BUILD
+// Windows Version - _tWinMain()
 #pragma comment(linker, "/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
-
-//Windows Version
 #include "src/gui/gui_main.hpp"
+#endif
