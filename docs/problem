@@ -7,19 +7,11 @@ Line
 Suppression State
 Details
 Warning
-C4865
-'<unnamed-enum-DISPLAYCONFIG_SCALING_IDENTITY>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+C4464
+relative include path contains '..'
 UltraFastFileSearch
-C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
-2874
-
-
-Error (active)
-E0308
-more than one instance of overloaded function "safe_stprintf" matches the argument list:
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-319
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\mft_reader.hpp
+27
 
 
 Warning
@@ -36,14 +28,6 @@ Function definition for 'HOOK_CONCAT' not found.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 481
-
-
-Message
-lnt-uninitialized-local
-Local variable is not initialized.
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-318
 
 
 Message
@@ -76,6 +60,14 @@ C4865
 UltraFastFileSearch
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
 2831
+
+
+Warning
+C4865
+'<unnamed-enum-DISPLAYCONFIG_SCALING_IDENTITY>': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+UltraFastFileSearch
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\wingdi.h
+2874
 
 
 Warning
@@ -303,6 +295,14 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\vo
 
 
 Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\time_utils.hpp
+14
+
+
+Warning
 C5267
 definition of implicit copy constructor for 'boost::algorithm::boyer_moore_horspool<tracking_iterator<const wchar_t *>,boost::algorithm::detail::BM_traits<patIter>>' is deprecated because it has a user-provided destructor        with        [            patIter=tracking_iterator<const wchar_t *>        ]
 UltraFastFileSearch
@@ -316,14 +316,6 @@ definition of implicit copy constructor for 'boost::algorithm::boyer_moore_horsp
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\boost\boost\algorithm\searching\boyer_moore_horspool.hpp
 66
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\time_utils.hpp
-14
 
 
 Warning
@@ -482,104 +474,64 @@ Warning
 C4464
 relative include path contains '..'
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-8
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+26
 
 
-Error
-C2039
-'ATTRIBUTE_RECORD_HEADER': is not a member of 'uffs::ntfs'
+Warning
+C4464
+relative include path contains '..'
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-28
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\core\packed_file_size.hpp
+6
 
 
-Error
-C2061
-syntax error: identifier 'ATTRIBUTE_RECORD_HEADER'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-28
-
-
-Error
-C2065
-'ah': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-31
-
-
-Error
-C2065
-'ah': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-32
-
-
-Error
-C2065
-'ah': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-33
-
-
-Error
-C2065
-'ah': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-34
-
-
-Error
-C2065
-'max_length': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-34
-
-
-Error
-C2065
-'ah': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-34
-
-
-Error
-C2065
-'max_length': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-34
-
-
-Error
-C2065
-'ah': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-36
-
-
-Error
-C2065
-'current_lcn': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
-36
-
-
-Error
-C2661
-'uffs::mapping_pair_iterator::mapping_pair_iterator': no overloaded function takes 2 arguments
+Warning
+C4464
+relative include path contains '..'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
-855
+27
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+28
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\core\ntfs_record_types.hpp
+6
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\ntfs_index.hpp
+29
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\core\ntfs_key_type.hpp
+19
+
+
+Warning
+C4464
+relative include path contains '..'
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\index\mapping_pair_iterator.hpp
+8
 
 
 Warning
@@ -595,14 +547,6 @@ C4464
 relative include path contains '..'
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\io_completion_port.hpp
-27
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\io\mft_reader.hpp
 27
 
 
@@ -666,63 +610,15 @@ Warning
 C4464
 relative include path contains '..'
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-5
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\icon_cache_types.hpp
+14
 
 
-Warning
-C5267
-definition of implicit assignment operator for 'WTL::CImageListT<false>' is deprecated because it has a user-provided destructor
+Error
+C1083
+Cannot open include file: '../util/tstring.hpp': No such file or directory
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\wtl\Include\atlctrls.h
-1866
-
-
-Warning
-C5219
-implicit conversion from 'const ptrdiff_t' to 'double', possible loss of data
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1262
-
-
-Warning
-C5219
-implicit conversion from '_Ty1' to 'double', possible loss of data        with        [            _Ty1=unsigned __int64        ]
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1674
-
-
-Warning
-C4834
-discarding return value of function with [[nodiscard]] attribute
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-2516
-
-
-Warning
-C4310
-cast truncates constant value
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-3000
-
-
-Warning
-C4464
-relative include path contains '..'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\util\x64_launcher.hpp
-17
-
-
-Warning
-C5219
-implicit conversion from 'unsigned __int64' to 'double', possible loss of data
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-618
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\icon_cache_types.hpp
+14
 
 

@@ -155,7 +155,7 @@ namespace WTL
 }
 
 #ifndef ILIsEmpty
-inline BOOL ILIsEmpty(LPCITEMIDLIST pidl) { return ((pidl == nullptr) || (pidl->mkid.cb == 0)); }
+static inline BOOL ILIsEmpty(LPCITEMIDLIST pidl) { return ((pidl == nullptr) || (pidl->mkid.cb == 0)); }
 #endif
 
 extern WTL::CAppModule _Module;
@@ -301,7 +301,7 @@ HOOK_DEFINE_DEFAULT(BOOL __stdcall, NtUserRedrawWindow, (HWND hWnd, CONST RECT *
 ATL::CWindow topmostWindow;
 atomic_namespace::recursive_mutex global_exception_mutex;
 
-long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo)
+static long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo)
 {
 	long result;
 	if (ExceptionInfo->ExceptionRecord->ExceptionCode == 0x40010006 /*DBG_PRINTEXCEPTION_C*/ ||

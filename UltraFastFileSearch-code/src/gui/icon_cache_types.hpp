@@ -11,7 +11,7 @@
 
 #include <map>
 #include <tchar.h>
-#include "../util/tstring.hpp"
+#include "../util/core_types.hpp"
 
 namespace uffs {
 

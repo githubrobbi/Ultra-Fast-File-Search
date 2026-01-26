@@ -310,7 +310,7 @@ public:
 	{
 		if (total > INT_MAX)
 		{
-			current = static_cast<long long>((static_cast<double>(current) / total) * INT_MAX);
+			current = static_cast<long long>((static_cast<double>(current) / static_cast<double>(total)) * INT_MAX);
 			total = INT_MAX;
 		}
 
