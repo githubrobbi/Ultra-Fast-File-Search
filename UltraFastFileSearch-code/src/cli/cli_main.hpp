@@ -757,11 +757,11 @@ int main(int argc, char* argv[])
 									NtfsIndex::standard_info
 										const& stdinfo = i->get_stdinfo(key.frs());
 									/* File attribute abbreviations: https://en.wikipedia.org/wiki/File_attribute#Types */
-									CMainDlg::SystemTimeToStringImpl(stdinfo.created, line_buffer, true, true, time_zone_bias, lcid);
+									SystemTimeToString(stdinfo.created, line_buffer, true, true, time_zone_bias, lcid);
 									line_buffer += sep;
-									CMainDlg::SystemTimeToStringImpl(stdinfo.written, line_buffer, true, true, time_zone_bias, lcid);
+									SystemTimeToString(stdinfo.written, line_buffer, true, true, time_zone_bias, lcid);
 									line_buffer += sep;
-									CMainDlg::SystemTimeToStringImpl(stdinfo.accessed, line_buffer, true, true, time_zone_bias, lcid);
+									SystemTimeToString(stdinfo.accessed, line_buffer, true, true, time_zone_bias, lcid);
 									line_buffer += sep;
 
 									line_buffer += nformat(static_cast<unsigned int> (sizeinfo.treesize));
@@ -989,19 +989,19 @@ int main(int argc, char* argv[])
 									/* File attribute abbreviations: https://en.wikipedia.org/wiki/File_attribute#Types */
 									if (output_columns_flags & COL_CREATED)
 									{
-										CMainDlg::SystemTimeToStringImpl(stdinfo.created, line_buffer, true, true, time_zone_bias, lcid);
+										SystemTimeToString(stdinfo.created, line_buffer, true, true, time_zone_bias, lcid);
 										line_buffer += sep;
 									}
 
 									if (output_columns_flags & COL_WRITTEN)
 									{
-										CMainDlg::SystemTimeToStringImpl(stdinfo.written, line_buffer, true, true, time_zone_bias, lcid);
+										SystemTimeToString(stdinfo.written, line_buffer, true, true, time_zone_bias, lcid);
 										line_buffer += sep;
 									}
 
 									if (output_columns_flags & COL_ACCESSED)
 									{
-										CMainDlg::SystemTimeToStringImpl(stdinfo.accessed, line_buffer, true, true, time_zone_bias, lcid);
+										SystemTimeToString(stdinfo.accessed, line_buffer, true, true, time_zone_bias, lcid);
 										line_buffer += sep;
 									}
 
