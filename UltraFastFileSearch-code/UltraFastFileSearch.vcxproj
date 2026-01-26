@@ -258,6 +258,8 @@
     <ClInclude Include="src\cli\mft_diagnostics.hpp" />
     <ClInclude Include="src\util\devnull_check.hpp" />
     <ClInclude Include="src\gui\progress_dialog.hpp" />
+    <ClInclude Include="src\gui\modified_dialog_impl.hpp" />
+    <ClInclude Include="src\gui\dialog_template.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

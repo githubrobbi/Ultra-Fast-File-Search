@@ -127,8 +127,7 @@
 // ============================================================================
 #include "resource.h"
 #include "BackgroundWorker.hpp"
-#include "CDlgTemplate.hpp"
-#include "CModifiedDialogImpl.hpp"
+#include "src/gui/modified_dialog_impl.hpp"
 #include "CommandLineParser.hpp"
 #include "nformat.hpp"
 #include "NtUserCallHook.hpp"

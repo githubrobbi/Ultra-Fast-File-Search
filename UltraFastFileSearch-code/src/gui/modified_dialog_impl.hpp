@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CDlgTemplate.hpp"
+#include "dialog_template.hpp"
 #include <wingdi.h>
 #include <vector>
 #pragma comment(lib, "Gdi32.lib")
