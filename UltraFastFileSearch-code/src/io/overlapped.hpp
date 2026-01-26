@@ -25,21 +25,21 @@
 
 class Overlapped : public OVERLAPPED, public RefCounted<Overlapped>
 {
-	Overlapped(Overlapped const&);
-	Overlapped& operator=(Overlapped const&);
+	Overlapped(Overlapped const&) = delete;
+	Overlapped& operator=(Overlapped const&) = delete;
 public:
-	virtual ~Overlapped() {}
+	virtual ~Overlapped() = default;
 
-	Overlapped() : OVERLAPPED() {}
+	Overlapped() noexcept : OVERLAPPED() {}
 
-	virtual int /*> 0 if re-queue requested, = 0 if no re-queue but no destruction, < 0 if destruction requested */ operator()(size_t const size, uintptr_t const /*key*/) = 0;
+	virtual int /*> 0 if re-queue requested, = 0 if no re-queue but no destruction, < 0 if destruction requested */ operator()(size_t size, uintptr_t /*key*/) = 0;
 
-	long long offset() const
+	[[nodiscard]] long long offset() const noexcept
 	{
 		return (static_cast<long long>(this->OVERLAPPED::OffsetHigh) << (CHAR_BIT * sizeof(this->OVERLAPPED::Offset))) | this->OVERLAPPED::Offset;
 	}
 
-	void offset(long long const value)
+	void offset(long long value) noexcept
 	{
 		this->OVERLAPPED::Offset = static_cast<unsigned long>(value);
 		this->OVERLAPPED::OffsetHigh = static_cast<unsigned long>(value >> (CHAR_BIT * sizeof(this->OVERLAPPED::Offset)));
@@ -74,9 +74,9 @@ struct value_initialized
 {
 	typedef value_initialized this_type, type;
 	T value;
-	value_initialized() : value() {}
+	value_initialized() noexcept : value() {}
 
-	value_initialized(T const& value) : value(value) {}
+	value_initialized(T const& value) noexcept : value(value) {}
 
 	operator T& ()
 	{

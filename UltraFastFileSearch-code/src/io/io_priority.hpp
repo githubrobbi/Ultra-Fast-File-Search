@@ -32,12 +32,12 @@ class IoPriority
     uintptr_t _volume;
     winnt::IO_PRIORITY_HINT _old;
 
-    // Non-assignable
-    IoPriority& operator=(IoPriority const&);
+    // Non-copyable, non-assignable
+    IoPriority& operator=(IoPriority const&) = delete;
 
 public:
     // Query current I/O priority for a file handle
-    static winnt::IO_PRIORITY_HINT query(uintptr_t const file)
+    [[nodiscard]] static winnt::IO_PRIORITY_HINT query(uintptr_t file) noexcept
     {
         winnt::FILE_IO_PRIORITY_HINT_INFORMATION old = { winnt::IoPriorityNormal };
         winnt::IO_STATUS_BLOCK iosb;
@@ -52,7 +52,7 @@ public:
     }
 
     // Set I/O priority for a file handle
-    static void set(uintptr_t const volume, winnt::IO_PRIORITY_HINT const value)
+    static void set(uintptr_t volume, winnt::IO_PRIORITY_HINT value) noexcept
     {
         if (value != winnt::MaxIoPriorityTypes)
         {
@@ -82,30 +82,30 @@ public:
     }
 
     // Get the volume handle
-    uintptr_t volume() const
+    [[nodiscard]] uintptr_t volume() const noexcept
     {
         return this->_volume;
     }
 
     // Default constructor
-    IoPriority() : _volume(), _old() {}
+    IoPriority() noexcept : _volume(), _old() {}
 
     // Copy constructor (does not restore priority)
-    IoPriority(IoPriority const& other)
+    IoPriority(IoPriority const& other) noexcept
         : _volume(other._volume), _old()
     {
         this->_old = winnt::MaxIoPriorityTypes;
     }
 
     // Constructor that sets priority and saves old value
-    explicit IoPriority(uintptr_t const volume, winnt::IO_PRIORITY_HINT const priority)
+    explicit IoPriority(uintptr_t volume, winnt::IO_PRIORITY_HINT priority)
         : _volume(volume), _old(query(volume))
     {
         set(volume, priority);
     }
 
     // Get the original priority
-    winnt::IO_PRIORITY_HINT old() const
+    [[nodiscard]] winnt::IO_PRIORITY_HINT old() const noexcept
     {
         return this->_old;
     }
@@ -120,7 +120,7 @@ public:
     }
 
     // Swap with another IoPriority
-    void swap(IoPriority& other)
+    void swap(IoPriority& other) noexcept
     {
         using std::swap;
         swap(this->_volume, other._volume);
@@ -129,7 +129,7 @@ public:
 };
 
 // Free function swap
-inline void swap(IoPriority& a, IoPriority& b)
+inline void swap(IoPriority& a, IoPriority& b) noexcept
 {
     a.swap(b);
 }
