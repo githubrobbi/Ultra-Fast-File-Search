@@ -191,6 +191,7 @@
   <!-- The project uses Boost.Xpressive (header-only) for regex functionality -->
   <ItemGroup>
     <ClCompile Include="CommandLineParser.cpp" />
+    <ClCompile Include="src\cli\cli_main.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EXE DEBUG|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='EXE|x64'">Create</PrecompiledHeader>
@@ -254,6 +255,7 @@
     <ClInclude Include="src\util\utf_convert.hpp" />
     <ClInclude Include="src\search\match_operation.hpp" />
     <ClInclude Include="src\cli\mft_diagnostics.hpp" />
+    <ClInclude Include="src\util\devnull_check.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
