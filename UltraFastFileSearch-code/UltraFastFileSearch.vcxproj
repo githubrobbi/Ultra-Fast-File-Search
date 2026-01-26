@@ -256,6 +256,7 @@
     <ClInclude Include="src\search\match_operation.hpp" />
     <ClInclude Include="src\cli\mft_diagnostics.hpp" />
     <ClInclude Include="src\util\devnull_check.hpp" />
+    <ClInclude Include="src\gui\progress_dialog.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
