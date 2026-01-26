@@ -1,7 +1,8 @@
 # Future Cleanup Work
 
-> **Status**: Planning Document  
-> **Created**: 2026-01-25  
+> **Status**: In Progress
+> **Created**: 2026-01-25
+> **Last Updated**: 2026-01-26
 > **Related**: [Refactoring Milestones](refactoring-milestones.md) (Phases 1-7 Complete)
 
 ---
@@ -12,16 +13,28 @@ The initial 7-phase refactoring is complete, reducing the monolith from 14,155 t
 
 ---
 
-## Current State (Post-Phase 7)
+## Progress Tracker
 
-| Metric | Value | Target |
-|--------|-------|--------|
-| Monolith (`UltraFastFileSearch.cpp`) | 4,306 lines | < 500 lines |
-| `main_dialog.hpp` | 3,910 lines | Split into multiple files |
-| `ntfs_index.hpp` | 1,936 lines | Split into .hpp/.cpp |
-| `.cpp` compilation units | 4 files | 15+ files |
-| Unit tests | 0 | Full coverage |
-| Third-party deps in source | 3 (CLI11, boost, wtl) | 0 (use package manager) |
+| Wave | Status | Notes |
+|------|--------|-------|
+| Wave 1: Quick Wins | ✅ COMPLETE | SwiftSearch removed, icon renamed |
+| Wave 2: Architecture | 🔄 IN PROGRESS | Phase 8.5/9.x extractions ongoing |
+| Wave 3: Infrastructure | ⏳ Not Started | |
+| Wave 4: Polish | ⏳ Not Started | |
+
+---
+
+## Current State (Post-Wave 2 Progress)
+
+| Metric | Value | Target | Change |
+|--------|-------|--------|--------|
+| Monolith (`UltraFastFileSearch.cpp`) | 3,647 lines | < 500 lines | -659 lines from 4,306 |
+| `main_dialog.hpp` | 3,910 lines | Split into multiple files | - |
+| `ntfs_index.hpp` | 1,936 lines | Split into .hpp/.cpp | - |
+| `.cpp` compilation units | 5 files | 15+ files | +1 (string_utils.cpp) |
+| Extracted utility headers | 10 files | - | NEW |
+| Unit tests | 0 | Full coverage | - |
+| Third-party deps in source | 3 (CLI11, boost, wtl) | 0 (use package manager) | - |
 
 ---
 
@@ -71,17 +84,21 @@ Almost all code is in `.hpp` files with full implementations:
 
 ### Solution: Phase 9 - Complete Monolith Decomposition
 
-| Task | Target File | Lines |
-|------|-------------|-------|
-| 9.1 Extract `CProgressDialog` | `src/gui/progress_dialog.hpp` | ~200 |
-| 9.2 Extract volume utilities | `src/util/volume_utils.hpp` | ~150 |
-| 9.3 Extract MFT dump tool | `src/tools/mft_dump.hpp` | ~300 |
-| 9.4 Extract MFT benchmark tool | `src/tools/mft_benchmark.hpp` | ~200 |
-| 9.5 Extract string utilities | `src/util/string_utils.hpp` | ~100 |
-| 9.6 Extract error handling | `src/util/error_handling.hpp` | ~100 |
-| 9.7 Reduce monolith to entry point only | `UltraFastFileSearch.cpp` | < 200 |
+| Task | Target File | Lines | Status |
+|------|-------------|-------|--------|
+| 9.1 Extract `CProgressDialog` | `src/gui/progress_dialog.hpp` | ~200 | ⏳ |
+| 9.2 Extract volume utilities | `src/util/volume_utils.hpp` | ~80 | ✅ DONE |
+| 9.3 Extract MFT dump tool | `src/cli/mft_diagnostics.hpp` | ~800 | 🔄 Header created, impl in monolith |
+| 9.4 Extract MFT benchmark tool | (merged with 9.3) | - | 🔄 |
+| 9.5 Extract string utilities | `src/util/string_utils.hpp/.cpp` | ~100 | ✅ DONE |
+| 9.6 Extract error handling | `src/util/error_utils.hpp` | ~50 | ✅ DONE (previously) |
+| 9.7 Extract time utilities | `src/util/time_utils.hpp` | ~30 | ✅ DONE |
+| 9.8 Extract NFormat | `src/util/nformat_ext.hpp` | ~90 | ✅ DONE |
+| 9.9 Extract UTF converter | `src/util/utf_convert.hpp` | ~55 | ✅ DONE |
+| 9.10 Extract MatchOperation | `src/search/match_operation.hpp` | ~130 | ✅ DONE |
+| 9.11 Reduce monolith to entry point only | `UltraFastFileSearch.cpp` | < 200 | ⏳ |
 
-**Estimated Total**: 8 hours
+**Estimated Total**: 8 hours (~4h remaining)
 
 ---
 
@@ -215,16 +232,16 @@ Mixed naming conventions:
 
 **Recommended Convention**: `snake_case.hpp` for all source files
 
-| Current | Proposed |
-|---------|----------|
-| `BackgroundWorker.hpp` | `background_worker.hpp` |
-| `CDlgTemplate.hpp` | `dialog_template.hpp` |
-| `CModifiedDialogImpl.hpp` | `modified_dialog_impl.hpp` |
-| `NtUserCallHook.hpp` | `nt_user_call_hook.hpp` |
-| `ShellItemIDList.hpp` | `shell_item_id_list.hpp` |
-| `Search Drive.ico` | `search_drive.ico` |
+| Current | Proposed | Status |
+|---------|----------|--------|
+| `BackgroundWorker.hpp` | `background_worker.hpp` | ⏳ |
+| `CDlgTemplate.hpp` | `dialog_template.hpp` | ⏳ |
+| `CModifiedDialogImpl.hpp` | `modified_dialog_impl.hpp` | ⏳ |
+| `NtUserCallHook.hpp` | `nt_user_call_hook.hpp` | ⏳ |
+| `ShellItemIDList.hpp` | `shell_item_id_list.hpp` | ⏳ |
+| `Search Drive.ico` | `search_drive.ico` | ✅ DONE |
 
-**Estimated Total**: 2 hours
+**Estimated Total**: 2 hours (1.5h remaining)
 
 ---
 
@@ -248,17 +265,17 @@ Mixed naming conventions:
 
 ---
 
-## 🟡 Moderate: Remove Duplicate Codebase
+## ~~🟡 Moderate: Remove Duplicate Codebase~~ ✅ COMPLETE
 
-### Problem
-`swiftsearch-code-4043bc.../` contains the original SwiftSearch code.
+### ~~Problem~~
+~~`swiftsearch-code-4043bc.../` contains the original SwiftSearch code.~~
 
-### Solution
-- Move to a separate `archive/` branch
-- Or document in README and add to `.gitignore`
-- Remove from main branch to reduce confusion
+### Resolution
+- ✅ Deleted `swiftsearch-code-4043bc4cfb4b47216cd70c8229912728017f4b63/` directory
+- ✅ Deleted `Original Packages/swiftsearch-code-4043bc-2023-03-24.zip`
+- ✅ Updated README.md directory tree
 
-**Estimated Total**: 0.5 hours
+**Completed**: 2026-01-25
 
 ---
 
@@ -281,14 +298,17 @@ Mixed naming conventions:
 
 ## Recommended Execution Order
 
-### Wave 1: Quick Wins (1-2 hours)
-1. Add build artifacts to `.gitignore`
-2. Remove/archive duplicate SwiftSearch codebase
-3. Rename files with spaces
+### Wave 1: Quick Wins (1-2 hours) ✅ COMPLETE
+1. ~~Add build artifacts to `.gitignore`~~ (User: keep tracked intentionally)
+2. ✅ Remove/archive duplicate SwiftSearch codebase
+3. ✅ Rename files with spaces (`Search Drive.ico` → `search_drive.ico`)
 
-### Wave 2: Architecture (24 hours)
+### Wave 2: Architecture (24 hours) 🔄 IN PROGRESS
 1. Phase 8: Split headers into .hpp/.cpp
 2. Phase 9: Complete monolith decomposition
+   - ✅ Step 1: Extract string utilities (Task 9.5) - `src/util/string_utils.hpp/.cpp`
+   - 🔜 Step 2: Convert `cli_main.hpp` → `cli_main.cpp` (Task 8.5)
+   - ⏳ Step 3: Convert `gui_main.hpp` → `gui_main.cpp` (Task 8.6)
 
 ### Wave 3: Infrastructure (16 hours)
 1. Phase 10: Dependency management

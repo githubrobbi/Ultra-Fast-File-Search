@@ -49,6 +49,11 @@
 // Utility Headers (extracted from monolith)
 // ============================================================================
 #include "src/util/string_utils.hpp"
+#include "src/util/volume_utils.hpp"
+#include "src/util/time_utils.hpp"
+#include "src/util/nformat_ext.hpp"
+#include "src/util/utf_convert.hpp"
+#include "src/search/match_operation.hpp"
 
 // ============================================================================
 // Compiler-Specific Headers
@@ -201,309 +206,6 @@ extern WTL::CAppModule _Module;
 
 #endif
 
-template<class T, class Traits = std::char_traits<T>, class Ax = std::allocator<T> >
-class basic_vector_based_string : public
-
-#ifdef _DEBUG
-	std::basic_string<T, Traits, Ax>
-#else
-	std::vector<T, Ax>
-#endif
-
-{
-	typedef basic_vector_based_string this_type;
-	typedef std::basic_string<T, Traits, Ax> string_type;
-	typedef
-#ifdef _DEBUG
-	string_type
-#else
-	std::vector<T, Ax>
-#endif
-	base_type;
-
-public:
-	
-	typedef typename base_type::size_type size_type;
-	typedef typename base_type::allocator_type allocator_type;
-
-	typedef typename base_type::value_type
-		const* const_pointer;
-
-	typedef typename base_type::value_type value_type;
-
-	static size_type
-		const npos = ~size_type();
-
-	basic_vector_based_string() : base_type() {}
-
-	explicit basic_vector_based_string(const_pointer
-		const value, size_t
-		const n = npos) : base_type(value, value + static_cast<ptrdiff_t> (n == npos ? Traits::length(value) : n)) {}
-
-	explicit basic_vector_based_string(size_type
-		const n) : base_type(n) {}
-
-	explicit basic_vector_based_string(size_type
-		const n, value_type
-		const& value) : base_type(n, value) {}
-
-	explicit basic_vector_based_string(allocator_type
-		const& ax) : base_type(ax) {}
-
-	explicit basic_vector_based_string(size_type
-		const n, allocator_type
-		const& ax) : base_type(n, ax) {}
-
-	explicit basic_vector_based_string(size_type
-		const n, value_type
-		const& value, allocator_type
-		const& ax) : base_type(n, value, ax) {}
-
-	using base_type::insert;
-	using base_type::operator=; 
-
-#ifndef _DEBUG
-	typedef Traits traits_type;
-
-	typedef typename base_type::difference_type difference_type;
-	typedef typename base_type::iterator iterator;
-	typedef typename base_type::const_iterator const_iterator;
-	
-	using base_type::erase;
-	
-	void append(size_t
-		const n, value_type
-		const& value)
-	{
-		if (!n)
-		{
-			return;
-		}
-
-#if defined(_MSC_VER) && !defined(_CPPLIB_VER)
-
-		if (this->_End - this->_Last < static_cast<ptrdiff_t> (n))
-		{
-			this->reserve(this->size() + n);
-			for (size_t i = 0; i != n; ++i)
-			{
-				this->push_back(value);
-			}
-		}
-		else
-		{
-			std::uninitialized_fill(this->_Last, this->_Last + static_cast<ptrdiff_t> (n), value);
-			this->_Last += n;
-		}
-
-#else
-
-		this->reserve(this->size() + n);
-		for (size_t i = 0; i != n; ++i)
-		{
-			this->push_back(value);
-		}
-
-#endif
-
-	}
-
-	void append(const_pointer
-		const begin, const_pointer
-		const end)
-
-	{
-
-#if defined(_MSC_VER) && !defined(_CPPLIB_VER)
-
-		ptrdiff_t
-		const n = end - begin;
-		
-		if (this->_End - this->_Last < n)
-		{
-			this->insert(this->end(), begin, end);
-		}
-		else
-		{
-			std::uninitialized_copy(begin, end, this->_Last);
-			this->_Last += n;
-		}
-#else
-
-			this->insert(this->end(), begin, end); 
-
-#endif
-
-	}
-
-	void append(const_pointer
-		const value, size_type n = npos)
-	{
-		return this->append(value, value + static_cast<ptrdiff_t> (n == npos ? Traits::length(value) : n));
-	}
-
-	size_type find(value_type
-		const& value, size_type
-		const offset = 0) const
-	{
-		const_iterator begin = this->begin() + static_cast<difference_type> (offset), end = this->end();
-		size_type result = static_cast<size_type> (std::find(begin, end, value) - begin);
-		if (result >= static_cast<size_type> (end - begin))
-		{
-			result = npos;
-		}
-		else
-		{
-			result += offset;
-		}
-
-		return result;
-	}
-
-	const_pointer c_str()
-	{
-		const_pointer p;
-		size_t
-			const n = this->size();
-		if (n == 0 || this->capacity() <= n || *(&*this->begin() + static_cast<ptrdiff_t> (n)) != value_type())
-		{
-			this->push_back(value_type());
-			p = &*this->begin();
-			this->pop_back();
-		}
-		else
-		{
-			p = &*this->begin();
-		}
-
-		return p;
-	}
-
-	const_pointer c_str() const
-	{
-		// Delegate to non-const version via const_cast
-		// This is safe because the modification (push_back/pop_back) is temporary
-		// and leaves the object in the same logical state
-		return const_cast<this_type*>(this)->c_str();
-	}
-
-	const_pointer data() const
-	{
-		return this->empty() ? nullptr : &*this->begin();
-	}
-
-	iterator erase(size_t
-		const pos, size_type
-		const n = npos)
-	{
-		return this->erase(this->begin() + static_cast<difference_type> (pos), this->begin() + static_cast<difference_type> (pos) + (n == npos ? this->size() - pos : n));
-	}
-
-	iterator insert(size_t
-		const pos, const_pointer
-		const value, size_type
-		const n = npos)
-	{
-		return this->insert(this->begin() + static_cast<difference_type> (pos), value, n);
-	}
-
-	this_type operator+(base_type
-		const& other) const
-	{
-		this_type result;
-		result.reserve(this->size() + other.size());
-		result += *this;
-		result += other;
-		return result;
-	}
-
-#if defined(_MSC_VER) && !defined(_CPPLIB_VER)
-
-	void push_back(value_type
-		const& value)
-	{
-		if (this->_Last != this->_End)
-		{
-			this->allocator.construct(this->_Last, value);
-			++this->_Last;
-		}
-		else
-		{
-			this->base_type::push_back(value);
-		}
-	}
-
-#endif
-
-	friend this_type operator+(const_pointer
-		const left, base_type
-		const& right)
-	{
-		size_t
-				const nleft = Traits::length(left);
-			this_type result;
-			result.reserve(nleft + right.size());
-			result.append(left, nleft);
-			result += right;
-			return result;
-	}
-
-	this_type& operator+=(base_type
-		const& value)
-	{
-		if (!value.empty())
-		{
-			this->append(&*value.begin(), &*(value.end() - 1) + 1);
-		}
-
-		return *this;
-	}
-
-#else
-
-	using base_type::operator+=;
-	this_type& operator+=(this_type
-		const& value)
-	{
-		if (!value.empty())
-		{
-			this->append(&*value.begin(), &*(value.end() - 1) + 1);
-		}
-
-		return *this;
-	}
-
-#endif
-
-	template < class Ax2>
-	friend std::basic_string<T, Traits, Ax2>& operator+=(std::basic_string<T, Traits, Ax2> &out, this_type
-		const& me)
-	{
-		out.append(me.begin(), me.end());
-		return out;
-	}
-
-	iterator insert(iterator
-		const i, const_pointer
-		const value, size_type
-		const n = npos)
-	{
-		size_type
-			const pos = static_cast<size_type> (i - this->begin());
-		this->insert(i, value, value + static_cast<ptrdiff_t> (n == npos ? Traits::length(value) : n));
-		return this->begin() + static_cast<difference_type> (pos);
-	}
-
-	this_type& operator=(const_pointer
-		const value)
-	{
-		this->clear();
-		this->append(value);
-		return *this;
-	}
-
-};
-
 template < class It, class Less>
 bool is_sorted_ex(It begin, It
 	const end, Less less, bool
@@ -584,15 +286,16 @@ void stable_sort_by_key(It begin, It end, Key key, Swapper swapper)
 
 
 #include "src/util/allocators.hpp"
+#include "src/util/core_types.hpp"
+#include "src/util/error_utils.hpp"
 using uffs::DynamicAllocator;
 using uffs::dynamic_allocator;
 using uffs::SingleMovableGlobalAllocator;
-
-namespace std
-{
-	typedef basic_string<TCHAR> tstring;
-	typedef basic_vector_based_string<TCHAR, std::char_traits < TCHAR>, dynamic_allocator<TCHAR>> tvstring;
-}
+using uffs::error::safe_stprintf;
+using uffs::error::CppRaiseException;
+using uffs::error::CheckAndThrow;
+using uffs::error::GetAnyErrorText;
+using uffs::error::GetLastErrorAsString;
 
 namespace std
 {
@@ -734,26 +437,7 @@ HOOK_DEFINE_DEFAULT(BOOL __stdcall, NtUserRedrawWindow, (HWND hWnd, CONST RECT *
 
 
 
-template < size_t N>
-int safe_stprintf(TCHAR(&s)[N], TCHAR
-	const* const format, ...)
-{
-	int result;
-	va_list args;
-	va_start(args, format);
-	result = _vsntprintf(s, N - 1, format, args);
-	va_end(args);
-	if (result < 0)
-	{
-		s[0] = _T('\0');
-	}
-	else if (result == N - 1)
-	{
-		s[result] = _T('\0');
-	}
-
-	return result;
-}
+// safe_stprintf() extracted to src/util/error_utils.hpp
 
 ATL::CWindow topmostWindow;
 atomic_namespace::recursive_mutex global_exception_mutex;
@@ -946,66 +630,11 @@ static void append_directional(std::tvstring& str, TCHAR
 }
 
 
-void CppRaiseException(unsigned long
-	const error)
-{
-	struct _EXCEPTION_POINTERS* pExPtrs = nullptr;
-	bool thrown = false;
-	int exCode = 0;
-	struct CppExceptionThrower
-	{
-		void operator()(int exCode, struct _EXCEPTION_POINTERS* pExPtrs)
-		{
-			throw CStructured_Exception(exCode, pExPtrs);
-		}
+// CppRaiseException() extracted to src/util/error_utils.hpp
 
-		static bool assign(struct _EXCEPTION_POINTERS** to, struct _EXCEPTION_POINTERS* from)
-		{
-			*to = from;
-			return true;
-		}
-	};
+// CheckAndThrow() extracted to src/util/error_utils.hpp
 
-	__try
-	{
-		ATL::_AtlRaiseException(error, 0);
-	}
-
-	__except (CppExceptionThrower::assign(&pExPtrs, static_cast<struct _EXCEPTION_POINTERS*> (GetExceptionInformation())) ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
-	{
-		exCode = GetExceptionCode();
-		thrown = true;
-	}
-
-	if (thrown)
-	{
-		CppExceptionThrower()(exCode, pExPtrs);
-	}
-}
-
-void CheckAndThrow(int
-	const success)
-{
-	if (!success)
-	{
-		CppRaiseException(GetLastError());
-	}
-}
-
-[[nodiscard]] LPTSTR GetAnyErrorText(DWORD errorCode, va_list* pArgList = nullptr)
-{
-	static TCHAR buffer[1 << 15];
-	ZeroMemory(buffer, sizeof(buffer));
-	if (!FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | (pArgList == nullptr ? FORMAT_MESSAGE_IGNORE_INSERTS : 0), nullptr, errorCode, 0, buffer, sizeof(buffer) / sizeof(*buffer), pArgList))
-	{
-		if (!FormatMessage(FORMAT_MESSAGE_FROM_HMODULE | (pArgList == nullptr ? FORMAT_MESSAGE_IGNORE_INSERTS : 0), GetModuleHandle(_T("NTDLL.dll")), errorCode, 0, buffer, sizeof(buffer) / sizeof(*buffer), pArgList))
-		{
-			safe_stprintf(buffer, _T("%#lx"), errorCode);
-		}
-}
-
-	return buffer;
-}
+// GetAnyErrorText() extracted to src/util/error_utils.hpp
 
 // Wow64 and Wow64Disable classes extracted to src/util/wow64.hpp
 
@@ -1610,64 +1239,7 @@ unsigned int get_cluster_size(void* const volume)
 	return info.BytesPerSector * info.SectorsPerAllocationUnit;
 }
 
-[[nodiscard]] std::vector<std::pair < unsigned long long, long long >> get_retrieval_pointers(TCHAR
-	const path[], long long* const size, long long
-	const mft_start_lcn, unsigned int
-	const file_record_size)
-{
-	(void)mft_start_lcn;
-	(void)file_record_size;
-	typedef std::vector<std::pair < unsigned long long, long long >> Result;
-	Result result;
-	Handle handle;
-	if (path)
-	{
-		HANDLE
-			const opened = CreateFile(path, FILE_READ_ATTRIBUTES | SYNCHRONIZE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_NO_BUFFERING, nullptr);
-		unsigned long
-			const error = opened != INVALID_HANDLE_VALUE ? ERROR_SUCCESS : GetLastError();
-		if (!error)
-		{
-			Handle(opened).swap(handle);
-		}
-		else if (error == ERROR_FILE_NOT_FOUND)
-		{ /*do nothing */
-		}
-		else if (error)
-		{
-			CppRaiseException(error);
-		}
-	}
-
-	if (handle)
-	{
-		result.resize(1 + (sizeof(RETRIEVAL_POINTERS_BUFFER) - 1) / sizeof(Result::value_type));
-		STARTING_VCN_INPUT_BUFFER input = {};
-
-		BOOL success;
-		for (unsigned long nr; !(success = DeviceIoControl(handle, FSCTL_GET_RETRIEVAL_POINTERS, &input, sizeof(input), &*result.begin(), static_cast<unsigned long> (result.size()) * sizeof(*result.begin()), &nr, nullptr), success) && GetLastError() == ERROR_MORE_DATA;)
-		{
-			size_t
-				const n = result.size();
-			Result(/*free old memory */).swap(result);
-			Result(n * 2).swap(result);
-		}
-
-		CheckAndThrow(success);
-		if (size)
-		{
-			LARGE_INTEGER large_size;
-			CheckAndThrow(GetFileSizeEx(handle, &large_size));
-			*size = large_size.QuadPart;
-		}
-
-		result.erase(result.begin() + 1 + reinterpret_cast<unsigned long
-			const&> (*result.begin()), result.end());
-		result.erase(result.begin(), result.begin() + 1);
-	}
-
-	return result;
-}
+// get_retrieval_pointers() extracted to src/util/volume_utils.hpp
 
 // propagate_const and fast_subscript templates extracted to src/index/ntfs_index.hpp
 
@@ -1677,107 +1249,7 @@ unsigned int get_cluster_size(void* const volume)
 #include "src/index/ntfs_index.hpp"
 
 // NtfsIndex class has been extracted to src/index/ntfs_index.hpp
-struct MatchOperation
-{
-	value_initialized < bool>
-		is_regex,
-		is_path_pattern,
-		is_stream_pattern,
-		requires_root_path_match;
-
-	std::tvstring root_path_optimized_away;
-
-	string_matcher matcher;
-
-	MatchOperation() {}
-
-	void init(std::tstring pattern)
-	{
-		is_regex = !pattern.empty() &&
-			*pattern.begin() == _T('>');
-
-		if (is_regex)
-		{
-			pattern.erase(pattern.begin());
-		}
-
-		is_path_pattern = is_regex ||
-			~pattern.find(_T('\\')) ||
-			~pattern.find(_T("**"));
-
-		is_stream_pattern =
-			is_regex ||
-			~pattern.find(_T(':'));
-
-		requires_root_path_match =
-			is_path_pattern &&
-			!is_regex &&
-			pattern.size() >= 2 &&
-			*(pattern.begin() + 0) != _T('*') &&
-			*(pattern.begin() + 0) != _T('?') &&
-			*(pattern.begin() + 1) != _T('*') &&
-			*(pattern.begin() + 1) != _T('?');
-
-		if (requires_root_path_match)
-		{
-			root_path_optimized_away.insert(root_path_optimized_away.end(),
-				pattern.begin(),
-				std::find(pattern.begin(),
-					pattern.end(),
-					_T('\\')
-				)
-			);
-			pattern.erase(pattern.begin(),
-				pattern.begin() + static_cast<ptrdiff_t> (root_path_optimized_away.size())
-			);
-		}
-
-		if (!is_path_pattern && !~pattern.find(_T('*')) && !~pattern.find(_T('?')))
-		{
-			pattern.insert(pattern.begin(), _T('*'));
-			pattern.insert(pattern.begin(), _T('*'));
-			pattern.insert(pattern.end()  , _T('*'));
-			pattern.insert(pattern.end()  , _T('*'));
-		}
-
-		string_matcher(is_regex ?
-			string_matcher::pattern_regex :
-			is_path_pattern ?
-			string_matcher::pattern_globstar :
-			string_matcher::pattern_glob,
-			string_matcher::pattern_option_case_insensitive,
-			pattern.data(), pattern.size()).swap(matcher);
-	}	//init
-
-	bool prematch(std::tvstring
-		const& root_path) const
-	{
-		return !requires_root_path_match || (root_path.size() >= root_path_optimized_away.size() &&
-			std::equal(root_path.begin(),
-				root_path.begin() + static_cast<ptrdiff_t> (root_path_optimized_away.size()),
-				root_path_optimized_away.begin()
-			)
-			);
-	}	//prematch
-
-	std::tvstring get_current_path(std::tvstring
-		const& root_path) const
-	{
-		std::tvstring current_path =
-			root_path_optimized_away.empty() ? root_path : std::tvstring();
-
-		while (!current_path.empty() &&
-			*(current_path.end() - 1) == _T('\\')
-			)
-		{
-			current_path.erase(current_path.end() - 1);
-		}
-
-		return current_path;
-	}	//get current path
-
-};
-// MatchOperation
+// MatchOperation struct has been extracted to src/search/match_operation.hpp
 
 // std::is_scalar specializations are now in src/index/ntfs_index.hpp
 
@@ -2879,23 +2351,7 @@ public: using Base::IsWindow;
 
 // OverlappedNtfsMftReadPayload class extracted to src/io/mft_reader.hpp
 
-std::vector<std::tvstring > get_volume_path_names()
-{
-	typedef std::tvstring String;
-	std::vector<String> result;
-	String buf;
-	size_t prev;
-	do {
-		prev = buf.size();
-		buf.resize(std::max(static_cast<size_t> (GetLogicalDriveStrings(static_cast<unsigned long> (buf.size()), buf.empty() ? nullptr : &*buf.begin())), buf.size()));
-	} while (prev < buf.size());
-	for (size_t i = 0, n; n = std::char_traits<TCHAR>::length(&buf[i]), i < buf.size() && buf[i]; i += n + 1)
-	{
-		result.push_back(String(&buf[i], n));
-	}
-
-	return result;
-}
+// get_volume_path_names() extracted to src/util/volume_utils.hpp
 
 #pragma pack(push, 1)
 struct SearchResult
@@ -3045,72 +2501,8 @@ public: typedef base_type::allocator_type allocator_type;
 	  }
 };
 
-long long get_time_zone_bias()
-{
-	long long ft = 0;
-	GetSystemTimeAsFileTime(&reinterpret_cast<FILETIME&> (ft));
-	long long ft_local = 0;
-	if (!FileTimeToLocalFileTime(&reinterpret_cast<FILETIME&> (ft), &reinterpret_cast<FILETIME&> (ft_local)))
-	{
-		ft_local = 0;
-	}
-
-	return ft_local - ft;
-}
-
-template < class Container > struct NFormatBase
-{
-	typedef basic_iterator_ios<std::back_insert_iterator < Container>, typename Container::traits_type > type;
-};
-
-class NFormat : public NFormatBase<std::tstring>::type, public NFormatBase<std::tvstring>::type
-{
-	typedef NFormat this_type;
-public:
-	explicit NFormat(std::locale
-		const& loc) : NFormatBase<std::tstring>::type(loc), NFormatBase<std::tvstring>::type(loc) {}
-
-	template < class T>
-	struct lazy
-	{
-		this_type
-			const* me;
-		T
-			const* value;
-		explicit lazy(this_type
-			const* const me, T
-			const& value) : me(me), value(&value) {}
-
-		operator std::tstring() const
-		{
-			std::tstring result;
-			me->NFormatBase<std::tstring>::type::put(std::back_inserter(result), *value);
-			return result;
-		}
-
-		operator std::tvstring() const
-		{
-			std::tvstring result;
-			me->NFormatBase<std::tvstring>::type::put(std::back_inserter(result), *value);
-			return result;
-		}
-
-		template < class String>
-		friend String& operator+=(String& out, lazy
-			const& this_)
-		{
-			this_.me->NFormatBase<String>::type::put(std::back_inserter(out), *this_.value);
-			return out;
-		}
-	};
-
-	template < class T>
-	lazy<T> operator()(T
-		const& value) const
-	{
-		return lazy<T>(this, value);
-	}
-};
+// get_time_zone_bias() extracted to src/util/time_utils.hpp
+// NFormatBase and NFormat extracted to src/util/nformat_ext.hpp
 
 extern "C"
 IMAGE_DOS_HEADER __ImageBase;
@@ -3366,9 +2758,8 @@ std::pair<int, std::tstring > extract_and_run_if_needed(HINSTANCE hInstance, int
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::wstring_convert<std::codecvt_utf8_utf16 < wchar_t>> converter;
-//std::string narrow = converter.to_bytes(wide_utf16_source_string);
-//std::wstring wide = converter.from_bytes(narrow_utf8_source_string);
+// UTF-8/UTF-16 converter extracted to src/util/utf_convert.hpp
+// Use: converter.to_bytes(wide) or converter.from_bytes(narrow)
 
 std::string PACKAGE_VERSION = "0.9.6";
 
@@ -3403,25 +2794,7 @@ std::wstring s2ws(const std::string & s)
 	return r;
 }
 
-//Returns the last Win32 error, in string format. Returns an empty string if there is no error.
-std::string GetLastErrorAsString()
-{
-	//Get the error message, if any.
-	DWORD errorMessageID = ::GetLastError();
-	if (errorMessageID == 0)
-		return std::string();	//No error message has been recorded
-
-	LPSTR messageBuffer = nullptr;
-	size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-		nullptr, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, nullptr);
-
-	std::string message(messageBuffer, size);
-
-	//Free the buffer.
-	LocalFree(messageBuffer);
-
-	return message;
-}
+// GetLastErrorAsString() extracted to src/util/error_utils.hpp
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3452,6 +2825,15 @@ struct UffsMftHeader {
 #pragma pack(pop)
 
 static_assert(sizeof(UffsMftHeader) == 64, "UffsMftHeader must be exactly 64 bytes");
+
+// ============================================================================
+// MFT Diagnostic Tools
+// ============================================================================
+// Forward declarations are in src/cli/mft_diagnostics.hpp
+// These functions are defined here in the uffs namespace
+// ============================================================================
+
+namespace uffs {
 
 // Dump raw MFT to file in UFFS-MFT format
 // Returns 0 on success, error code on failure
@@ -4247,6 +3629,14 @@ int benchmark_index_build(char drive_letter, std::ostream& OS)
 // ============================================================================
 // End Raw MFT Dump Implementation
 // ============================================================================
+
+} // namespace uffs
+
+// Expose MFT diagnostic functions at global scope for backward compatibility
+using uffs::dump_raw_mft;
+using uffs::dump_mft_extents;
+using uffs::benchmark_mft_read;
+using uffs::benchmark_index_build;
 
 // Command Line Version
 //int _tmain(int argc, TCHAR *argv[])

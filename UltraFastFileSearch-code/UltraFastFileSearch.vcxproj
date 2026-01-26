@@ -248,6 +248,12 @@
     <ClInclude Include="src\gui\gui_main.hpp" />
     <ClInclude Include="src\gui\main_dialog.hpp" />
     <ClInclude Include="src\util\string_utils.hpp" />
+    <ClInclude Include="src\util\volume_utils.hpp" />
+    <ClInclude Include="src\util\time_utils.hpp" />
+    <ClInclude Include="src\util\nformat_ext.hpp" />
+    <ClInclude Include="src\util\utf_convert.hpp" />
+    <ClInclude Include="src\search\match_operation.hpp" />
+    <ClInclude Include="src\cli\mft_diagnostics.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
