@@ -170,6 +170,8 @@ struct AttributeRecordHeader
     unsigned short Flags;    // 0x0001 = Compressed, 0x4000 = Encrypted, 0x8000 = Sparse
     unsigned short Instance;
 
+    // Resident and NonResident data share the same memory location (union)
+    // because an attribute is either resident OR non-resident, never both.
     struct ResidentData
     {
         unsigned long ValueLength;
@@ -190,7 +192,7 @@ struct AttributeRecordHeader
             auto* base = reinterpret_cast<const char*>(this) - offsetof(AttributeRecordHeader, Resident);
             return reinterpret_cast<const void*>(base + this->ValueOffset);
         }
-    } Resident;
+    };
 
     struct NonResidentData
     {
@@ -203,7 +205,15 @@ struct AttributeRecordHeader
         long long DataSize;
         long long InitializedSize;
         long long CompressedSize;
-    } NonResident;
+    };
+
+    // CRITICAL: This must be a union! Resident and NonResident occupy the same
+    // memory location in the NTFS on-disk format.
+    union
+    {
+        ResidentData Resident;
+        NonResidentData NonResident;
+    };
 
     AttributeRecordHeader* next()
     {
