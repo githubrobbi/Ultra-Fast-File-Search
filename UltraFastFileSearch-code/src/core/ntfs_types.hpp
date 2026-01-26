@@ -170,26 +170,29 @@ struct AttributeRecordHeader
     unsigned short Flags;    // 0x0001 = Compressed, 0x4000 = Encrypted, 0x8000 = Sparse
     unsigned short Instance;
 
-    struct Resident
+    struct ResidentData
     {
         unsigned long ValueLength;
         unsigned short ValueOffset;
         unsigned short Flags;
 
+        // GetValue() - returns pointer to the attribute value
+        // Uses offsetof to calculate the AttributeRecordHeader base address
         inline void* GetValue()
         {
-            return reinterpret_cast<void*>(
-                reinterpret_cast<char*>(CONTAINING_RECORD(this, AttributeRecordHeader, Resident)) + this->ValueOffset);
+            // Calculate offset from Resident member to start of AttributeRecordHeader
+            auto* base = reinterpret_cast<char*>(this) - offsetof(AttributeRecordHeader, Resident);
+            return reinterpret_cast<void*>(base + this->ValueOffset);
         }
 
         inline void const* GetValue() const
         {
-            return reinterpret_cast<const void*>(
-                reinterpret_cast<const char*>(CONTAINING_RECORD(this, AttributeRecordHeader, Resident)) + this->ValueOffset);
+            auto* base = reinterpret_cast<const char*>(this) - offsetof(AttributeRecordHeader, Resident);
+            return reinterpret_cast<const void*>(base + this->ValueOffset);
         }
-    };
+    } Resident;
 
-    struct NonResident
+    struct NonResidentData
     {
         long long LowestVCN;
         long long HighestVCN;
@@ -200,13 +203,7 @@ struct AttributeRecordHeader
         long long DataSize;
         long long InitializedSize;
         long long CompressedSize;
-    };
-
-    union
-    {
-        struct Resident Resident;
-        struct NonResident NonResident;
-    };
+    } NonResident;
 
     AttributeRecordHeader* next()
     {
@@ -238,7 +235,7 @@ struct AttributeRecordHeader
 // ============================================================================
 struct FileRecordSegmentHeader
 {
-    struct MultiSectorHeader MultiSectorHeader;
+    uffs::ntfs::MultiSectorHeader MultiSectorHeader;
     unsigned long long LogFileSequenceNumber;
     unsigned short SequenceNumber;
     unsigned short LinkCount;
