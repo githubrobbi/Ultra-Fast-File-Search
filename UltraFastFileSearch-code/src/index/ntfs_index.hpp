@@ -22,6 +22,8 @@
 #include "../io/winnt_types.hpp"
 #include "../io/io_priority.hpp"
 #include "../util/type_traits_ext.hpp"
+#include "../core/file_attributes_ext.hpp"
+#include "mapping_pair_iterator.hpp"
 
 class NtfsIndex : public RefCounted < NtfsIndex>
 {
@@ -98,51 +100,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 			is_sparsefile      : 1,
 			is_reparsepoint    : 1;
 
-		// #####
-
-#define FILE_ATTRIBUTE_DEVICE                0x00000040
-#define FILE_ATTRIBUTE_NORMAL                0x00000080
-#define FILE_ATTRIBUTE_TEMPORARY             0x00000100
-#define FILE_ATTRIBUTE_ENCRYPTED             0x00004000
-#define FILE_ATTRIBUTE_VIRTUAL               0x00010000
-#define FILE_ATTRIBUTE_EA                    0x00040000
-#define FILE_ATTRIBUTE_RECALL_ON_OPEN        0x00040000
-#define FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS 0x00400000
-
-		/*Displays or changes file attributes.
-
-		ATTRIB[+R | -R][+A | -A][+S | -S][+H | -H][+O | -O][+I | -I][+X | -X][+P | -P][+U | -U]
-			[drive:][path][filename][/ S[/ D]][/ L]
-
-		+	Sets an attribute.
-		-	Clears an attribute.
-		R   Read - only file attribute.
-		A   Archive file attribute.
-		S   System file attribute.
-		H   Hidden file attribute.
-		O   Offline attribute.
-		I   Not content indexed file attribute.
-		X   No scrub file attribute.
-		V   Integrity attribute.
-		P   Pinned attribute.
-		U   Unpinned attribute.
-		B   SMR Blob attribute.
-	[drive:][path][filename]
-			Specifies a file or files for attrib to process.
-		/S  Processes matching files in the current folder
-			and all subfolders.
-		/D  Processes folders as well.
-		/L  Work on the attributes of the Symbolic Link versus
-			the target of the Symbolic Link*/
-
-#define FILE_ATTRIBUTE_INTEGRITY_STREAM      0x00008000
-#define FILE_ATTRIBUTE_VIRTUAL               0x00010000
-#define FILE_ATTRIBUTE_NO_SCRUB_DATA         0x00020000
-#define FILE_ATTRIBUTE_EA                    0x00040000
-#define FILE_ATTRIBUTE_PINNED                0x00080000
-#define FILE_ATTRIBUTE_UNPINNED              0x00100000
-#define FILE_ATTRIBUTE_RECALL_ON_OPEN        0x00040000
-#define FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS 0x00400000
+		// FILE_ATTRIBUTE_* constants are in file_attributes_ext.hpp
 
 		[[nodiscard]] unsigned long attributes() const noexcept
 		{
@@ -394,84 +352,7 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 	};
 #pragma pack(pop)
 
-	struct mapping_pair_iterator
-	{
-		typedef mapping_pair_iterator this_type;
-		typedef long long vcn_type, lcn_type;
-		struct value_type
-		{
-			value_type(vcn_type
-				const next_vcn, lcn_type
-				const current_lcn) noexcept : next_vcn(next_vcn), current_lcn(current_lcn) {}
-
-			vcn_type next_vcn;
-			lcn_type current_lcn;
-		};
-
-		explicit mapping_pair_iterator(ntfs::ATTRIBUTE_RECORD_HEADER
-			const* const ah, size_t
-			const max_length = ~size_t(), lcn_type
-			const current_lcn = lcn_type()) noexcept :
-			mapping_pairs(reinterpret_cast<unsigned char
-				const*> (ah) + static_cast<ptrdiff_t> (ah->NonResident.MappingPairsOffset)),
-			ah_end(reinterpret_cast<unsigned char
-				const*> (ah) + (ah->Length < max_length ? ah->Length : static_cast<ptrdiff_t> (max_length))),
-			j(0),
-			value(ah->NonResident.LowestVCN, current_lcn) {}
-
-		[[nodiscard]] bool is_final() const noexcept
-		{
-			return !(mapping_pairs[j] && &mapping_pairs[j] < ah_end);
-		}
-
-		[[nodiscard]] value_type
-			const& operator* () const noexcept
-		{
-			return this->value;
-		}
-
-		[[nodiscard]] value_type
-			const* operator->() const noexcept
-		{
-			return &**this;
-		}
-
-		this_type& operator++() noexcept
-		{
-			unsigned char
-				const lv = mapping_pairs[j++];
-			{
-				unsigned char v = static_cast<unsigned char> (lv & ((1U << (CHAR_BIT / 2)) - 1));
-				vcn_type delta = v && (mapping_pairs[j + v - 1] >> (CHAR_BIT - 1)) ? static_cast<vcn_type>(~static_cast<unsigned long long>(0) << (v * CHAR_BIT)) : vcn_type();
-				for (unsigned char k = 0; k != v; ++k)
-				{
-					delta |= static_cast<vcn_type> (mapping_pairs[j++]) << (CHAR_BIT * k);
-				}
-
-				value.next_vcn += delta;
-			}
-
-			{
-
-				unsigned char l = static_cast<unsigned char> (lv >> (CHAR_BIT / 2));
-				lcn_type delta = l && (mapping_pairs[j + l - 1] >> (CHAR_BIT - 1)) ? static_cast<lcn_type>(~static_cast<unsigned long long>(0) << (l * CHAR_BIT)) : lcn_type();
-				for (unsigned char k = 0; k != l; ++k)
-				{
-					delta |= static_cast<lcn_type> (mapping_pairs[j++]) << (CHAR_BIT * k);
-				}
-
-				value.current_lcn += delta;
-			}
-
-			return *this;
-		}
-
-	private:
-		unsigned char
-			const* mapping_pairs, * ah_end;
-		size_t j;
-		value_type value;
-	};
+	// mapping_pair_iterator is now in mapping_pair_iterator.hpp
 
 	Records::iterator at(size_t
 		const frs, Records::iterator* const existing_to_revalidate = nullptr)
