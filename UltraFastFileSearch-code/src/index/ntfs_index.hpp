@@ -25,15 +25,17 @@
 #include "../core/file_attributes_ext.hpp"
 #include "../core/packed_file_size.hpp"
 #include "../core/standard_info.hpp"
+#include "../core/ntfs_record_types.hpp"
 #include "mapping_pair_iterator.hpp"
 
 class NtfsIndex : public RefCounted < NtfsIndex>
 {
 	typedef NtfsIndex this_type;
-	template < class = void > struct small_t
-	{
-		typedef unsigned int type;
-	};
+
+	// small_t is now in ntfs_record_types.hpp
+	template <class T = void>
+	using small_t = ::uffs::small_t<T>;
+
 	// file_size_type is now in packed_file_size.hpp
 	typedef ::uffs::file_size_type file_size_type;
 
@@ -48,87 +50,32 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 	// SizeInfo is now in packed_file_size.hpp
 	typedef ::uffs::SizeInfo SizeInfo;
 
-#pragma pack(push, 1)
+	// NameInfo is now in ntfs_record_types.hpp
+	typedef ::uffs::NameInfo NameInfo;
+
+	// LinkInfo is now in ntfs_record_types.hpp
+	typedef ::uffs::LinkInfo LinkInfo;
+
+	// StreamInfo is now in ntfs_record_types.hpp
+	typedef ::uffs::StreamInfo StreamInfo;
+
+	// ChildInfo is now in ntfs_record_types.hpp
+	typedef ::uffs::ChildInfo ChildInfo;
+
 	friend struct std::is_scalar<StandardInfo>;
-	struct NameInfo
-	{
-		small_t<size_t>::type _offset;
-		[[nodiscard]] bool ascii() const noexcept
-		{
-			return !!(this->_offset & 1U);
-		}
-
-		void ascii(bool
-			const value) noexcept
-		{
-			this->_offset = static_cast<small_t<size_t>::type> ((this->_offset & static_cast<small_t<size_t>::type> (~static_cast<small_t<size_t>::type> (1U))) | (value ? 1U : small_t<size_t>::type()));
-		}
-
-		[[nodiscard]] small_t<size_t>::type offset() const noexcept
-		{
-			small_t<size_t>::type result = this->_offset >> 1;
-			if (result == (static_cast<small_t<size_t>::type> (negative_one) >> 1))
-			{
-				result = static_cast<small_t<size_t>::type> (negative_one);
-			}
-
-			return result;
-		}
-
-		void offset(small_t<size_t>::type
-			const value) noexcept
-		{
-			this->_offset = (value << 1) | (this->_offset & 1U);
-		}
-
-		unsigned char length;
-	};
-
 	friend struct std::is_scalar<NameInfo>;
-	struct LinkInfo
-	{
-		LinkInfo() : next_entry(negative_one)
-		{
-			this->name.offset(negative_one);
-		}
-
-		typedef small_t<size_t>::type next_entry_type;
-		next_entry_type next_entry;
-		NameInfo name;
-		unsigned int parent;
-	};
-
 	friend struct std::is_scalar<LinkInfo>;
-	struct StreamInfo : SizeInfo
-	{
-		StreamInfo() : SizeInfo(), next_entry(), name(), type_name_id() {}
-
-		typedef small_t<size_t>::type next_entry_type;
-		next_entry_type next_entry;
-		NameInfo name;
-		unsigned char is_sparse : 1;
-		unsigned char is_allocated_size_accounted_for_in_main_stream : 1;
-		unsigned char type_name_id : CHAR_BIT - 2 /*zero if and only if $I30:$INDEX_ROOT or $I30:$INDEX_ALLOCATION */;
-	};
-
 	friend struct std::is_scalar<StreamInfo>;
+
 	typedef std::codecvt<std::tstring::value_type, char, int /*std::mbstate_t*/ > CodeCvt;
 	typedef vector_with_fast_size<LinkInfo> LinkInfos;
 	typedef vector_with_fast_size<StreamInfo> StreamInfos;
 	struct Record;
 	typedef vector_with_fast_size<Record> Records;
 	typedef std::vector < unsigned int > RecordsLookup;
-	struct ChildInfo
-	{
-		ChildInfo() : next_entry(negative_one), record_number(negative_one), name_index(negative_one) {}
-
-		typedef small_t<size_t>::type next_entry_type;
-		next_entry_type next_entry;
-		small_t<Records::size_type>::type record_number;
-		unsigned short name_index;
-	};
 
 	typedef vector_with_fast_size<ChildInfo> ChildInfos;
+#pragma pack(push, 1)
 	struct Record
 	{
 		StandardInfo stdinfo;
