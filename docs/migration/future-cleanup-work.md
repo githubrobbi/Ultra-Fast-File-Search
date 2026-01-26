@@ -28,11 +28,11 @@ The initial 7-phase refactoring is complete, reducing the monolith from 14,155 t
 
 | Metric | Value | Target | Change |
 |--------|-------|--------|--------|
-| Monolith (`UltraFastFileSearch.cpp`) | 3,647 lines | < 500 lines | -659 lines from 4,306 |
+| Monolith (`UltraFastFileSearch.cpp`) | **2,077 lines** | < 500 lines | **-1,787 lines (46% reduction)** |
 | `main_dialog.hpp` | 3,910 lines | Split into multiple files | - |
 | `ntfs_index.hpp` | 1,936 lines | Split into .hpp/.cpp | - |
-| `.cpp` compilation units | 5 files | 15+ files | +1 (string_utils.cpp) |
-| Extracted utility headers | 10 files | - | NEW |
+| `.cpp` compilation units | 6 files | 15+ files | +2 (string_utils.cpp, mft_diagnostics.cpp) |
+| Extracted utility headers | 15 files | - | +5 NEW |
 | Unit tests | 0 | Full coverage | - |
 | Third-party deps in source | 3 (CLI11, boost, wtl) | 0 (use package manager) | - |
 
@@ -92,19 +92,44 @@ Almost all code is in `.hpp` files with full implementations:
 
 | Task | Target File | Lines | Status |
 |------|-------------|-------|--------|
-| 9.1 Extract `CProgressDialog` | `src/gui/progress_dialog.hpp` | ~200 | ⏳ |
-| 9.2 Extract volume utilities | `src/util/volume_utils.hpp` | ~80 | ✅ DONE |
-| 9.3 Extract MFT dump tool | `src/cli/mft_diagnostics.hpp` | ~800 | 🔄 Header created, impl in monolith |
-| 9.4 Extract MFT benchmark tool | (merged with 9.3) | - | 🔄 |
+| 9.1 Extract `CProgressDialog` | `src/gui/progress_dialog.hpp` | ~344 | ✅ DONE |
+| 9.2 Extract `SearchResult`/`Results` | `src/search/search_results.hpp` | ~145 | ✅ DONE |
+| 9.3 Extract MFT diagnostics | `src/cli/mft_diagnostics.cpp` | ~715 | ✅ DONE |
+| 9.4 Extract MFT benchmark tool | (merged with 9.3) | - | ✅ DONE |
 | 9.5 Extract string utilities | `src/util/string_utils.hpp/.cpp` | ~100 | ✅ DONE |
 | 9.6 Extract error handling | `src/util/error_utils.hpp` | ~50 | ✅ DONE (previously) |
-| 9.7 Extract time utilities | `src/util/time_utils.hpp` | ~30 | ✅ DONE |
+| 9.7 Extract time utilities | `src/util/time_utils.hpp` | ~130 | ✅ DONE |
 | 9.8 Extract NFormat | `src/util/nformat_ext.hpp` | ~90 | ✅ DONE |
 | 9.9 Extract UTF converter | `src/util/utf_convert.hpp` | ~55 | ✅ DONE |
 | 9.10 Extract MatchOperation | `src/search/match_operation.hpp` | ~130 | ✅ DONE |
-| 9.11 Reduce monolith to entry point only | `UltraFastFileSearch.cpp` | < 200 | ⏳ |
+| 9.11 Extract volume utilities | `src/util/volume_utils.hpp` | ~80 | ✅ DONE |
+| 9.12 Reduce monolith to entry point only | `UltraFastFileSearch.cpp` | < 500 | 🔄 IN PROGRESS (2,077 lines) |
 
-**Estimated Total**: 8 hours (~4h remaining)
+**Estimated Total**: 8 hours (~2h remaining)
+
+### Remaining Monolith Content (~2,077 lines)
+
+| Lines | Content | Extraction Target | Priority |
+|-------|---------|-------------------|----------|
+| 1-150 | Includes, config, macros | Keep (entry point setup) | - |
+| 150-670 | Utility functions (ILIsEmpty, DisplayError, isdevnull, NormalizePath, etc.) | `src/util/misc_utils.hpp` | Medium |
+| 670-900 | Locale/cluster utilities | `src/util/locale_utils.hpp` | Low |
+| 900-1100 | Hook macros, CInvokeImpl | `src/gui/invoke_impl.hpp` | Medium |
+| 1100-1420 | CModifiedDialogImpl, autosize_columns | `src/gui/modified_dialog_impl.hpp` | Medium |
+| 1420-1640 | Includes for extracted headers | Keep (orchestration) | - |
+| 1646-1707 | get_subsystem, get_version, HookedNtUserProps | `src/util/pe_utils.hpp` | Low |
+| 1710-1750 | main_dialog include, My_Stable_sort | Keep (GUI entry) | - |
+| 1751-1896 | get_app_guid, extract_and_run_if_needed | `src/util/x64_launcher.hpp` | Low |
+| 1903-1934 | PACKAGE_VERSION, PrintVersion, s2ws | `src/util/version_info.hpp` | Low |
+| 1955-2065 | benchmark_index_build | Keep (depends on NtfsIndex) | - |
+| 2071-2078 | CLI/GUI includes | Keep (entry points) | - |
+
+**Next extraction candidates (in order):**
+1. **CModifiedDialogImpl** (~200 lines) - Already has header, move to `src/gui/`
+2. **CInvokeImpl** (~100 lines) - GUI utility class
+3. **Utility functions** (~300 lines) - Miscellaneous helpers
+4. **HookedNtUserProps** (~50 lines) - Windows hook utilities
+5. **extract_and_run_if_needed** (~140 lines) - x64 launcher logic
 
 ---
 
@@ -313,11 +338,14 @@ Mixed naming conventions:
 1. Phase 8: Split headers into .hpp/.cpp
 2. Phase 9: Complete monolith decomposition
    - ✅ Step 1: Extract string utilities (Task 9.5) - `src/util/string_utils.hpp/.cpp`
-   - ✅ Step 4: Consolidate NTFS types (Task 8.1) - Moved ~375 lines to `ntfs_types.hpp`
-   - ✅ Step 5: Decouple CLI from GUI - Extracted `SystemTimeToString` to `time_utils.hpp`
-   - 🔄 Step 2: Convert `cli_main.hpp` → `cli_main.cpp` (Task 8.5) - **PARTIAL**: CLI decoupled from GUI, full separation deferred
-   - ⏳ Step 3: Convert `gui_main.hpp` → `gui_main.cpp` (Task 8.6) - Pending
-   - ⏳ Step 6: Extract CProgressDialog (Task 9.1)
+   - ✅ Step 2: Consolidate NTFS types (Task 8.1) - Moved ~375 lines to `ntfs_types.hpp`
+   - ✅ Step 3: Decouple CLI from GUI - Extracted `SystemTimeToString` to `time_utils.hpp`
+   - ✅ Step 4: Extract MFT diagnostics (Task 9.3) - `src/cli/mft_diagnostics.cpp` (~715 lines)
+   - ✅ Step 5: Extract CProgressDialog (Task 9.1) - `src/gui/progress_dialog.hpp` (~344 lines)
+   - ✅ Step 6: Extract SearchResult/Results (Task 9.2) - `src/search/search_results.hpp` (~145 lines)
+   - 🔄 Step 7: Continue monolith reduction (2,077 → <500 lines)
+   - ⏳ Step 8: Convert `cli_main.hpp` → `cli_main.cpp` (Task 8.5) - Deferred until headers self-contained
+   - ⏳ Step 9: Convert `gui_main.hpp` → `gui_main.cpp` (Task 8.6) - Deferred
 
 ### Wave 3: Infrastructure (16 hours)
 1. Phase 10: Dependency management
