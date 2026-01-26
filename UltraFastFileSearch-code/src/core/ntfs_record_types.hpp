@@ -3,7 +3,7 @@
 // Extracted from ntfs_index.hpp for reusability
 
 #include <climits>
-#include "../util/negative_one.hpp"
+#include "../io/overlapped.hpp"  // for negative_one
 #include "packed_file_size.hpp"
 
 namespace uffs {
