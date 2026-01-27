@@ -5,37 +5,34 @@
  * This file contains the OverlappedNtfsMftReadPayload class which handles
  * asynchronous reading of the NTFS MFT using I/O completion ports.
  *
- * Dependencies (must be defined before including this header):
- * - Overlapped class (from overlapped.hpp)
- * - IoCompletionPort class (from io_completion_port.hpp)
- * - atomic_namespace (from atomic_compat.hpp)
- * - intrusive_ptr, RefCounted (from intrusive_ptr.hpp)
- * - lock() function (from lock_ptr.hpp)
- * - Handle class (forward declared, defined in monolith)
- * - NtfsIndex class (forward declared, defined in monolith)
- * - get_retrieval_pointers() function (defined in monolith before this include)
- * - CheckAndThrow() function (defined in monolith before this include)
- * - CppRaiseException() function (defined in monolith before this include)
- * - CStructured_Exception class (defined in monolith before this include)
+ * This is a self-contained header-only implementation using inline functions.
+ * All dependencies are included directly.
  */
 
 #ifndef UFFS_MFT_READER_HPP
 #define UFFS_MFT_READER_HPP
 
+// I/O infrastructure
 #include "overlapped.hpp"
 #include "io_completion_port.hpp"
+
+// Utility headers
 #include "../util/atomic_compat.hpp"
 #include "../util/intrusive_ptr.hpp"
 #include "../util/lock_ptr.hpp"
+#include "../util/error_utils.hpp"      // CheckAndThrow, CppRaiseException, CStructured_Exception
+#include "../util/volume_utils.hpp"     // get_retrieval_pointers
+#include "../util/handle.hpp"           // Handle class
 
+// Standard library
 #include <vector>
 #include <ctime>
 #include <climits>
 #include <algorithm>
 #include <stdexcept>
 
-// Forward declarations for types defined in the monolith
-class Handle;
+// Forward declaration for NtfsIndex (defined in ntfs_index.hpp)
+// We only need forward declaration here since we use pointers/references
 class NtfsIndex;
 
 class OverlappedNtfsMftReadPayload : public Overlapped
