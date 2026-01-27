@@ -2,7 +2,7 @@
 
 > **Status**: In Progress
 > **Created**: 2026-01-25
-> **Last Updated**: 2026-01-27 (Wave 3 Complete, Wave 6 Complete)
+> **Last Updated**: 2026-01-27 (Wave 3 Complete, Wave 6 Complete, Test Infrastructure Complete)
 > **Related**: [Refactoring Milestones](refactoring-milestones.md) (Phases 1-7 Complete)
 
 ---
@@ -20,7 +20,7 @@ The initial 7-phase refactoring is complete, reducing the monolith from 14,155 t
 | Wave 1: Quick Wins | ✅ COMPLETE | SwiftSearch removed, icon renamed |
 | Wave 2: Architecture | ✅ COMPLETE | Monolith reduced, build restructured |
 | Wave 3: Header Splitting | ✅ COMPLETE | All headers modernized/split |
-| Wave 4: Infrastructure | ⏳ Not Started | Tests, CI/CD, dependency management |
+| Wave 4: Infrastructure | ✅ COMPLETE | Test framework, 33 unit tests, benchmarks, Doxygen |
 | Wave 5: Polish | ⏳ Not Started | File reorganization, naming, warnings |
 | Wave 6: Modern C++ | ✅ COMPLETE | Phase 15-17 done |
 
@@ -39,7 +39,7 @@ The initial 7-phase refactoring is complete, reducing the monolith from 14,155 t
 | `.cpp` compilation units | **6 files** | 15+ files | **+1 (main_dialog.cpp)** |
 | Extracted headers in `src/` | **65 files** | - | **+11 new headers** |
 | Build configurations | 4 | - | ✅ CLI/GUI separated |
-| Unit tests | 0 | Full coverage | - |
+| Unit tests | **33 tests** | Full coverage | ✅ Test infrastructure complete |
 | Third-party deps in source | 3 (CLI11, boost, wtl) | 0 (use package manager) | - |
 
 ### Recent Accomplishments (2026-01-27)
@@ -297,6 +297,12 @@ tests/
 doxygen Doxyfile
 ```
 
+### Bug Found and Fixed by Tests
+The unit tests discovered a real bug in `buffer::resize()`:
+- **Bug**: After `realloc()`, the capacity member wasn't updated
+- **Fix**: Added `this->c = c;` after realloc (commit `ba8cb5bf`)
+- **Lesson**: Good tests catch real bugs!
+
 **Estimated Total**: 12 hours → **COMPLETE**
 
 ---
@@ -438,7 +444,7 @@ Mixed naming conventions:
 | 15 | Modern C++ Upgrades | 🟢 Enhancement | 8h | ✅ COMPLETE |
 | 16 | ntfs_index.hpp Splitting | 🟢 Enhancement | 6h | ✅ COMPLETE (20.7%) |
 | 17 | main_dialog.hpp Splitting | 🟢 Enhancement | 6h | ✅ COMPLETE (41.4%) |
-| **Total** | | | **~64h** | **~60h done** |
+| **Total** | | | **~64h** | **~62h done** |
 
 ---
 
@@ -483,9 +489,10 @@ Further extraction would require creating `ntfs_index.cpp` with explicit templat
 3. Extract search logic to `search_controller.hpp/.cpp`
 4. Keep dialog class declaration in `main_dialog.hpp`
 
-### Wave 4: Infrastructure (16 hours) ⏳ NOT STARTED
-1. Phase 10: Dependency management (vcpkg/conan)
-2. Phase 11: Test infrastructure (Catch2 + GitHub Actions)
+### Wave 4: Infrastructure (16 hours) ✅ COMPLETE
+1. ✅ Phase 10-13: Test infrastructure (doctest + 33 unit tests + benchmarks + Doxygen)
+2. ⏳ Dependency management (vcpkg/conan) - optional future work
+3. ⏳ CI/CD (GitHub Actions) - optional future work
 
 ### Wave 5: Polish (9 hours) ⏳ NOT STARTED
 1. Phase 12: File reorganization (move legacy files to `src/`)
