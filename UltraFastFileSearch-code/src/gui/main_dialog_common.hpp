@@ -132,6 +132,10 @@
 #include "../util/pe_utils.hpp"
 #include "../util/nt_user_call_hook.hpp"
 #include "../util/com_init.hpp"
+#include "../util/path_utils.hpp"
+#include "../util/sort_utils.hpp"
+#include "../util/allocators.hpp"
+#include "../util/file_handle.hpp"
 
 // ============================================================================
 // Namespace aliases (MUST come before headers that use winnt:: prefix)
@@ -148,6 +152,21 @@ using uffs::get_subsystem;
 using uffs::get_version;
 using uffs::LCIDToLocaleName_XPCompatible;
 using uffs::get_ui_locale_name;
+
+// Path utilities
+using uffs::NormalizePath;
+using uffs::remove_path_stream_and_trailing_sep;
+using uffs::GetDisplayName;
+
+// Sort utilities
+using uffs::is_sorted_ex;
+using uffs::stable_sort_by_key;
+
+// Allocators
+using uffs::SingleMovableGlobalAllocator;
+
+// File handle
+using uffs::File;
 
 template <class T, class Alloc = uffs::default_memheap_alloc<T>>
 using memheap_vector = uffs::memheap_vector<T, Alloc>;
@@ -166,11 +185,17 @@ long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo);
 // Headers that depend on namespace aliases and using declarations
 // ============================================================================
 #include "../util/nt_user_hooks.hpp"
+#include "../util/hooked_nt_user_props.hpp"
 #include "../index/ntfs_index.hpp"
 #include "../io/io_completion_port.hpp"
 #include "../io/mft_reader.hpp"
 #include "listview_hooks.hpp"
 #include "string_loader.hpp"
+
+// Using declarations needed BEFORE progress_dialog.hpp
+using uffs::gui::RefCountedCString;
+using uffs::gui::StringLoader;
+
 #include "listview_adapter.hpp"
 #include "progress_dialog.hpp"
 #include "../search/search_results.hpp"
@@ -182,8 +207,6 @@ using uffs::gui::CDisableListViewUnnecessaryMessages;
 #ifdef WM_SETREDRAW
 using uffs::gui::CSetRedraw;
 #endif
-using uffs::gui::RefCountedCString;
-using uffs::gui::StringLoader;
 using uffs::gui::ImageListAdapter;
 using uffs::gui::ListViewAdapter;
 using uffs::gui::autosize_columns;

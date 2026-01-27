@@ -450,44 +450,8 @@ IMAGE_DOS_HEADER __ImageBase;
 using uffs::get_subsystem;
 using uffs::get_version;
 
-struct HookedNtUserProps
-{
-	typedef HookedNtUserProps hook_type;
-	HWND prev_hwnd;
-	ATOM prev_atom;
-	HANDLE prev_result;
-	struct : hook_detail::thread_hook_swap<HOOK_TYPE(NtUserGetProp)>
-	{
-		HANDLE operator()(HWND hWnd, ATOM PropId) override
-		{
-			hook_type* const self = CONTAINING_RECORD(this, hook_type, HOOK_CONCAT(hook_, NtUserGetProp));
-			if (self->prev_hwnd != hWnd || self->prev_atom != PropId)
-			{
-				self->prev_result = this->hook_base_type::operator()(hWnd, PropId);
-				self->prev_hwnd = hWnd;
-				self->prev_atom = PropId;
-			}
-			return self->prev_result;
-		}
-	} HOOK_CONCAT(hook_, NtUserGetProp);
-
-	struct : hook_detail::thread_hook_swap<HOOK_TYPE(NtUserSetProp)>
-	{
-		BOOL operator()(HWND hWnd, ATOM PropId, HANDLE value) override
-		{
-			hook_type* const self = CONTAINING_RECORD(this, hook_type, HOOK_CONCAT(hook_, NtUserSetProp));
-			BOOL const result = this->hook_base_type::operator()(hWnd, PropId, value);
-			if (result && self->prev_hwnd == hWnd && self->prev_atom == PropId)
-			{
-				self->prev_result = value;
-			}
-			return result;
-		}
-	} HOOK_CONCAT(hook_, NtUserSetProp);
-
-	HookedNtUserProps() : prev_hwnd(), prev_atom(), prev_result() {}
-	~HookedNtUserProps() {}
-};
+// HookedNtUserProps extracted to src/util/hooked_nt_user_props.hpp
+#include "src/util/hooked_nt_user_props.hpp"
 
 #include "src/gui/main_dialog.hpp"
 
