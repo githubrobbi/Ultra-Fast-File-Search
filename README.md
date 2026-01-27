@@ -502,8 +502,6 @@ The codebase has undergone a major refactoring effort (~66 hours of work):
 - **Consistent naming** - All files use `snake_case.hpp` convention
 - **Self-contained headers** - Each header includes its own dependencies
 
-See [`docs/migration/future-cleanup-work.md`](docs/migration/future-cleanup-work.md) for full details.
-
 ## TODO
 
 1. ~~Modernize the MFT engine.~~ ✅ Done (refactored into modular headers)

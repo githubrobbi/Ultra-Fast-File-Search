@@ -18,7 +18,7 @@ namespace uffs {
 // Package version string
 inline const std::string& get_package_version()
 {
-    static const std::string version = "0.9.6";
+    static const std::string version = "1.0.0";
     return version;
 }
 
