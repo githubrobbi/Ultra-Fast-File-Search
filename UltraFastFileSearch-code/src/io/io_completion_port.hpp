@@ -6,29 +6,35 @@
  * Provides IoCompletionPort and OleIoCompletionPort classes for managing
  * asynchronous I/O operations using Windows IOCP.
  *
- * Dependencies (must be defined before including this header):
- * - Handle class
- * - IoPriority::query
- * - CheckAndThrow, CppRaiseException
- * - CStructured_Exception
- * - global_exception_handler
- * - CoInit
- * - winnt::IO_PRIORITY_HINT
+ * This is a self-contained header with all dependencies included.
  */
 
 #ifndef UFFS_IO_COMPLETION_PORT_HPP
 #define UFFS_IO_COMPLETION_PORT_HPP
 
+// Windows headers
 #include <Windows.h>
 #include <process.h>
+
+// Standard library
 #include <vector>
 
+// Utility headers
 #include "../util/atomic_compat.hpp"
 #include "../util/lock_ptr.hpp"
-#include "overlapped.hpp"
-#include "winnt_types.hpp"
+#include "../util/handle.hpp"           // Handle class
+#include "../util/error_utils.hpp"      // CheckAndThrow, CppRaiseException, CStructured_Exception
+#include "../util/com_init.hpp"         // CoInit class
+
+// I/O headers
+#include "overlapped.hpp"               // Overlapped, intrusive_ptr
+#include "winnt_types.hpp"              // winnt:: types
+#include "io_priority.hpp"              // IoPriority class
 
 namespace winnt = uffs::winnt;  // Alias for winnt:: prefix usage
+
+// Forward declaration for global_exception_handler (defined in UltraFastFileSearch.cpp)
+long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo);
 
 class IoCompletionPort
 {

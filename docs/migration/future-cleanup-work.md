@@ -144,9 +144,9 @@ Large implementation files are still in `.hpp` headers:
 | 8.3 Split `main_dialog.hpp` → multiple files | High | 6h | ✅ DONE (41.4% reduction) |
 | 8.4 Split `ntfs_index.hpp` → `.hpp` + `.cpp` | Medium | 4h | ⏳ (complex - many templates) |
 | 8.5 Modernize `mft_reader.hpp` | Medium | 0.5h | ✅ DONE (self-contained) |
-| 8.6 Split `io_completion_port.hpp` → `.hpp` + `.cpp` | Low | 2h | ⏳ |
+| 8.6 Modernize `io_completion_port.hpp` | Low | 0.5h | ✅ DONE (self-contained) |
 
-**Estimated Total**: 15 hours (9.5h complete)
+**Estimated Total**: 15 hours (10h complete)
 
 > **Note (2026-01-26)**: `main_dialog.hpp` has been split! Created `main_dialog.cpp` (993 lines)
 > with 6 major method implementations extracted. Header reduced from 3,541 to 2,132 lines (41.4%).
@@ -155,6 +155,10 @@ Large implementation files are still in `.hpp` headers:
 > **Note (2026-01-27)**: `mft_reader.hpp` modernized - now self-contained with proper includes
 > for `error_utils.hpp`, `volume_utils.hpp`, and `handle.hpp`. Already uses inline functions,
 > so no .cpp split needed. Removed outdated monolith dependency comments.
+
+> **Note (2026-01-27)**: `io_completion_port.hpp` modernized - now self-contained with proper
+> includes for `handle.hpp`, `error_utils.hpp`, `com_init.hpp`, and `io_priority.hpp`.
+> Added forward declaration for `global_exception_handler`. No .cpp split needed.
 
 ---
 
@@ -424,7 +428,7 @@ Mixed naming conventions:
 | 8.3 | `main_dialog.hpp` → `.hpp` + `.cpp` | 2,132 | 6h | ✅ DONE (41.4% reduction) |
 | 8.4 | `ntfs_index.hpp` → extract types | 1,556 | 4h | ✅ 19.8% done |
 | 8.5 | `mft_reader.hpp` → self-contained | ~500 | 0.5h | ✅ DONE |
-| 8.6 | `io_completion_port.hpp` → .hpp/.cpp | ~300 | 1h | ⏳ NEXT |
+| 8.6 | `io_completion_port.hpp` → self-contained | ~350 | 0.5h | ✅ DONE |
 
 **ntfs_index.hpp extraction complete (7 headers, 384 lines extracted):**
 - ✅ `type_traits_ext.hpp` - `propagate_const`, `fast_subscript`
