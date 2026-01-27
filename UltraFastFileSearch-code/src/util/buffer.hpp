@@ -198,6 +198,7 @@ private:
 
 			using namespace std;
 			this->p = c ? realloc(this->p, c) : nullptr;
+			this->c = c;  // Update capacity after realloc
 			this->n = n;
 		}
 	}

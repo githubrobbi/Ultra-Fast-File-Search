@@ -39,16 +39,15 @@ TEST_SUITE("buffer") {
             *p = i * 10;
         }
         CHECK(buf.size() == 16);
+        CHECK(buf.capacity() == 16);  // Still at initial capacity
 
-        // Add one more - triggers realloc (but note: buffer::resize has a bug
-        // where it doesn't update this->c after realloc, so capacity() stays stale)
+        // Add one more - triggers realloc
         int* p = buf.emplace_back<int>();
         *p = 999;
         CHECK(buf.size() == 20);
-        // Note: capacity() is not updated by resize() - this is a known issue
-        // The memory IS reallocated, but the capacity member isn't updated
+        CHECK(buf.capacity() >= 20);  // Capacity grew after realloc
 
-        // Verify data survived the realloc - this is the important test
+        // Verify data survived the realloc
         CHECK(*reinterpret_cast<int*>(buf.begin()) == 0);
         CHECK(*reinterpret_cast<int*>(buf.begin() + 4) == 10);
         CHECK(*reinterpret_cast<int*>(buf.begin() + 16) == 999);
