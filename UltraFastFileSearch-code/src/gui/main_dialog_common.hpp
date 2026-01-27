@@ -136,6 +136,7 @@
 #include "../util/sort_utils.hpp"
 #include "../util/allocators.hpp"
 #include "../util/file_handle.hpp"
+#include "../util/type_traits_compat.hpp"
 
 // ============================================================================
 // Namespace aliases (MUST come before headers that use winnt:: prefix)

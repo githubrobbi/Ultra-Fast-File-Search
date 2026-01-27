@@ -11,7 +11,7 @@ VCR102
 Browsing operations around this macro may fail. Consider adding it to a hint file.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-292
+293
 
 
 Warning
@@ -46,22 +46,6 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFi
 295
 
 
-Warning
-VCR001
-Function definition for 'HOOK_CONCAT' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-472
-
-
-Warning
-VCR001
-Function definition for 'HOOK_CONCAT' not found.
-
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-486
-
-
 Message
 VCR102
 Browsing operations around this macro may fail. Consider adding it to a hint file.
@@ -83,7 +67,7 @@ VCR102
 Browsing operations around this macro may fail. Consider adding it to a hint file.
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
-293
+292
 
 
 Message
@@ -156,510 +140,126 @@ Browsing operations around this macro may fail. Consider adding it to a hint fil
 
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.cpp
 295
-
-
-Error
-C3646
-'stringLoader_': unknown override specifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
-54
-
-
-Error
-C4430
-missing type specifier - int assumed. Note: C++ does not support default-int
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
-54
 
 
 Error
 C2039
-'stringLoader_': is not a member of 'CProgressDialog'
+'remove_cv': is not a member of 'stdext'
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
-66
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+667
+
+
+Error
+C2065
+'remove_cv': undeclared identifier
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+667
+
+
+Error
+C2275
+'CMainDlg::ResultCompare<24>::Index': expected an expression instead of a type
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+667
 
 
 Error
 C2039
-'stringLoader_': is not a member of 'CProgressDialog'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\progress_dialog.hpp
-68
-
-
-Error
-C3861
-'NormalizePath': identifier not found
+'type': is not a member of '`global namespace''
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-230
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-878
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-879
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-880
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-884
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-884
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-885
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-885
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-886
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-886
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-887
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-887
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-888
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-888
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-889
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-889
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-890
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-890
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-891
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-891
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-892
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-892
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-893
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-893
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-894
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-894
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-895
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-895
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-896
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-896
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-897
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-897
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-898
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-898
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-899
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-899
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-900
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-900
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-901
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-901
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-902
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-902
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-903
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-903
-
-
-Error
-C3861
-'is_sorted_ex': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-904
-
-
-Error
-C3861
-'stable_sort_by_key': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-904
+667
 
 
 Error
 C2065
-'HookedNtUserProps': undeclared identifier
+'type': undeclared identifier
 UltraFastFileSearch
 C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1167
-
-
-Error
-C2146
-syntax error: missing ';' before identifier 'hook_NtUserProp'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1167
-
-
-Error
-C2065
-'hook_NtUserProp': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1167
-
-
-Error
-C3861
-'remove_path_stream_and_trailing_sep': identifier not found
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-1278
-
-
-Error
-C2065
-'File': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.cpp
-355
+667
 
 
 Error
 C2143
 syntax error: missing ';' before 'const'
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.cpp
-355
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+668
 
 
 Error
 C4430
 missing type specifier - int assumed. Note: C++ does not support default-int
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.cpp
-355
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+668
 
 
 Error
-C2065
-'SingleMovableGlobalAllocator': undeclared identifier
+C2440
+'initializing': cannot convert from 'const NtfsIndex *' to 'const int *'
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.cpp
-378
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+669
 
 
 Error
-C2146
-syntax error: missing ';' before identifier 'global_alloc'
+C2440
+'initializing': cannot convert from 'const NtfsIndex *' to 'const int *'
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.cpp
-378
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+670
 
 
 Error
-C2065
-'global_alloc': undeclared identifier
+C2530
+'r1': references must be initialized
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.cpp
-378
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+685
 
 
 Error
-C2065
-'global_alloc': undeclared identifier
+C2530
+'r2': references must be initialized
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.cpp
-379
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+685
 
 
 Error
-C2065
-'global_alloc': undeclared identifier
+C2665
+'NtfsIndex::ParentIterator::ParentIterator': no overloaded function could convert all the argument types
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.cpp
-520
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+712
 
 
 Error
-C3861
-'remove_path_stream_and_trailing_sep': identifier not found
+C2665
+'NtfsIndex::ParentIterator::ParentIterator': no overloaded function could convert all the argument types
 UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.cpp
-558
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+712
+
+
+Error
+C2665
+'NtfsIndex::ParentIterator::ParentIterator': no overloaded function could convert all the argument types
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+716
+
+
+Error
+C2665
+'NtfsIndex::ParentIterator::ParentIterator': no overloaded function could convert all the argument types
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
+716
 
 
 Warning
