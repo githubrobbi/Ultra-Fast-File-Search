@@ -5,6 +5,7 @@
 #include <climits>
 #include "../io/overlapped.hpp"  // for negative_one
 #include "packed_file_size.hpp"
+#include "standard_info.hpp"     // for StandardInfo
 
 namespace uffs {
 
@@ -90,6 +91,29 @@ struct ChildInfo
 	unsigned short name_index;
 };
 
+/// MFT file record - represents a single file/directory in the NTFS index
+/// Contains standard info, name count, stream count, and links to child/name/stream lists
+struct Record
+{
+	StandardInfo stdinfo;
+	unsigned short name_count /*<= 1024 < 2048 */, stream_count /*<= 4106?<8192 */;
+	ChildInfo::next_entry_type first_child;
+	LinkInfo first_name;
+	StreamInfo first_stream;
+
+	Record() noexcept
+		: stdinfo()
+		, name_count()
+		, stream_count()
+		, first_child(negative_one)
+		, first_name()
+		, first_stream()
+	{
+		this->first_stream.name.offset(negative_one);
+		this->first_stream.next_entry = negative_one;
+	}
+};
+
 #pragma pack(pop)
 
 } // namespace uffs
@@ -100,4 +124,5 @@ using uffs::NameInfo;
 using uffs::LinkInfo;
 using uffs::StreamInfo;
 using uffs::ChildInfo;
+using uffs::Record;
 

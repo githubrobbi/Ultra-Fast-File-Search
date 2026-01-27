@@ -71,26 +71,12 @@ class NtfsIndex : public RefCounted < NtfsIndex>
 	typedef std::codecvt<std::tstring::value_type, char, int /*std::mbstate_t*/ > CodeCvt;
 	typedef vector_with_fast_size<LinkInfo> LinkInfos;
 	typedef vector_with_fast_size<StreamInfo> StreamInfos;
-	struct Record;
+	// Record is now in ntfs_record_types.hpp
+	typedef ::uffs::Record Record;
 	typedef vector_with_fast_size<Record> Records;
 	typedef std::vector < unsigned int > RecordsLookup;
 
 	typedef vector_with_fast_size<ChildInfo> ChildInfos;
-#pragma pack(push, 1)
-	struct Record
-	{
-		StandardInfo stdinfo;
-		unsigned short name_count /*<= 1024 < 2048 */, stream_count /*<= 4106?<8192 */;
-		ChildInfos::value_type::next_entry_type first_child;
-		LinkInfos::value_type first_name;
-		StreamInfos::value_type first_stream;
-		Record() : stdinfo(), name_count(), stream_count(), first_child(negative_one), first_name(), first_stream()
-		{
-			this->first_stream.name.offset(negative_one);
-			this->first_stream.next_entry = negative_one;
-		}
-	};
-#pragma pack(pop)
 	friend struct std::is_scalar<Record>;
 	mutable atomic_namespace::recursive_mutex _mutex;
 	value_initialized<clock_t> _tbegin;

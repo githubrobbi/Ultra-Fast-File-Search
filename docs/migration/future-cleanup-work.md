@@ -426,18 +426,22 @@ Mixed naming conventions:
 | Task | File | Lines | Effort | Status |
 |------|------|-------|--------|--------|
 | 8.3 | `main_dialog.hpp` → `.hpp` + `.cpp` | 2,132 | 6h | ✅ DONE (41.4% reduction) |
-| 8.4 | `ntfs_index.hpp` → extract types | 1,556 | 4h | ✅ 19.8% done |
+| 8.4 | `ntfs_index.hpp` → extract types | 1,542 | 4h | ✅ 20.7% done |
 | 8.5 | `mft_reader.hpp` → self-contained | ~500 | 0.5h | ✅ DONE |
 | 8.6 | `io_completion_port.hpp` → self-contained | ~350 | 0.5h | ✅ DONE |
 
-**ntfs_index.hpp extraction complete (7 headers, 384 lines extracted):**
+**ntfs_index.hpp extraction complete (7 headers, ~400 lines extracted):**
 - ✅ `type_traits_ext.hpp` - `propagate_const`, `fast_subscript`
 - ✅ `mapping_pair_iterator.hpp` - NTFS VCN/LCN run decoder
 - ✅ `file_attributes_ext.hpp` - Extended FILE_ATTRIBUTE_*
 - ✅ `packed_file_size.hpp` - `file_size_type`, `SizeInfo`
 - ✅ `standard_info.hpp` - `StandardInfo` bitfield struct
-- ✅ `ntfs_record_types.hpp` - `small_t`, `NameInfo`, `LinkInfo`, `StreamInfo`, `ChildInfo`
+- ✅ `ntfs_record_types.hpp` - `small_t`, `NameInfo`, `LinkInfo`, `StreamInfo`, `ChildInfo`, `Record`
 - ✅ `ntfs_key_type.hpp` - `key_type_internal` packed bitfield key
+
+**Note**: Remaining code in `ntfs_index.hpp` is the `NtfsIndex` class with tightly-coupled
+methods (`ParentIterator`, `Matcher`, `load()`, etc.) that access class internals directly.
+Further extraction would require creating `ntfs_index.cpp` with explicit template instantiation.
 
 **Recommended approach for `main_dialog.hpp`:**
 1. Extract event handlers to `main_dialog_events.cpp`
