@@ -414,6 +414,8 @@ To improve the codebase, I have taken several steps. First, I cleaned up the sou
 
 **Recent Update:** The CLI has been migrated from LLVM's command line library to [CLI11](https://github.com/CLIUtils/CLI11), a modern header-only C++ library. This significantly simplifies the build process by eliminating the LLVM dependency entirely.
 
+A Rust port of the MFT reader is also in development (see `mft-reader-rs/` directory).
+
 ### Tool Chain
 
 Setting up the toolchain to compile this code on your machine is straightforward. Here are the steps:
