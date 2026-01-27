@@ -317,11 +317,11 @@ public:
 };
 
 
-// Static member definitions
-atomic_namespace::recursive_mutex OverlappedNtfsMftReadPayload::ReadOperation::recycled_mutex;
-std::vector<std::pair<size_t, void*>> OverlappedNtfsMftReadPayload::ReadOperation::recycled;
+// Static member definitions (inline for header-only usage)
+inline atomic_namespace::recursive_mutex OverlappedNtfsMftReadPayload::ReadOperation::recycled_mutex;
+inline std::vector<std::pair<size_t, void*>> OverlappedNtfsMftReadPayload::ReadOperation::recycled;
 
-void OverlappedNtfsMftReadPayload::queue_next() volatile
+inline void OverlappedNtfsMftReadPayload::queue_next() volatile
 {
 	OverlappedNtfsMftReadPayload
 		const* const me = const_cast<OverlappedNtfsMftReadPayload
@@ -389,7 +389,7 @@ void OverlappedNtfsMftReadPayload::queue_next() volatile
 }
 
 
-int OverlappedNtfsMftReadPayload::operator()(size_t /*size*/, uintptr_t key)
+inline int OverlappedNtfsMftReadPayload::operator()(size_t /*size*/, uintptr_t key)
 {
 	int result = -1;
 	intrusive_ptr<NtfsIndex> p = this->p->unvolatile();

@@ -196,7 +196,7 @@ public:
 		}
 	}
 };
-BackgroundWorker *BackgroundWorker::create(bool coInitialize, long exception_handler(struct _EXCEPTION_POINTERS *))
+inline BackgroundWorker *BackgroundWorker::create(bool coInitialize, long exception_handler(struct _EXCEPTION_POINTERS *))
 {
 	return new BackgroundWorkerImpl(coInitialize, exception_handler);
 }

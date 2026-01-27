@@ -142,131 +142,75 @@ C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFi
 295
 
 
-Error
-C2039
-'remove_cv': is not a member of 'stdext'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-667
-
-
-Error
-C2065
-'remove_cv': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-667
-
-
-Error
-C2275
-'CMainDlg::ResultCompare<24>::Index': expected an expression instead of a type
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-667
-
-
-Error
-C2039
-'type': is not a member of '`global namespace''
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-667
-
-
-Error
-C2065
-'type': undeclared identifier
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-667
-
-
-Error
-C2143
-syntax error: missing ';' before 'const'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-668
-
-
-Error
-C4430
-missing type specifier - int assumed. Note: C++ does not support default-int
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-668
-
-
-Error
-C2440
-'initializing': cannot convert from 'const NtfsIndex *' to 'const int *'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-669
-
-
-Error
-C2440
-'initializing': cannot convert from 'const NtfsIndex *' to 'const int *'
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-670
-
-
-Error
-C2530
-'r1': references must be initialized
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-685
-
-
-Error
-C2530
-'r2': references must be initialized
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-685
-
-
-Error
-C2665
-'NtfsIndex::ParentIterator::ParentIterator': no overloaded function could convert all the argument types
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-712
-
-
-Error
-C2665
-'NtfsIndex::ParentIterator::ParentIterator': no overloaded function could convert all the argument types
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-712
-
-
-Error
-C2665
-'NtfsIndex::ParentIterator::ParentIterator': no overloaded function could convert all the argument types
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-716
-
-
-Error
-C2665
-'NtfsIndex::ParentIterator::ParentIterator': no overloaded function could convert all the argument types
-UltraFastFileSearch
-C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\src\gui\main_dialog.hpp
-716
-
-
 Warning
 C4244
 '=': conversion from 'wchar_t' to 'char', possible loss of data
 UltraFastFileSearch
 C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC\Tools\MSVC\14.50.35717\include\xutility
 4924
+
+
+Error
+LNK2005
+"private: static class std::recursive_mutex OverlappedNtfsMftReadPayload::ReadOperation::recycled_mutex" (?recycled_mutex@ReadOperation@OverlappedNtfsMftReadPayload@@0Vrecursive_mutex@std@@A) already defined in main_dialog.obj
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.obj
+1
+
+
+Error
+LNK2005
+"private: static class std::vector<struct std::pair<unsigned __int64,void *>,class std::allocator<struct std::pair<unsigned __int64,void *> > > OverlappedNtfsMftReadPayload::ReadOperation::recycled" (?recycled@ReadOperation@OverlappedNtfsMftReadPayload@@0V?$vector@U?$pair@_KPEAX@std@@V?$allocator@U?$pair@_KPEAX@std@@@2@@std@@A) already defined in main_dialog.obj
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.obj
+1
+
+
+Error
+LNK2005
+"public: virtual int __cdecl OverlappedNtfsMftReadPayload::operator()(unsigned __int64,unsigned __int64)" (??ROverlappedNtfsMftReadPayload@@UEAAH_K0@Z) already defined in main_dialog.obj
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.obj
+1
+
+
+Error
+LNK2005
+"public: void __cdecl OverlappedNtfsMftReadPayload::queue_next(void)volatile " (?queue_next@OverlappedNtfsMftReadPayload@@QECAXXZ) already defined in main_dialog.obj
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.obj
+1
+
+
+Error
+LNK2005
+"private: int __cdecl Hook::unset_hook(void)" (?unset_hook@Hook@@AEAAHXZ) already defined in main_dialog.obj
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.obj
+1
+
+
+Error
+LNK2005
+"private: int __cdecl Hook::set_hook(void *)" (?set_hook@Hook@@AEAAHPEAX@Z) already defined in main_dialog.obj
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.obj
+1
+
+
+Error
+LNK2005
+"public: static class BackgroundWorker * __cdecl BackgroundWorker::create(bool,long (__cdecl*)(struct _EXCEPTION_POINTERS *))" (?create@BackgroundWorker@@SAPEAV1@_NP6AJPEAU_EXCEPTION_POINTERS@@@Z@Z) already defined in main_dialog.obj
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\UltraFastFileSearch.obj
+1
+
+
+Error
+LNK1169
+one or more multiply defined symbols found
+UltraFastFileSearch
+C:\Users\rnio\GitHub\Ultra-Fast-File-Search\UltraFastFileSearch-code\x64\COM\uffs.com
+1
 
 

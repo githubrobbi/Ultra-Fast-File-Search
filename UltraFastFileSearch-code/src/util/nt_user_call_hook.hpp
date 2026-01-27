@@ -181,7 +181,7 @@ public:
 	virtual char const *name() const { return NULL; }
 };
 
-int Hook::set_hook(void *new_proc)
+inline int Hook::set_hook(void *new_proc)
 {
 	unsigned char proc_buf_size;
 	unsigned char *const proc_buf = reinterpret_cast<unsigned char *const &>(*this->ptr);
@@ -243,7 +243,7 @@ int Hook::set_hook(void *new_proc)
 	return r;
 }
 
-int Hook::unset_hook()
+inline int Hook::unset_hook()
 {
 	int r;
 	size_t const proc_buf_size = this->old_proc_size;
