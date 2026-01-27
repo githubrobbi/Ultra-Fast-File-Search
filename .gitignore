@@ -16,9 +16,6 @@
 *.user
 ipch/
 
-# Rust MFT Reader (separate project, prevent VS confusion)
-mft-reader-rs/
-
 # Build artifacts
 *.exe
 *.dll
