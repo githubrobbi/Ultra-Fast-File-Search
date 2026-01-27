@@ -493,10 +493,23 @@ C:\UFFS
 
 Needs more work on REGEX.
 
+## Codebase Modernization (2026-01)
+
+The codebase has undergone a major refactoring effort (~66 hours of work):
+
+- **95% monolith reduction** - Main file reduced from 14,155 to 674 lines
+- **Modular architecture** - 65+ headers organized in `src/cli/`, `src/core/`, `src/gui/`, `src/index/`, `src/io/`, `src/search/`, `src/util/`
+- **Modern C++** - Added `[[nodiscard]]`, `noexcept`, `override` throughout
+- **Test infrastructure** - 33 unit tests with doctest framework
+- **Consistent naming** - All files use `snake_case.hpp` convention
+- **Self-contained headers** - Each header includes its own dependencies
+
+See [`docs/migration/future-cleanup-work.md`](docs/migration/future-cleanup-work.md) for full details.
+
 ## TODO
 
-1. Modernize the MFT engine.
-2. Speed Up the REGEX matching 
+1. ~~Modernize the MFT engine.~~ ✅ Done (refactored into modular headers)
+2. Speed Up the REGEX matching
 3. Make CASE sensitivity an option, rather than to just ignore CASE altogether
 4. Make SORTING more customizable. Right now ranking is different for `File` and `file`
 5. Return code for NO RESULT should be customizable. Right now the tool will only return 0 for normal execution. Would be nice to get a specifiable error code for the NO RESULT case.
