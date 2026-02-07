@@ -166,10 +166,12 @@ static constexpr unsigned char kNibblePopCount[16] = {
  */
 class OverlappedNtfsMftReadPayload : public Overlapped
 {
-protected:
+public:
     // ========================================================================
     // NESTED TYPE: ChunkDescriptor (formerly RetPtr)
     // ========================================================================
+    // Made public to enable unit testing and potential external use.
+    // This is a simple data structure with no dangerous internal state.
 
     /**
      * @struct ChunkDescriptor
@@ -264,6 +266,7 @@ protected:
     using MftBitmap = std::vector<unsigned char>;
     using Bitmap = MftBitmap;  // Legacy alias
 
+protected:
     // ========================================================================
     // MEMBER VARIABLES
     // ========================================================================
