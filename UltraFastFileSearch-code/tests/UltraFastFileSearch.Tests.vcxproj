@@ -91,6 +91,7 @@
     <ClCompile Include="unit\test_ntfs_key_type.cpp" />
     <ClCompile Include="unit\test_ntfs_record_types.cpp" />
     <ClCompile Include="unit\test_buffer.cpp" />
+    <ClCompile Include="unit\test_mft_reader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="doctest.h" />
