@@ -1,62 +1,15 @@
 /**
  * @file mft_reader.hpp
- * @brief Asynchronous NTFS MFT (Master File Table) reader using I/O Completion Ports
+ * @brief Asynchronous NTFS MFT (Master File Table) reader using I/O Completion Ports.
  *
- * @details
- * This file implements high-performance asynchronous reading of the NTFS Master File
- * Table (MFT). The MFT is the central data structure of NTFS, containing one record
- * for every file and directory on the volume.
+ * This is the main header for MFT reading. It includes:
+ * - mft_reader_constants.hpp: I/O sizing and lookup tables
+ * - mft_reader_types.hpp: ChunkDescriptor and type aliases
+ * - bitmap_utils.hpp: Popcount and bit scanning functions
  *
- * ## Architecture Overview
- *
- * The reader uses a two-phase pipeline with Windows I/O Completion Ports (IOCP):
- *
- * ```
- * ┌─────────────────────────────────────────────────────────────────────────┐
- * │                         MFT Reading Pipeline                            │
- * │                                                                         │
- * │  ┌──────────────┐     ┌──────────────┐     ┌──────────────┐            │
- * │  │   Phase 1    │     │   Sync       │     │   Phase 2    │            │
- * │  │ Read $BITMAP │────▶│   Point      │────▶│ Read $DATA   │            │
- * │  │  (parallel)  │     │              │     │  (parallel)  │            │
- * │  └──────────────┘     └──────────────┘     └──────────────┘            │
- * │         │                    │                    │                     │
- * │         ▼                    ▼                    ▼                     │
- * │  Count valid records   Calculate skip      Parse MFT records           │
- * │  in each chunk         ranges for each     and build index             │
- * │                        data chunk                                       │
- * └─────────────────────────────────────────────────────────────────────────┘
- * ```
- *
- * ## Why Two Phases?
- *
- * 1. **$MFT::$BITMAP** - One bit per MFT record (1 = in-use, 0 = free)
- *    - Reading this first tells us which records are active
- *    - Allows us to skip reading unused regions of $DATA
- *
- * 2. **$MFT::$DATA** - The actual MFT records (typically 1024 bytes each)
- *    - Can be gigabytes in size
- *    - Often fragmented across the disk
- *    - Skip optimization can save significant I/O
- *
- * ## Key Concepts
- *
- * - **VCN (Virtual Cluster Number)**: Logical position within a file
- * - **LCN (Logical Cluster Number)**: Physical position on disk
- * - **Extent**: A contiguous run of clusters (VCN range → LCN mapping)
- * - **Chunk**: A portion of an extent sized for efficient I/O (~1 MB)
- * - **Skip Range**: Clusters at chunk start/end with no in-use records
- *
- * ## Thread Safety
- *
- * - Multiple I/O operations run concurrently via IOCP
- * - Bitmap processing uses atomic operations for counters
- * - Data chunk parsing uses lock() for index updates
- *
- * @see NtfsIndex for the index that receives parsed records
- * @see IoCompletionPort for the async I/O infrastructure
- *
- * @note This is a header-only implementation using inline functions.
+ * @see mft_reader_constants.hpp for configuration constants
+ * @see mft_reader_types.hpp for data structures
+ * @see bitmap_utils.hpp for bitmap manipulation utilities
  */
 
 #ifndef UFFS_MFT_READER_HPP
@@ -66,6 +19,11 @@
 // INCLUDES
 // ============================================================================
 
+// MFT reader components (split for single-responsibility)
+#include "mft_reader_constants.hpp"
+#include "mft_reader_types.hpp"
+#include "bitmap_utils.hpp"
+
 // I/O infrastructure
 #include "overlapped.hpp"
 #include "io_completion_port.hpp"
@@ -74,14 +32,13 @@
 #include "../util/atomic_compat.hpp"
 #include "../util/intrusive_ptr.hpp"
 #include "../util/lock_ptr.hpp"
-#include "../util/error_utils.hpp"      // CheckAndThrow, CppRaiseException, CStructured_Exception
-#include "../util/volume_utils.hpp"     // get_retrieval_pointers
-#include "../util/handle.hpp"           // Handle class
+#include "../util/error_utils.hpp"
+#include "../util/volume_utils.hpp"
+#include "../util/handle.hpp"
 
 // Standard library
 #include <vector>
 #include <ctime>
-#include <climits>
 #include <algorithm>
 #include <stdexcept>
 
@@ -89,40 +46,7 @@
 // FORWARD DECLARATIONS
 // ============================================================================
 
-/// Forward declaration for NtfsIndex (defined in ntfs_index.hpp)
-/// We only need forward declaration here since we use pointers/references
 class NtfsIndex;
-
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
-namespace mft_reader_constants {
-
-/// Default maximum bytes to read in a single I/O operation.
-/// 1 MB is a good balance between:
-/// - Large enough to amortize I/O overhead
-/// - Small enough to maintain concurrency
-/// - Aligned with typical disk cache sizes
-static constexpr unsigned long long kDefaultReadBlockSize = 1ULL << 20;  // 1 MB
-
-/// Number of concurrent I/O operations to maintain.
-/// Two operations allows one to be in-flight while another completes.
-/// Higher values may improve throughput on SSDs but increase memory usage.
-static constexpr int kIoConcurrencyLevel = 2;
-
-/// Number of bits per byte (platform-independent).
-/// Used for bitmap calculations.
-static constexpr size_t kBitsPerByte = CHAR_BIT;
-
-/// Lookup table for counting set bits in a 4-bit nibble.
-/// Used for fast population count when processing the MFT bitmap.
-/// Index is the nibble value (0-15), result is the number of 1-bits.
-static constexpr unsigned char kNibblePopCount[16] = {
-    0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4
-};
-
-}  // namespace mft_reader_constants
 
 // ============================================================================
 // CLASS: OverlappedNtfsMftReadPayload
@@ -168,103 +92,17 @@ class OverlappedNtfsMftReadPayload : public Overlapped
 {
 public:
     // ========================================================================
-    // NESTED TYPE: ChunkDescriptor (formerly RetPtr)
+    // TYPE ALIASES (from mft_reader_types.hpp)
     // ========================================================================
-    // Made public to enable unit testing and potential external use.
-    // This is a simple data structure with no dangerous internal state.
 
-    /**
-     * @struct ChunkDescriptor
-     * @brief Describes a chunk of the MFT to be read from disk.
-     *
-     * Each chunk represents a contiguous region of clusters that will be
-     * read in a single I/O operation. The chunk maps a virtual position
-     * (VCN) to a physical position (LCN) on disk.
-     *
-     * ## Skip Optimization
-     *
-     * After the bitmap is read, we calculate how many clusters at the
-     * beginning and end of each chunk contain only unused MFT records.
-     * These clusters can be skipped to reduce I/O.
-     *
-     * ```
-     * Chunk: [====USED====----FREE----]
-     *         ^                       ^
-     *         |                       |
-     *         skip_begin=0            skip_end=4 clusters
-     * ```
-     */
-    struct ChunkDescriptor
-    {
-        /// Virtual Cluster Number - logical position within the MFT file.
-        /// Used to calculate which MFT records this chunk contains.
-        unsigned long long vcn;
+    using ChunkDescriptor = mft_reader_types::ChunkDescriptor;
+    using ChunkList = mft_reader_types::ChunkList;
+    using MftBitmap = mft_reader_types::MftBitmap;
 
-        /// Number of clusters in this chunk (before skip optimization).
-        unsigned long long cluster_count;
-
-        /// Logical Cluster Number - physical position on disk.
-        /// This is where the data actually resides.
-        long long lcn;
-
-        /// Number of clusters to skip at the START of this chunk.
-        /// These clusters contain only unused MFT records.
-        /// Atomic because it's written by bitmap processing and read by data reading.
-        atomic_namespace::atomic<unsigned long long> skip_begin;
-
-        /// Number of clusters to skip at the END of this chunk.
-        /// These clusters contain only unused MFT records.
-        atomic_namespace::atomic<unsigned long long> skip_end;
-
-        /// Constructs a chunk descriptor with no skip optimization.
-        ChunkDescriptor(
-            unsigned long long vcn_,
-            unsigned long long cluster_count_,
-            long long lcn_)
-            : vcn(vcn_)
-            , cluster_count(cluster_count_)
-            , lcn(lcn_)
-            , skip_begin(0)
-            , skip_end(0)
-        {}
-
-        /// Copy constructor (required because of atomic members).
-        ChunkDescriptor(const ChunkDescriptor& other)
-            : vcn(other.vcn)
-            , cluster_count(other.cluster_count)
-            , lcn(other.lcn)
-            , skip_begin(other.skip_begin.load(atomic_namespace::memory_order_relaxed))
-            , skip_end(other.skip_end.load(atomic_namespace::memory_order_relaxed))
-        {}
-
-        /// Copy assignment (required because of atomic members).
-        ChunkDescriptor& operator=(const ChunkDescriptor& other)
-        {
-            vcn = other.vcn;
-            cluster_count = other.cluster_count;
-            lcn = other.lcn;
-            skip_begin.store(other.skip_begin.load(atomic_namespace::memory_order_relaxed),
-                             atomic_namespace::memory_order_relaxed);
-            skip_end.store(other.skip_end.load(atomic_namespace::memory_order_relaxed),
-                           atomic_namespace::memory_order_relaxed);
-            return *this;
-        }
-    };
-
-    // Legacy typedef for backward compatibility
+    // Legacy aliases for backward compatibility
     using RetPtr = ChunkDescriptor;
-
-    // ========================================================================
-    // TYPE ALIASES
-    // ========================================================================
-
-    /// List of chunks to read (for bitmap or data).
-    using ChunkList = std::vector<ChunkDescriptor>;
-    using RetPtrs = ChunkList;  // Legacy alias
-
-    /// MFT bitmap: one bit per record (1 = in-use, 0 = free).
-    using MftBitmap = std::vector<unsigned char>;
-    using Bitmap = MftBitmap;  // Legacy alias
+    using RetPtrs = ChunkList;
+    using Bitmap = MftBitmap;
 
 protected:
     // ========================================================================
@@ -773,7 +611,7 @@ private:
         }
 
         // Count valid records using nibble-based popcount
-        const unsigned int valid_count = count_valid_records_in_buffer(buffer, bytes_to_process);
+        const unsigned int valid_count = bitmap_utils::count_bits_in_buffer(buffer, bytes_to_process);
 
         // Copy bitmap data to master bitmap
         const auto* src = static_cast<const unsigned char*>(buffer);
@@ -785,41 +623,6 @@ private:
 
         // Check if this was the last bitmap chunk
         check_if_last_bitmap_chunk(parent);
-    }
-
-    /**
-     * @brief Counts valid (in-use) MFT records in a bitmap buffer.
-     *
-     * Uses nibble-based popcount for efficiency:
-     * - Split each byte into two 4-bit nibbles
-     * - Look up popcount for each nibble in table
-     * - Sum all popcounts
-     *
-     * @param buffer  Raw bitmap data
-     * @param size    Number of bytes
-     * @return Number of set bits (valid records)
-     */
-    [[nodiscard]] static unsigned int count_valid_records_in_buffer(
-        const void* buffer,
-        size_t size)
-    {
-        const auto* bytes = static_cast<const unsigned char*>(buffer);
-        unsigned int count = 0;
-
-        for (size_t i = 0; i < size; ++i)
-        {
-            const unsigned char byte = bytes[i];
-
-            // Split byte into high and low nibbles
-            const unsigned char low_nibble = byte & 0x0F;
-            const unsigned char high_nibble = (byte >> 4) & 0x0F;
-
-            // Look up popcount for each nibble
-            count += mft_reader_constants::kNibblePopCount[low_nibble];
-            count += mft_reader_constants::kNibblePopCount[high_nibble];
-        }
-
-        return count;
     }
 
     /**
@@ -861,9 +664,6 @@ private:
      */
     void calculate_all_skip_ranges(OverlappedNtfsMftReadPayload* parent)
     {
-        // Number of bits per bitmap byte
-        constexpr size_t kBitsPerByte = mft_reader_constants::kBitsPerByte;
-
         for (auto& chunk : parent->data_chunks_)
         {
             // Calculate which MFT records this chunk covers
@@ -872,13 +672,13 @@ private:
             const size_t record_count =
                 static_cast<size_t>(chunk.cluster_count * parent->cluster_size_ / parent->index_->mft_record_size);
 
-            // Find first in-use record from start
+            // Find first in-use record from start (using bitmap_utils)
             const size_t skip_records_begin =
-                find_first_used_record(parent->mft_bitmap_, first_record, record_count);
+                bitmap_utils::find_first_set_bit(parent->mft_bitmap_, first_record, record_count);
 
-            // Find first in-use record from end
+            // Find first in-use record from end (using bitmap_utils)
             const size_t skip_records_end =
-                find_last_used_record(parent->mft_bitmap_, first_record, record_count, skip_records_begin);
+                bitmap_utils::find_last_set_bit(parent->mft_bitmap_, first_record, record_count, skip_records_begin);
 
             // Convert record counts to cluster counts
             const size_t skip_clusters_begin = static_cast<size_t>(
@@ -900,75 +700,6 @@ private:
             chunk.skip_begin.store(skip_clusters_begin, atomic_namespace::memory_order_release);
             chunk.skip_end.store(skip_clusters_end, atomic_namespace::memory_order_release);
         }
-    }
-
-    /**
-     * @brief Finds the first in-use record in a range.
-     *
-     * Scans the bitmap from the start of the range until finding a set bit.
-     *
-     * @param bitmap        The MFT bitmap
-     * @param first_record  First record index in range
-     * @param record_count  Number of records in range
-     * @return Number of unused records at start (0 if first is used)
-     */
-    [[nodiscard]] static size_t find_first_used_record(
-        const MftBitmap& bitmap,
-        size_t first_record,
-        size_t record_count)
-    {
-        constexpr size_t kBitsPerByte = mft_reader_constants::kBitsPerByte;
-
-        for (size_t i = 0; i < record_count; ++i)
-        {
-            const size_t record_index = first_record + i;
-            const size_t byte_index = record_index / kBitsPerByte;
-            const size_t bit_index = record_index % kBitsPerByte;
-
-            if (bitmap[byte_index] & (1 << bit_index))
-            {
-                return i;  // Found first used record
-            }
-        }
-
-        return record_count;  // All records unused
-    }
-
-    /**
-     * @brief Finds the last in-use record in a range.
-     *
-     * Scans the bitmap from the end of the range until finding a set bit.
-     *
-     * @param bitmap              The MFT bitmap
-     * @param first_record        First record index in range
-     * @param record_count        Number of records in range
-     * @param skip_records_begin  Records already skipped at start
-     * @return Number of unused records at end (0 if last is used)
-     */
-    [[nodiscard]] static size_t find_last_used_record(
-        const MftBitmap& bitmap,
-        size_t first_record,
-        size_t record_count,
-        size_t skip_records_begin)
-    {
-        constexpr size_t kBitsPerByte = mft_reader_constants::kBitsPerByte;
-
-        // Don't scan past the first used record
-        const size_t max_skip = record_count - skip_records_begin;
-
-        for (size_t i = 0; i < max_skip; ++i)
-        {
-            const size_t record_index = first_record + record_count - 1 - i;
-            const size_t byte_index = record_index / kBitsPerByte;
-            const size_t bit_index = record_index % kBitsPerByte;
-
-            if (bitmap[byte_index] & (1 << bit_index))
-            {
-                return i;  // Found last used record
-            }
-        }
-
-        return max_skip;  // All remaining records unused
     }
 
     // ========================================================================
