@@ -131,35 +131,35 @@ TEST_SUITE("mft_reader_constants") {
     TEST_CASE("kNibblePopCount lookup table is correct") {
         // Verify each entry in the popcount table
         // This is critical - a wrong value here corrupts record counts
-        CHECK(mft_reader_constants::kNibblePopCount[0x0] == 0);  // 0000
-        CHECK(mft_reader_constants::kNibblePopCount[0x1] == 1);  // 0001
-        CHECK(mft_reader_constants::kNibblePopCount[0x2] == 1);  // 0010
-        CHECK(mft_reader_constants::kNibblePopCount[0x3] == 2);  // 0011
-        CHECK(mft_reader_constants::kNibblePopCount[0x4] == 1);  // 0100
-        CHECK(mft_reader_constants::kNibblePopCount[0x5] == 2);  // 0101
-        CHECK(mft_reader_constants::kNibblePopCount[0x6] == 2);  // 0110
-        CHECK(mft_reader_constants::kNibblePopCount[0x7] == 3);  // 0111
-        CHECK(mft_reader_constants::kNibblePopCount[0x8] == 1);  // 1000
-        CHECK(mft_reader_constants::kNibblePopCount[0x9] == 2);  // 1001
-        CHECK(mft_reader_constants::kNibblePopCount[0xA] == 2);  // 1010
-        CHECK(mft_reader_constants::kNibblePopCount[0xB] == 3);  // 1011
-        CHECK(mft_reader_constants::kNibblePopCount[0xC] == 2);  // 1100
-        CHECK(mft_reader_constants::kNibblePopCount[0xD] == 3);  // 1101
-        CHECK(mft_reader_constants::kNibblePopCount[0xE] == 3);  // 1110
-        CHECK(mft_reader_constants::kNibblePopCount[0xF] == 4);  // 1111
+        CHECK(test_mft_reader_constants::kNibblePopCount[0x0] == 0);  // 0000
+        CHECK(test_mft_reader_constants::kNibblePopCount[0x1] == 1);  // 0001
+        CHECK(test_mft_reader_constants::kNibblePopCount[0x2] == 1);  // 0010
+        CHECK(test_mft_reader_constants::kNibblePopCount[0x3] == 2);  // 0011
+        CHECK(test_mft_reader_constants::kNibblePopCount[0x4] == 1);  // 0100
+        CHECK(test_mft_reader_constants::kNibblePopCount[0x5] == 2);  // 0101
+        CHECK(test_mft_reader_constants::kNibblePopCount[0x6] == 2);  // 0110
+        CHECK(test_mft_reader_constants::kNibblePopCount[0x7] == 3);  // 0111
+        CHECK(test_mft_reader_constants::kNibblePopCount[0x8] == 1);  // 1000
+        CHECK(test_mft_reader_constants::kNibblePopCount[0x9] == 2);  // 1001
+        CHECK(test_mft_reader_constants::kNibblePopCount[0xA] == 2);  // 1010
+        CHECK(test_mft_reader_constants::kNibblePopCount[0xB] == 3);  // 1011
+        CHECK(test_mft_reader_constants::kNibblePopCount[0xC] == 2);  // 1100
+        CHECK(test_mft_reader_constants::kNibblePopCount[0xD] == 3);  // 1101
+        CHECK(test_mft_reader_constants::kNibblePopCount[0xE] == 3);  // 1110
+        CHECK(test_mft_reader_constants::kNibblePopCount[0xF] == 4);  // 1111
     }
 
     TEST_CASE("kDefaultReadBlockSize is 1 MB") {
-        CHECK(mft_reader_constants::kDefaultReadBlockSize == 1024 * 1024);
+        CHECK(test_mft_reader_constants::kDefaultReadBlockSize == 1024 * 1024);
     }
 
     TEST_CASE("kIoConcurrencyLevel is reasonable") {
-        CHECK(mft_reader_constants::kIoConcurrencyLevel >= 1);
-        CHECK(mft_reader_constants::kIoConcurrencyLevel <= 16);
+        CHECK(test_mft_reader_constants::kIoConcurrencyLevel >= 1);
+        CHECK(test_mft_reader_constants::kIoConcurrencyLevel <= 16);
     }
 
     TEST_CASE("kBitsPerByte matches CHAR_BIT") {
-        CHECK(mft_reader_constants::kBitsPerByte == CHAR_BIT);
+        CHECK(test_mft_reader_constants::kBitsPerByte == CHAR_BIT);
     }
 }
 
