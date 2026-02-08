@@ -14,7 +14,7 @@
 
 #include "path.hpp"
 #include "wow64.hpp"
-#include "../search/string_matcher.hpp"
+#include "search/string_matcher.hpp"
 
 namespace uffs {
 

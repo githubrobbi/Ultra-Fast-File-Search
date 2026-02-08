@@ -66,7 +66,7 @@
  */
 
 #include <climits>
-#include "../io/overlapped.hpp"  // for negative_one
+#include "io/overlapped.hpp"  // for negative_one
 #include "packed_file_size.hpp"
 #include "standard_info.hpp"     // for StandardInfo
 

@@ -8,7 +8,7 @@
 #include <Windows.h>
 #include <tchar.h>
 
-#include "../util/nt_user_call_hook.hpp"
+#include "util/nt_user_call_hook.hpp"
 
 namespace uffs {
 namespace gui {

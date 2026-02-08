@@ -49,11 +49,11 @@
 #include <vector>
 
 // Utility headers
-#include "../util/atomic_compat.hpp"
-#include "../util/lock_ptr.hpp"
-#include "../util/handle.hpp"
-#include "../util/error_utils.hpp"
-#include "../util/com_init.hpp"
+#include "util/atomic_compat.hpp"
+#include "util/lock_ptr.hpp"
+#include "util/handle.hpp"
+#include "util/error_utils.hpp"
+#include "util/com_init.hpp"
 
 // I/O headers
 #include "overlapped.hpp"

@@ -5,7 +5,7 @@
 #include "listview_columns.hpp"
 #include "file_attribute_colors.hpp"
 #include "icon_cache_types.hpp"
-#include "../util/time_utils.hpp"
+#include "util/time_utils.hpp"
 
 class CMainDlg : public CModifiedDialogImpl < CMainDlg>, public WTL::CDialogResize < CMainDlg>, public CInvokeImpl < CMainDlg>, private WTL::CMessageFilter
 {
@@ -863,7 +863,7 @@ public:
 					ptrdiff_t
 						const item_count = end - begin;
 					using std::ceil;
-					ResultCompareBase compare = { this, &temp, &temp_keys, variation, &dlg, static_cast<unsigned long long> ((ceil(log(static_cast<double> (item_count)) + 1) * item_count * 1.5))
+					ResultCompareBase compare = { this, &temp, &temp_keys, variation, &dlg, static_cast<unsigned long long> ((ceil(log(static_cast<double> (item_count)) + 1) * static_cast<double>(item_count) * 1.5))
 					};
 
 					clock_t

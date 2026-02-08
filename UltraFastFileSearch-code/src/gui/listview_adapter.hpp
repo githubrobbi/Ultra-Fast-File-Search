@@ -18,7 +18,7 @@
 #include <atlmisc.h>
 #include <atlwin.h>
 
-#include "../util/core_types.hpp"  // for std::tvstring
+#include "util/core_types.hpp"  // for std::tvstring
 
 namespace uffs {
 namespace gui {

@@ -29,12 +29,12 @@
 #include "io_completion_port.hpp"
 
 // Utility headers
-#include "../util/atomic_compat.hpp"
-#include "../util/intrusive_ptr.hpp"
-#include "../util/lock_ptr.hpp"
-#include "../util/error_utils.hpp"
-#include "../util/volume_utils.hpp"
-#include "../util/handle.hpp"
+#include "util/atomic_compat.hpp"
+#include "util/intrusive_ptr.hpp"
+#include "util/lock_ptr.hpp"
+#include "util/error_utils.hpp"
+#include "util/volume_utils.hpp"
+#include "util/handle.hpp"
 
 // Standard library
 #include <vector>

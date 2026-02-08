@@ -18,7 +18,7 @@
 #include "handle.hpp"
 #include "error_utils.hpp"
 #include "core_types.hpp"  // For std::tvstring
-#include "../io/winnt_types.hpp"  // For winnt:: types
+#include "io/winnt_types.hpp"  // For winnt:: types
 
 namespace uffs {
 

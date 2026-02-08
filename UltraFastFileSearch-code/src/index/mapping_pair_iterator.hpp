@@ -73,7 +73,7 @@
 
 #include <climits>
 #include <cstddef>
-#include "../io/winnt_types.hpp"
+#include "io/winnt_types.hpp"
 
 namespace uffs {
 

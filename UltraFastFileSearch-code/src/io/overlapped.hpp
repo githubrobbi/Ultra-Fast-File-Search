@@ -14,7 +14,7 @@
 
 #include <Windows.h>
 #include <climits>
-#include "../util/intrusive_ptr.hpp"
+#include "util/intrusive_ptr.hpp"
 
 // ============================================================================
 // Overlapped Base Class

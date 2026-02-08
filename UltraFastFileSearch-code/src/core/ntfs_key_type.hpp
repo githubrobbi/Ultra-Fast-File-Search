@@ -68,7 +68,7 @@
 #define UFFS_NTFS_KEY_TYPE_HPP
 
 #include <climits>
-#include "../io/overlapped.hpp"  // for negative_one
+#include "io/overlapped.hpp"  // for negative_one
 
 namespace uffs {
 

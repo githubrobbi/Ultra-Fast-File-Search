@@ -12,7 +12,7 @@
 #ifndef UFFS_MFT_READER_TYPES_HPP
 #define UFFS_MFT_READER_TYPES_HPP
 
-#include "../util/atomic_compat.hpp"
+#include "util/atomic_compat.hpp"
 #include <vector>
 
 namespace mft_reader_types {

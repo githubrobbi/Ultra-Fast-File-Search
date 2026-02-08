@@ -178,7 +178,7 @@ inline int benchmark_index_build(char drive_letter, std::ostream& OS)
 
     // Calculate throughput
     double mb_per_sec = (seconds > 0)
-        ? (mft_bytes / (1024.0 * 1024.0)) / seconds
+        ? (static_cast<double>(mft_bytes) / (1024.0 * 1024.0)) / seconds
         : 0;
     double records_per_sec = (seconds > 0)
         ? static_cast<double>(total_records) / seconds

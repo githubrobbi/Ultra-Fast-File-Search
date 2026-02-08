@@ -19,12 +19,12 @@
 
 #include "mft_diagnostics.hpp"
 #include "command_line_parser.hpp"
-#include "../util/string_utils.hpp"
-#include "../util/volume_utils.hpp"
-#include "../util/nformat_ext.hpp"
-#include "../util/time_utils.hpp"
-#include "../util/devnull_check.hpp"
-#include "../search/match_operation.hpp"
+#include "util/string_utils.hpp"
+#include "util/volume_utils.hpp"
+#include "util/nformat_ext.hpp"
+#include "util/time_utils.hpp"
+#include "util/devnull_check.hpp"
+#include "search/match_operation.hpp"
 
 int main(int argc, char* argv[])
 	{

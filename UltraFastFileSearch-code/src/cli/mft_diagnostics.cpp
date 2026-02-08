@@ -21,10 +21,10 @@
 #include <fstream>
 
 // For get_retrieval_pointers
-#include "../util/volume_utils.hpp"
+#include "util/volume_utils.hpp"
 
 // For std::tvstring
-#include "../util/string_utils.hpp"
+#include "util/string_utils.hpp"
 
 namespace uffs {
 

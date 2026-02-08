@@ -9,8 +9,8 @@
 // ============================================================================
 
 #include "string_loader.hpp"
-#include "../util/path.hpp"
-#include "../../resource.h"
+#include "util/path.hpp"
+#include "resource.h"
 
 namespace uffs {
 
