@@ -150,8 +150,8 @@ public:
 	[[nodiscard]] long long mft_zone_start() const noexcept;
 	[[nodiscard]] long long mft_zone_end() const noexcept;
 	[[nodiscard]] unsigned int cluster_size() const noexcept;
-	[[nodiscard]] unsigned int mft_record_size() const noexcept;
-	[[nodiscard]] unsigned int mft_capacity() const noexcept;
+	[[nodiscard]] unsigned int mft_record_size() const volatile noexcept;
+	[[nodiscard]] unsigned int mft_capacity() const volatile noexcept;
 
 	// Volume configuration setters (for load() to use)
 	void set_reserved_clusters(long long value) volatile noexcept;

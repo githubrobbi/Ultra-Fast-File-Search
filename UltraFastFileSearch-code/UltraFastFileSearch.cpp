@@ -579,8 +579,8 @@ int benchmark_index_build(char drive_letter, std::ostream& OS)
     size_t total_records = index->records_so_far();
     size_t total_names = index->total_names();
     size_t total_names_and_streams = index->total_names_and_streams();
-    unsigned int mft_capacity = index->mft_capacity;
-    unsigned int mft_record_size = index->mft_record_size;
+    unsigned int mft_capacity = index->mft_capacity();
+    unsigned int mft_record_size = index->mft_record_size();
     unsigned long long mft_bytes = static_cast<unsigned long long>(mft_capacity) * mft_record_size;
 
     // Calculate throughput

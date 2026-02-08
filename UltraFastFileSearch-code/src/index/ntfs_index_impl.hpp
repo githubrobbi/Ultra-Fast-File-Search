@@ -1009,12 +1009,12 @@ inline unsigned int NtfsIndex::cluster_size() const noexcept
 	return _cluster_size;
 }
 
-inline unsigned int NtfsIndex::mft_record_size() const noexcept
+inline unsigned int NtfsIndex::mft_record_size() const volatile noexcept
 {
 	return _mft_record_size;
 }
 
-inline unsigned int NtfsIndex::mft_capacity() const noexcept
+inline unsigned int NtfsIndex::mft_capacity() const volatile noexcept
 {
 	return _mft_capacity;
 }
