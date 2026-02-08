@@ -50,8 +50,7 @@
  * | File                        | Content                                    |
  * |-----------------------------|--------------------------------------------|
  * | ntfs_index_accessors.hpp    | Constructor, destructor, accessors         |
- * | ntfs_index_load.hpp         | preload_concurrent(), load() - MFT parsing |
- * | ntfs_index_preprocess.hpp   | Preprocessor - directory size calculation  |
+ * | ntfs_index_load.hpp         | preload_concurrent(), load(), Preprocessor |
  * | ntfs_index_path.hpp         | ParentIterator - path reconstruction       |
  * | ntfs_index_matcher.hpp      | Matcher template - pattern matching        |
  *
@@ -87,16 +86,15 @@
 // SECTION: Implementation Component Includes
 // ============================================================================
 // The implementation is split into focused files for maintainability.
-// Include order matters: accessors first, then preprocess (used by load),
-// then load, then path and matcher.
+// Include order matters: accessors first, then load (contains inline
+// Preprocessor struct), then path and matcher.
 
 // Accessors, constructor, destructor, lifecycle management
 #include "ntfs_index_accessors.hpp"
 
-// Preprocessor struct for directory size calculation (used by load)
-#include "ntfs_index_preprocess.hpp"
-
 // Core MFT parsing: preload_concurrent() and load()
+// Note: The Preprocessor struct for directory size calculation is defined
+// inline within the load() function as an anonymous local struct.
 #include "ntfs_index_load.hpp"
 
 // Path reconstruction via ParentIterator state machine

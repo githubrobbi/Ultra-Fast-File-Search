@@ -289,21 +289,19 @@ inline void NtfsIndex::load(unsigned long long virtual_offset,
 							append_directional(this->names, fn->FileName, fn->FileNameLength, ascii ? 1 : 0);
 
 							// Build parent-child relationship
+							// Link this file/directory to its parent directory
 							if (frs_parent != frs_base)
 							{
 								Records::iterator const parent = this->at(frs_parent, &base_record);
 
-								ChildInfo* const pchild = this->childinfo(&*parent);
-								if (!pchild || ~pchild->record_number)
-								{
-									size_t const child_index = this->childinfos.size();
-									this->childinfos.push_back(parent->first_child);
-									parent->first_child.next_entry = static_cast<ChildInfos::value_type::next_entry_type>(child_index);
-								}
-
-								ChildInfo* const child = &parent->first_child;
-								child->record_number = frs_base;
-								child->name_index = base_record->name_count;
+								// Add new child info entry
+								size_t const child_index = this->childinfos.size();
+								this->childinfos.push_back(empty_child_info);
+								ChildInfo* const child_info = &this->childinfos.back();
+								child_info->record_number   = frs_base;
+								child_info->name_index      = base_record->name_count;
+								child_info->next_entry      = parent->first_child;
+								parent->first_child         = static_cast<ChildInfos::value_type::next_entry_type>(child_index);
 							}
 
 							++base_record->name_count;
@@ -519,9 +517,188 @@ inline void NtfsIndex::load(unsigned long long virtual_offset,
 			OutputDebugString(buf);
 		}
 
-		// Run the preprocessor to calculate directory sizes
-		// Uses the Preprocessor struct from ntfs_index_preprocess.hpp
-		Preprocessor preprocessor = { this };
+		// ============================================================
+		// PHASE 3: Directory Size Preprocessing
+		// ============================================================
+		// After MFT parsing, each file knows its own size, but directories
+		// don't know the total size of their contents. The Preprocessor
+		// performs a depth-first traversal to calculate cumulative sizes.
+		//
+		// Key algorithms implemented in the Preprocessor struct below:
+		// - Bulkiness calculation (excludes children < 1% of parent)
+		// - Hard link size distribution (Accumulator pattern)
+		// - WOF compression handling (WofCompressedData streams)
+
+		struct
+		{
+			using PreprocessResult = SizeInfo;
+			NtfsIndex* me;
+			using Scratch = std::vector<unsigned long long>;
+			Scratch scratch;
+			size_t depth;
+
+			PreprocessResult operator()(Records::value_type* const fr,
+				key_type::name_info_type const name_info,
+				unsigned short const total_names)
+			{
+				size_t const old_scratch_size = scratch.size();
+				PreprocessResult result;
+
+				if (fr)
+				{
+					PreprocessResult children_size;
+					++depth;
+
+					for (ChildInfos::value_type* i = me->childinfo(fr);
+						 i && ~i->record_number;
+						 i = me->childinfo(i->next_entry))
+					{
+						Records::value_type* const fr2 = me->find(i->record_number);
+
+						if (fr2 != fr)
+						{
+							PreprocessResult const subresult = this->operator()(fr2,
+								fr2->name_count - static_cast<size_t>(1) - i->name_index,
+								fr2->name_count);
+
+							scratch.push_back(subresult.bulkiness);
+
+							children_size.length    += subresult.length;
+							children_size.allocated += subresult.allocated;
+							children_size.bulkiness += subresult.bulkiness;
+							children_size.treesize  += subresult.treesize;
+						}
+					}
+
+					--depth;
+
+					std::make_heap(scratch.begin() + static_cast<ptrdiff_t>(old_scratch_size), scratch.end());
+					unsigned long long const threshold = children_size.allocated / 100;
+
+					for (auto i = scratch.end();
+						 i != scratch.begin() + static_cast<ptrdiff_t>(old_scratch_size);)
+					{
+						std::pop_heap(scratch.begin() + static_cast<ptrdiff_t>(old_scratch_size), i);
+						--i;
+
+						if (*i < threshold)
+						{
+							break;
+						}
+
+						children_size.bulkiness = children_size.bulkiness - *i;
+					}
+
+					if (depth == 0)
+					{
+						children_size.allocated +=
+							static_cast<unsigned long long>(me->_reserved_clusters) * me->_cluster_size;
+					}
+
+					result = children_size;
+
+					// Accumulator: Fair Size Distribution for Hard Links
+					struct Accumulator
+					{
+						static unsigned long long delta_impl(unsigned long long const value,
+							unsigned short const i, unsigned short const n)
+						{
+							return value * (i + 1) / n - value * i / n;
+						}
+
+						static unsigned long long delta(unsigned long long const value,
+							unsigned short const i, unsigned short const n)
+						{
+							return n != 1
+								? (n != 2 ? delta_impl(value, i, n)
+										: (i != 1 ? delta_impl(value, ((void)(assert(i == 0)), 0), n)
+											   : delta_impl(value, i, n)))
+								: delta_impl(value, ((void)(assert(i == 0)), 0), n);
+						}
+					};
+
+					// Stream Processing and Compression Handling
+					StreamInfos::value_type* default_stream = nullptr;
+					StreamInfos::value_type* compressed_default_stream_to_merge = nullptr;
+					unsigned long long default_allocated_delta = 0;
+					unsigned long long compressed_default_allocated_delta = 0;
+
+					for (StreamInfos::value_type* k = me->streaminfo(fr); k; k = me->streaminfo(k->next_entry))
+					{
+						bool const is_data_attribute =
+							(k->type_name_id << (CHAR_BIT / 2)) ==
+							static_cast<int>(ntfs::AttributeTypeCode::AttributeData);
+
+						bool const is_default_stream = is_data_attribute && !k->name.length;
+
+						unsigned long long const allocated_delta = Accumulator::delta(
+							k->is_allocated_size_accounted_for_in_main_stream
+								? static_cast<file_size_type>(0)
+								: k->allocated,
+							name_info, total_names);
+						unsigned long long const bulkiness_delta = Accumulator::delta(
+							k->bulkiness, name_info, total_names);
+
+						if (is_default_stream)
+						{
+							default_stream = k;
+							default_allocated_delta += allocated_delta;
+						}
+
+						// WOF Compression Handling
+						bool const is_compression_reparse_point =
+							is_data_attribute && k->name.length &&
+							(k->name.ascii()
+								 ? memcmp(reinterpret_cast<char const*>(&me->names[k->name.offset()]),
+									        "WofCompressedData", 17 * sizeof(char)) == 0
+								 : memcmp(reinterpret_cast<wchar_t const*>(&me->names[k->name.offset()]),
+									        L"WofCompressedData", 17 * sizeof(wchar_t)) == 0);
+
+						unsigned long long const length_delta = Accumulator::delta(
+							is_compression_reparse_point ? static_cast<file_size_type>(0) : k->length,
+							name_info, total_names);
+
+						if (is_compression_reparse_point)
+						{
+							if (!k->is_allocated_size_accounted_for_in_main_stream)
+							{
+								compressed_default_stream_to_merge = k;
+								compressed_default_allocated_delta += allocated_delta;
+							}
+						}
+
+						result.length    += length_delta;
+						result.allocated += allocated_delta;
+						result.bulkiness += bulkiness_delta;
+						result.treesize  += 1;
+
+						if (!k->type_name_id)
+						{
+							k->length    += children_size.length;
+							k->allocated += children_size.allocated;
+							k->bulkiness += children_size.bulkiness;
+							k->treesize  += children_size.treesize;
+						}
+
+						me->_preprocessed_so_far.fetch_add(1, atomic_namespace::memory_order_acq_rel);
+					}
+
+					// Merge WOF compressed stream size into default stream
+					if (compressed_default_stream_to_merge && default_stream)
+					{
+						compressed_default_stream_to_merge->is_allocated_size_accounted_for_in_main_stream = 1;
+						default_stream->allocated += compressed_default_stream_to_merge->allocated;
+
+						result.allocated -= default_allocated_delta;
+						result.allocated -= compressed_default_allocated_delta;
+						result.allocated += Accumulator::delta(default_stream->allocated, name_info, total_names);
+					}
+				}
+
+				scratch.erase(scratch.begin() + static_cast<ptrdiff_t>(old_scratch_size), scratch.end());
+				return result;
+			}
+		} preprocessor = { this };
 
 		clock_t const tbefore_preprocess = clock();
 
