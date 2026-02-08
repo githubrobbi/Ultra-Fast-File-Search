@@ -656,4 +656,333 @@ inline NtfsIndex::standard_info const& NtfsIndex::get_stdinfo(unsigned int const
 	return this->find(frn)->stdinfo;
 }
 
+// ============================================================================
+// Constructor and Destructor
+// ============================================================================
+
+inline NtfsIndex::NtfsIndex(std::tvstring value)
+	: _root_path(value)
+	, _finished_event(CreateEvent(nullptr, TRUE, FALSE, nullptr))
+	, _finished()
+	, _total_names_and_streams(0)
+	, _cancelled(false)
+	, _records_so_far(0)
+	, _preprocessed_so_far(0)
+	, _perf_reports_circ(1 << 6)
+	, _perf_avg_speed(Speed())
+	, reserved_clusters(0)
+{
+}
+
+inline NtfsIndex::~NtfsIndex()
+{
+}
+
+// ============================================================================
+// Initialization and lifecycle
+// ============================================================================
+
+inline bool NtfsIndex::init_called() const noexcept
+{
+	return this->_init_called;
+}
+
+inline void NtfsIndex::init()
+{
+	this->_init_called = true;
+	std::tvstring path_name = this->_root_path;
+	deldirsep(path_name);
+	if (!path_name.empty() && *path_name.begin() != _T('\\') && *path_name.begin() != _T('/'))
+	{
+		path_name.insert(static_cast<size_t>(0), _T("\\\\.\\"));
+	}
+
+	HANDLE const h = CreateFile(path_name.c_str(),
+		FILE_READ_DATA | FILE_READ_ATTRIBUTES | SYNCHRONIZE,
+		FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+		nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, nullptr);
+	CheckAndThrow(h != INVALID_HANDLE_VALUE);
+	Handle volume(h);
+	winnt::IO_STATUS_BLOCK iosb;
+	struct : winnt::FILE_FS_ATTRIBUTE_INFORMATION
+	{
+		unsigned char buf[MAX_PATH];
+	} info = {};
+
+	winnt::NTSTATUS status = winnt::NtQueryVolumeInformationFile(
+		volume.value, &iosb, &info, sizeof(info), 5);
+	if (status != 0)
+	{
+		CppRaiseException(winnt::RtlNtStatusToDosError(status));
+	}
+
+	if (info.FileSystemNameLength != 4 * sizeof(*info.FileSystemName) ||
+		std::char_traits<TCHAR>::compare(info.FileSystemName, _T("NTFS"), 4))
+	{
+		CppRaiseException(ERROR_UNRECOGNIZED_VOLUME);
+	}
+
+	if (false)
+	{
+		IoPriority::set(reinterpret_cast<uintptr_t>(volume.value), winnt::IoPriorityLow);
+	}
+
+	volume.swap(this->_volume);
+	this->_tbegin = clock();
+}
+
+inline void NtfsIndex::set_finished(unsigned int const& result)
+{
+	SetEvent(this->_finished_event);
+	this->_finished = result;
+}
+
+// ============================================================================
+// Volatile helpers
+// ============================================================================
+
+inline NtfsIndex* NtfsIndex::unvolatile() volatile noexcept
+{
+	return const_cast<NtfsIndex*>(this);
+}
+
+inline NtfsIndex const* NtfsIndex::unvolatile() const volatile noexcept
+{
+	return const_cast<NtfsIndex const*>(this);
+}
+
+// ============================================================================
+// Progress and statistics accessors
+// ============================================================================
+
+inline size_t NtfsIndex::total_names_and_streams() const noexcept
+{
+	return this->_total_names_and_streams.load(atomic_namespace::memory_order_relaxed);
+}
+
+inline size_t NtfsIndex::total_names_and_streams() const volatile noexcept
+{
+	return this->_total_names_and_streams.load(atomic_namespace::memory_order_acquire);
+}
+
+inline size_t NtfsIndex::total_names() const noexcept
+{
+	return this->nameinfos.size();
+}
+
+inline size_t NtfsIndex::expected_records() const noexcept
+{
+	return this->_expected_records;
+}
+
+inline size_t NtfsIndex::preprocessed_so_far() const volatile noexcept
+{
+	return this->_preprocessed_so_far.load(atomic_namespace::memory_order_acquire);
+}
+
+inline size_t NtfsIndex::preprocessed_so_far() const noexcept
+{
+	return this->_preprocessed_so_far.load(atomic_namespace::memory_order_relaxed);
+}
+
+inline size_t NtfsIndex::records_so_far() const volatile noexcept
+{
+	return this->_records_so_far.load(atomic_namespace::memory_order_acquire);
+}
+
+inline size_t NtfsIndex::records_so_far() const noexcept
+{
+	return this->_records_so_far.load(atomic_namespace::memory_order_relaxed);
+}
+
+inline void* NtfsIndex::volume() const volatile noexcept
+{
+	return this->_volume.value;
+}
+
+inline atomic_namespace::recursive_mutex& NtfsIndex::get_mutex() const volatile noexcept
+{
+	return this->unvolatile()->_mutex;
+}
+
+inline Speed NtfsIndex::speed() const volatile noexcept
+{
+	Speed total;
+	total = this->_perf_avg_speed.load(atomic_namespace::memory_order_acquire);
+	return total;
+}
+
+inline std::tvstring const& NtfsIndex::root_path() const volatile noexcept
+{
+	return const_cast<std::tvstring const&>(this->_root_path);
+}
+
+inline unsigned int NtfsIndex::get_finished() const volatile noexcept
+{
+	return this->_finished.load();
+}
+
+inline bool NtfsIndex::cancelled() const volatile noexcept
+{
+	this_type const* const me = this->unvolatile();
+	return me->_cancelled.load(atomic_namespace::memory_order_acquire);
+}
+
+inline void NtfsIndex::cancel() volatile noexcept
+{
+	this_type* const me = this->unvolatile();
+	me->_cancelled.store(true, atomic_namespace::memory_order_release);
+}
+
+inline uintptr_t NtfsIndex::finished_event() const noexcept
+{
+	return reinterpret_cast<uintptr_t>(this->_finished_event.value);
+}
+
+// ============================================================================
+// Capacity reservation
+// ============================================================================
+
+inline void NtfsIndex::reserve(unsigned int records)
+{
+	this->_expected_records = records;
+	try
+	{
+		if (this->records_lookup.size() < records)
+		{
+			this->nameinfos.reserve(records + records / 16);
+			this->streaminfos.reserve(records / 4);
+			this->childinfos.reserve(records + records / 2);
+			this->names.reserve(records * 23);
+			this->records_lookup.resize(records, ~RecordsLookup::value_type());
+			this->records_data.reserve(records + records / 4);
+		}
+	}
+	catch (std::bad_alloc&)
+	{
+	}
+}
+
+// ============================================================================
+// Private helper methods: at, find, childinfo, nameinfo, streaminfo
+// ============================================================================
+
+inline NtfsIndex::Records::iterator NtfsIndex::at(size_t const frs,
+	Records::iterator* const existing_to_revalidate)
+{
+	if (frs >= this->records_lookup.size())
+	{
+		this->records_lookup.resize(frs + 1, ~RecordsLookup::value_type());
+	}
+
+	RecordsLookup::iterator const k = this->records_lookup.begin() + static_cast<ptrdiff_t>(frs);
+	if (!~*k)
+	{
+		ptrdiff_t const j = (existing_to_revalidate ? *existing_to_revalidate : this->records_data.end())
+			- this->records_data.begin();
+		*k = static_cast<unsigned int>(this->records_data.size());
+		this->records_data.resize(this->records_data.size() + 1);
+		if (existing_to_revalidate)
+		{
+			*existing_to_revalidate = this->records_data.begin() + j;
+		}
+	}
+
+	return this->records_data.begin() + static_cast<ptrdiff_t>(*k);
+}
+
+template <class Me>
+inline typename propagate_const<Me, NtfsIndex::Records::value_type>::type*
+NtfsIndex::_find(Me* const me, key_type_internal::frs_type const frs)
+{
+	typedef typename propagate_const<Me, Records::value_type>::type* pointer_type;
+	pointer_type result;
+	if (frs < me->records_lookup.size())
+	{
+		RecordsLookup::value_type const islot = me->records_lookup[frs];
+		// The complicated logic here is to remove the 'imul' instruction...
+		result = fast_subscript(me->records_data.begin(), islot);
+	}
+	else
+	{
+		result = me->records_data.empty() ? nullptr : &*(me->records_data.end() - 1) + 1;
+	}
+	return result;
+}
+
+inline NtfsIndex::Records::value_type* NtfsIndex::find(key_type_internal::frs_type const frs)
+{
+	return this->_find(this, frs);
+}
+
+inline NtfsIndex::Records::value_type const* NtfsIndex::find(key_type_internal::frs_type const frs) const
+{
+	return this->_find(this, frs);
+}
+
+// childinfo overloads
+inline NtfsIndex::ChildInfos::value_type* NtfsIndex::childinfo(Records::value_type* const i)
+{
+	return this->childinfo(i->first_child);
+}
+
+inline NtfsIndex::ChildInfos::value_type const* NtfsIndex::childinfo(Records::value_type const* const i) const
+{
+	return this->childinfo(i->first_child);
+}
+
+inline NtfsIndex::ChildInfos::value_type* NtfsIndex::childinfo(ChildInfo::next_entry_type const i)
+{
+	return !~i ? nullptr : fast_subscript(this->childinfos.begin(), i);
+}
+
+inline NtfsIndex::ChildInfos::value_type const* NtfsIndex::childinfo(ChildInfo::next_entry_type const i) const
+{
+	return !~i ? nullptr : fast_subscript(this->childinfos.begin(), i);
+}
+
+// nameinfo overloads
+inline NtfsIndex::LinkInfos::value_type* NtfsIndex::nameinfo(LinkInfo::next_entry_type const i)
+{
+	return !~i ? nullptr : fast_subscript(this->nameinfos.begin(), i);
+}
+
+inline NtfsIndex::LinkInfos::value_type const* NtfsIndex::nameinfo(LinkInfo::next_entry_type const i) const
+{
+	return !~i ? nullptr : fast_subscript(this->nameinfos.begin(), i);
+}
+
+inline NtfsIndex::LinkInfos::value_type* NtfsIndex::nameinfo(Records::value_type* const i)
+{
+	return ~i->first_name.name.offset() ? &i->first_name : nullptr;
+}
+
+inline NtfsIndex::LinkInfos::value_type const* NtfsIndex::nameinfo(Records::value_type const* const i) const
+{
+	return ~i->first_name.name.offset() ? &i->first_name : nullptr;
+}
+
+// streaminfo overloads
+inline NtfsIndex::StreamInfos::value_type* NtfsIndex::streaminfo(StreamInfo::next_entry_type const i)
+{
+	return !~i ? nullptr : fast_subscript(this->streaminfos.begin(), i);
+}
+
+inline NtfsIndex::StreamInfos::value_type const* NtfsIndex::streaminfo(StreamInfo::next_entry_type const i) const
+{
+	return !~i ? nullptr : fast_subscript(this->streaminfos.begin(), i);
+}
+
+inline NtfsIndex::StreamInfos::value_type* NtfsIndex::streaminfo(Records::value_type* const i)
+{
+	assert(~i->first_stream.name.offset() || (!i->first_stream.name.length && !i->first_stream.length));
+	return ~i->first_stream.name.offset() ? &i->first_stream : nullptr;
+}
+
+inline NtfsIndex::StreamInfos::value_type const* NtfsIndex::streaminfo(Records::value_type const* const i) const
+{
+	assert(~i->first_stream.name.offset() || (!i->first_stream.name.length && !i->first_stream.length));
+	return ~i->first_stream.name.offset() ? &i->first_stream : nullptr;
+}
+
 #endif // UFFS_NTFS_INDEX_IMPL_HPP
