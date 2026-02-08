@@ -1,12 +1,41 @@
 #pragma once
 /**
  * @file io_completion_port.hpp
- * @brief Windows I/O Completion Port wrapper classes
+ * @brief Windows I/O Completion Port wrapper classes for high-performance async I/O
  *
- * Provides IoCompletionPort and OleIoCompletionPort classes for managing
- * asynchronous I/O operations using Windows IOCP.
+ * @details
+ * This file provides IoCompletionPort and OleIoCompletionPort classes that wrap
+ * the Windows I/O Completion Port (IOCP) mechanism for efficient asynchronous I/O.
  *
- * This is a self-contained header with all dependencies included.
+ * ## What is an I/O Completion Port?
+ *
+ * IOCP is a Windows kernel object that provides the most scalable mechanism for
+ * handling asynchronous I/O on Windows. Key benefits:
+ *
+ * - Thread Pool Integration: Multiple worker threads wait on a single IOCP
+ * - Efficient Scheduling: The kernel wakes only the optimal number of threads
+ * - Priority Support: I/O operations can be prioritized
+ * - Scalability: Handles thousands of concurrent I/O operations efficiently
+ *
+ * ## Completion Packet Key Values
+ *
+ * The IOCP uses a key parameter to distinguish packet types:
+ *
+ * | Key Value | Meaning                              |
+ * |-----------|--------------------------------------|
+ * | 0         | Shutdown signal - worker exits loop  |
+ * | 1         | Pending task available for dispatch  |
+ * | > 1       | I/O completion for associated file   |
+ *
+ * ## Thread Safety
+ *
+ * - All public methods are thread-safe (marked volatile)
+ * - Internal state protected by _mutex (recursive mutex)
+ * - Atomic flags for _initialized and _terminated
+ *
+ * @see io_completion_port_impl.hpp - Detailed implementation documentation
+ * @see Overlapped - Base class for async I/O completion callbacks
+ * @see IoPriority - I/O priority query/set utilities
  */
 
 #ifndef UFFS_IO_COMPLETION_PORT_HPP
@@ -22,46 +51,62 @@
 // Utility headers
 #include "../util/atomic_compat.hpp"
 #include "../util/lock_ptr.hpp"
-#include "../util/handle.hpp"           // Handle class
-#include "../util/error_utils.hpp"      // CheckAndThrow, CppRaiseException, CStructured_Exception
-#include "../util/com_init.hpp"         // CoInit class
+#include "../util/handle.hpp"
+#include "../util/error_utils.hpp"
+#include "../util/com_init.hpp"
 
 // I/O headers
-#include "overlapped.hpp"               // Overlapped, intrusive_ptr
-#include "winnt_types.hpp"              // winnt:: types
-#include "io_priority.hpp"              // IoPriority class
+#include "overlapped.hpp"
+#include "winnt_types.hpp"
+#include "io_priority.hpp"
 
-namespace winnt = uffs::winnt;  // Alias for winnt:: prefix usage
+namespace winnt = uffs::winnt;
 
 // Forward declaration for global_exception_handler (defined in UltraFastFileSearch.cpp)
 long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo);
 
+/**
+ * @brief High-performance I/O Completion Port wrapper for async file operations
+ *
+ * IoCompletionPort manages a Windows IOCP kernel object and a pool of worker
+ * threads that process completed I/O operations. It provides priority-based
+ * scheduling for pending I/O requests.
+ */
 class IoCompletionPort
 {
 	typedef IoCompletionPort this_type;
 protected:
+	/**
+	 * @brief Pending I/O task descriptor
+	 *
+	 * Represents an I/O operation that has been requested but not yet issued
+	 * to the operating system. Tasks are queued in _pending and processed
+	 * by worker threads based on I/O priority.
+	 */
 	struct Task
 	{
-		HANDLE file;
-		unsigned long issuing_thread_id;
-		void* buffer;
-		unsigned long cb;
-		intrusive_ptr<Overlapped> overlapped;
+		HANDLE file;                         ///< Handle to the file being read
+		unsigned long issuing_thread_id;     ///< Thread that requested the I/O
+		void* buffer;                        ///< Destination buffer for read data
+		unsigned long cb;                    ///< Number of bytes to read
+		intrusive_ptr<Overlapped> overlapped; ///< Overlapped structure with callback
 	};
 
 	typedef std::vector<Task> Pending;
 
+	/**
+	 * @brief RAII wrapper for a worker thread handle
+	 *
+	 * Manages the lifetime of a worker thread. The destructor waits for the
+	 * thread to complete before returning, ensuring clean shutdown.
+	 */
 	struct WorkerThread
 	{
 		Handle handle;
 		WorkerThread() = default;
 		WorkerThread(const WorkerThread&) = delete;
 		WorkerThread& operator=(const WorkerThread&) = delete;
-		// Move constructor - required for std::vector operations
-		WorkerThread(WorkerThread&& other) noexcept : handle(std::move(other.handle))
-		{
-		}
-		// Move assignment operator
+		WorkerThread(WorkerThread&& other) noexcept : handle(std::move(other.handle)) {}
 		WorkerThread& operator=(WorkerThread&& other) noexcept
 		{
 			if (this != &other)
@@ -83,11 +128,13 @@ protected:
 		}
 	};
 
+	/// Static thread entry point for _beginthreadex
 	static unsigned int __stdcall iocp_worker(void* me)
 	{
 		return static_cast<IoCompletionPort volatile*>(me)->worker();
 	}
 
+	/// Get the number of CPU cores for thread pool sizing
 	static int get_num_threads()
 	{
 		SYSTEM_INFO sysinfo;
@@ -95,11 +142,26 @@ protected:
 		return static_cast<int>(sysinfo.dwNumberOfProcessors);
 	}
 
+	/// Worker thread entry point (infinite timeout)
 	virtual unsigned int worker() volatile
 	{
 		return this->worker(INFINITE);
 	}
 
+	/**
+	 * @brief Main worker thread processing loop
+	 *
+	 * @param timeout Maximum time to wait for a completion packet (milliseconds)
+	 * @return Thread exit code (0 for success, error code otherwise)
+	 *
+	 * Processing flow:
+	 * 1. Wait for completion packet via GetQueuedCompletionStatus()
+	 * 2. If overlapped != NULL: invoke the callback
+	 * 3. If key == 1: find highest-priority pending task and issue it
+	 * 4. If key == 0: set terminated flag and exit loop
+	 *
+	 * @see io_completion_port_impl.hpp for detailed flowchart
+	 */
 	virtual unsigned int worker(unsigned long const timeout) volatile
 	{
 		unsigned int result = 0;
@@ -114,6 +176,7 @@ protected:
 				intrusive_ptr<Overlapped> overlapped(p, false);
 				if (overlapped.get())
 				{
+					// I/O completion - invoke the callback
 					int r = (*overlapped)(static_cast<size_t>(nr), key);
 					if (r > 0)
 					{
@@ -125,8 +188,9 @@ protected:
 						(void)overlapped.detach();  // Intentionally release ownership
 					}
 				}
-				else if (key == 1)
+				else if (key == 1)  // Pending task signal
 				{
+					// Find and issue the highest-priority pending task
 					size_t found = ~size_t();
 					Task task;
 					{
@@ -164,7 +228,7 @@ protected:
 						this->enqueue(task);
 					}
 				}
-				else if (key == 0)
+				else if (key == 0)  // Termination signal
 				{
 					this->_terminated.store(true, atomic_namespace::memory_order_release);
 					this->cancel_thread_ios();
@@ -188,6 +252,7 @@ protected:
 		return result;
 	}
 
+	/// Issue a pending I/O operation to the operating system
 	void enqueue(Task& task) volatile
 	{
 		bool attempted_reading_file = false;
@@ -202,7 +267,8 @@ protected:
 		}
 	}
 
-	void cancel_thread_ios() volatile	// Requests cancellation of all I/Os initiated by the current thread
+	/// Cancel all pending I/O operations initiated by the current thread
+	void cancel_thread_ios() volatile
 	{
 		lock_ptr<this_type> const me_lock(this);
 		Pending& pending = const_cast<Pending&>(this->_pending);
@@ -216,35 +282,42 @@ protected:
 		}
 	}
 
-	Handle _handle;
-	atomic_namespace::atomic<bool> _initialized, _terminated;
-	std::vector<WorkerThread> _threads;
-	mutable atomic_namespace::recursive_mutex _mutex;
-	Pending _pending;
-	size_t _pending_scan_offset;
+	Handle _handle;                                    ///< IOCP kernel object handle
+	atomic_namespace::atomic<bool> _initialized;       ///< True after worker threads started
+	atomic_namespace::atomic<bool> _terminated;        ///< True when shutdown initiated
+	std::vector<WorkerThread> _threads;                ///< Worker thread pool
+	mutable atomic_namespace::recursive_mutex _mutex;  ///< Protects _pending
+	Pending _pending;                                  ///< Tasks waiting to be issued
+	size_t _pending_scan_offset;                       ///< Round-robin scan position
 public:
+	/// Destructor - closes the IOCP and waits for all threads
 	~IoCompletionPort()
 	{
 		this->close();
 	}
 
+	/// Constructor - creates the IOCP kernel object
 	IoCompletionPort() : _handle(CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, 0)), _initialized(false), _terminated(false), _pending_scan_offset() {}
 
+	/// Cast away volatile qualifier (for internal use)
 	this_type* unvolatile() volatile
 	{
 		return const_cast<this_type*>(this);
 	}
 
+	/// Cast away volatile qualifier (const version)
 	this_type const* unvolatile() const volatile
 	{
 		return const_cast<this_type*>(this);
 	}
 
+	/// Get the mutex for external locking
 	atomic_namespace::recursive_mutex& get_mutex() const volatile
 	{
 		return this->unvolatile()->_mutex;
 	}
 
+	/// Initialize the worker thread pool (lazy initialization)
 	void ensure_initialized()
 	{
 		if (this->_threads.empty())
@@ -261,6 +334,7 @@ public:
 		}
 	}
 
+	/// Thread-safe version of ensure_initialized
 	void ensure_initialized() volatile
 	{
 		if (!this->_initialized.load(atomic_namespace::memory_order_acquire))
@@ -269,12 +343,14 @@ public:
 		}
 	}
 
+	/// Post a completion packet to the IOCP
 	void post(unsigned long cb, uintptr_t const key, intrusive_ptr<Overlapped> overlapped) volatile
 	{
 		CheckAndThrow(this->try_post(cb, key, overlapped));
 		(void)overlapped.detach();  // Intentionally release ownership
 	}
 
+	/// Try to post a completion packet (returns false on failure)
 	bool try_post(unsigned long cb, uintptr_t const key, intrusive_ptr<Overlapped>& overlapped) volatile
 	{
 		this->ensure_initialized();
@@ -286,9 +362,19 @@ public:
 		return !!PostQueuedCompletionStatus(this->_handle, cb, key, overlapped.get());
 	}
 
+	/**
+	 * @brief Queue an async file read operation
+	 *
+	 * @param file Handle to the file to read
+	 * @param buffer Destination buffer for read data
+	 * @param cb Number of bytes to read
+	 * @param overlapped Overlapped structure with completion callback
+	 *
+	 * The read is not issued immediately - it's added to the pending queue
+	 * and a worker thread will issue it based on priority.
+	 */
 	void read_file(HANDLE const file, void* const buffer, unsigned long const cb, intrusive_ptr<Overlapped> const& overlapped) volatile
 	{
-		// This part needs a lock
 		{
 			lock_ptr<this_type> const me_lock(this);
 			Pending& pending = const_cast<Pending&>(this->_pending);
@@ -301,28 +387,37 @@ public:
 			task.overlapped = overlapped;
 		}
 
-		this->post(0, 1, nullptr);
+		this->post(0, 1, nullptr);  // Signal pending task available
 	}
 
+	/// Associate a file handle with this IOCP
 	void associate(HANDLE const file, uintptr_t const key) volatile
 	{
 		this->ensure_initialized();
 		CheckAndThrow(!!CreateIoCompletionPort(file, this->_handle, key, 0));
 	}
 
+	/// Close the IOCP and wait for all threads to terminate
 	void close()
 	{
 		for (size_t i = 0; i != this->_threads.size(); ++i)
 		{
-			this->post(0, 0, nullptr);
+			this->post(0, 0, nullptr);  // Send termination signal
 		}
 
 		this->cancel_thread_ios();
-		this->_threads.clear();	// Destructors ensure all threads terminate
-		this->worker(0 /*dequeue all packets */);
+		this->_threads.clear();  // Destructors ensure all threads terminate
+		this->worker(0);  // Dequeue all remaining packets
 	}
 };
 
+/**
+ * @brief I/O Completion Port with COM/OLE support
+ *
+ * Extends IoCompletionPort to initialize COM on each worker thread.
+ * This is required when the completion callbacks need to use COM objects
+ * (e.g., Shell APIs, WIC, etc.).
+ */
 class OleIoCompletionPort : public IoCompletionPort
 {
 	virtual unsigned int worker() volatile override
@@ -342,9 +437,12 @@ class OleIoCompletionPort : public IoCompletionPort
 
 	virtual unsigned int worker(unsigned long const timeout) volatile override
 	{
-		CoInit coinit;
+		CoInit coinit;  // Initialize COM for this thread
 		return this->IoCompletionPort::worker(timeout);
 	}
 };
+
+// Include implementation documentation
+#include "io_completion_port_impl.hpp"
 
 #endif // UFFS_IO_COMPLETION_PORT_HPP
