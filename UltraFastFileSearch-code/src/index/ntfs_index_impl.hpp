@@ -198,8 +198,8 @@ inline void NtfsIndex::load(unsigned long long virtual_offset,
 							++mpi;
 							if (mpi->current_lcn)
 							{
-								mapping_pair_iterator::lcn_type intersect_mft_zone_begin = this->mft_zone_start;
-								mapping_pair_iterator::lcn_type intersect_mft_zone_end = this->mft_zone_end;
+								mapping_pair_iterator::lcn_type intersect_mft_zone_begin = this->_mft_zone_start;
+								mapping_pair_iterator::lcn_type intersect_mft_zone_end = this->_mft_zone_end;
 								if (intersect_mft_zone_begin < current_vcn)
 								{
 									intersect_mft_zone_begin = current_vcn;
@@ -212,7 +212,7 @@ inline void NtfsIndex::load(unsigned long long virtual_offset,
 
 								if (intersect_mft_zone_begin < intersect_mft_zone_end)
 								{
-									this->reserved_clusters.fetch_sub(intersect_mft_zone_end - intersect_mft_zone_begin);
+									this->_reserved_clusters.fetch_sub(intersect_mft_zone_end - intersect_mft_zone_begin);
 								}
 							}
 
@@ -320,7 +320,7 @@ inline void NtfsIndex::load(unsigned long long virtual_offset,
 	}  // end of outer for loop (line 104-109)
 
 	unsigned int const records_so_far = this->_records_so_far.load(atomic_namespace::memory_order_acquire);
-	bool const finished = records_so_far >= this->mft_capacity;
+	bool const finished = records_so_far >= this->_mft_capacity;
 	if (finished && !this->_root_path.empty())
 	{
 		TCHAR buf[2048];
@@ -420,7 +420,7 @@ inline void NtfsIndex::load(unsigned long long virtual_offset,
 					if (depth == 0)
 					{
 						children_size.allocated +=
-							static_cast<unsigned long long>(me->reserved_clusters) * me->cluster_size;
+							static_cast<unsigned long long>(me->_reserved_clusters) * me->_cluster_size;
 					}
 
 					result = children_size;
@@ -670,7 +670,7 @@ inline NtfsIndex::NtfsIndex(std::tvstring value)
 	, _preprocessed_so_far(0)
 	, _perf_reports_circ(1 << 6)
 	, _perf_avg_speed(Speed())
-	, reserved_clusters(0)
+	, _reserved_clusters(0)
 {
 }
 
@@ -984,5 +984,390 @@ inline NtfsIndex::StreamInfos::value_type const* NtfsIndex::streaminfo(Records::
 	assert(~i->first_stream.name.offset() || (!i->first_stream.name.length && !i->first_stream.length));
 	return ~i->first_stream.name.offset() ? &i->first_stream : nullptr;
 }
+
+// ============================================================================
+// Volume configuration accessors (encapsulated data members)
+// ============================================================================
+
+inline long long NtfsIndex::reserved_clusters() const volatile noexcept
+{
+	return _reserved_clusters.load(std::memory_order_relaxed);
+}
+
+inline long long NtfsIndex::mft_zone_start() const noexcept
+{
+	return _mft_zone_start;
+}
+
+inline long long NtfsIndex::mft_zone_end() const noexcept
+{
+	return _mft_zone_end;
+}
+
+inline unsigned int NtfsIndex::cluster_size() const noexcept
+{
+	return _cluster_size;
+}
+
+inline unsigned int NtfsIndex::mft_record_size() const noexcept
+{
+	return _mft_record_size;
+}
+
+inline unsigned int NtfsIndex::mft_capacity() const noexcept
+{
+	return _mft_capacity;
+}
+
+inline void NtfsIndex::set_reserved_clusters(long long value) volatile noexcept
+{
+	_reserved_clusters.store(value, std::memory_order_relaxed);
+}
+
+inline void NtfsIndex::set_mft_zone_start(long long value) noexcept
+{
+	_mft_zone_start = value;
+}
+
+inline void NtfsIndex::set_mft_zone_end(long long value) noexcept
+{
+	_mft_zone_end = value;
+}
+
+inline void NtfsIndex::set_cluster_size(unsigned int value) noexcept
+{
+	_cluster_size = value;
+}
+
+inline void NtfsIndex::set_mft_record_size(unsigned int value) noexcept
+{
+	_mft_record_size = value;
+}
+
+inline void NtfsIndex::set_mft_capacity(unsigned int value) noexcept
+{
+	_mft_capacity = value;
+}
+
+// ============================================================================
+// ParentIterator::operator++() implementation
+// ============================================================================
+
+inline NtfsIndex::ParentIterator& NtfsIndex::ParentIterator::operator++()
+{
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wimplicit-fallthrough"
+#endif
+	switch (state)
+	{
+		for (;;)
+		{
+	case 0:
+		ptrs = index->get_file_pointers(key);
+		if (!is_root())
+		{
+			if (!ptrs.stream->type_name_id)
+			{
+				result.first = _T("\\");
+				result.second = 1;
+				result.ascii = false;
+				if (result.second)
+				{
+					state = 1;
+					break;
+				}
+				[[fallthrough]];
+	case 1:;
+			}
+		}
+
+		if (!this->iteration)
+		{
+			if (is_attribute() && ptrs.stream->type_name_id < sizeof(ntfs::attribute_names) / sizeof(*ntfs::attribute_names))
+			{
+				result.first = ntfs::attribute_names[ptrs.stream->type_name_id].data;
+				result.second = ntfs::attribute_names[ptrs.stream->type_name_id].size;
+				result.ascii = false;
+				if (result.second)
+				{
+					state = 2;
+					break;
+				}
+				[[fallthrough]];
+	case 2:
+				result.first = _T(":");
+				result.second = 1;
+				result.ascii = false;
+				if (result.second)
+				{
+					state = 3;
+					break;
+				}
+				[[fallthrough]];
+	case 3:;
+			}
+
+			if (ptrs.stream->name.length)
+			{
+				result.first = &index->names[ptrs.stream->name.offset()];
+				result.second = ptrs.stream->name.length;
+				result.ascii = ptrs.stream->name.ascii();
+				if (result.second)
+				{
+					state = 4;
+					break;
+				}
+				[[fallthrough]];
+	case 4:;
+			}
+
+			if (ptrs.stream->name.length || is_attribute())
+			{
+				result.first = _T(":");
+				result.second = 1;
+				result.ascii = false;
+				if (result.second)
+				{
+					state = 5;
+					break;
+				}
+				[[fallthrough]];
+	case 5:;
+			}
+		}
+
+		if (!this->iteration || !is_root())
+		{
+			result.first = &index->names[ptrs.link->name.offset()];
+			result.second = ptrs.link->name.length;
+			result.ascii = ptrs.link->name.ascii();
+			if (result.second)
+			{
+				state = 6;
+				break;
+			}
+		}
+		[[fallthrough]];
+	case 6:
+		if (is_root())
+		{
+			this->index = nullptr;
+			break;
+		}
+		state = 0;
+		key = ptrs.parent();
+		++this->iteration;
+		}
+
+	default:
+		break;
+	}
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+	return *this;
+}
+
+// ============================================================================
+// Matcher template definition (moved from ntfs_index.hpp)
+// ============================================================================
+
+template <class F>
+struct NtfsIndex::Matcher
+{
+	NtfsIndex const* me;
+	F func;
+	bool match_paths;
+	bool match_streams;
+	bool match_attributes;
+	std::tvstring* path;
+	size_t basename_index_in_path;
+	NameInfo name;
+	size_t depth;
+
+	void operator()(key_type::frs_type const frs)
+	{
+		if (frs < me->records_lookup.size())
+		{
+			TCHAR const dirsep = getdirsep();
+			std::tvstring temp;
+			Records::value_type const* const i = me->find(frs);
+			unsigned short ji = 0;
+			for (LinkInfos::value_type const* j = me->nameinfo(i); j; j = me->nameinfo(j->next_entry), ++ji)
+			{
+				size_t const old_basename_index_in_path = basename_index_in_path;
+				basename_index_in_path = path->size();
+				temp.clear();
+				append_directional(temp, &dirsep, 1, 0);
+				if (!(match_paths && frs == kRootFRS))
+				{
+					append_directional(temp, &me->names[j->name.offset()], j->name.length, j->name.ascii() ? -1 : 0);
+				}
+				this->operator()(frs, ji, temp.data(), temp.size());
+				basename_index_in_path = old_basename_index_in_path;
+			}
+		}
+	}
+
+	void operator()(key_type::frs_type const frs, key_type::name_info_type const name_info,
+		TCHAR const stream_prefix[], size_t const stream_prefix_size)
+	{
+		bool const match_paths_or_streams = match_paths || match_streams || match_attributes;
+		bool const buffered_matching = stream_prefix_size || match_paths_or_streams;
+		if (frs < me->records_lookup.size() && (frs == kRootFRS || frs >= kFirstUserFRS || this->match_attributes))
+		{
+			Records::value_type const* const fr = me->find(frs);
+			key_type new_key(frs, name_info, 0);
+			ptrdiff_t traverse = 0;
+			for (StreamInfos::value_type const* k = me->streaminfo(fr); k;
+				k = me->streaminfo(k->next_entry), new_key.stream_info(new_key.stream_info() + 1))
+			{
+				assert(k->name.offset() <= me->names.size());
+				bool const is_attribute = k->type_name_id &&
+					(k->type_name_id << (CHAR_BIT / 2)) != static_cast<int>(ntfs::AttributeTypeCode::AttributeData);
+				if (!match_attributes && is_attribute)
+				{
+					continue;
+				}
+
+				size_t const old_size = path->size();
+				if (stream_prefix_size)
+				{
+					path->append(stream_prefix, stream_prefix_size);
+				}
+
+				if (match_paths_or_streams)
+				{
+					if ((fr->stdinfo.attributes() & FILE_ATTRIBUTE_DIRECTORY) && frs != kRootFRS)
+					{
+						path->push_back(_T('\\'));
+					}
+				}
+
+				if (match_streams || match_attributes)
+				{
+					if (k->name.length)
+					{
+						path->push_back(_T(':'));
+						append_directional(*path, k->name.length ? &me->names[k->name.offset()] : nullptr,
+							k->name.length, k->name.ascii() ? -1 : 0);
+					}
+
+					if (is_attribute)
+					{
+						if (!k->name.length)
+						{
+							path->push_back(_T(':'));
+						}
+						path->push_back(_T(':'));
+						path->append(ntfs::attribute_names[k->type_name_id].data,
+							ntfs::attribute_names[k->type_name_id].size);
+					}
+				}
+
+				bool ascii;
+				size_t name_offset, name_length;
+				if (buffered_matching)
+				{
+					name_offset = match_paths ? 0 : static_cast<unsigned int>(basename_index_in_path);
+					name_length = path->size() - name_offset;
+					ascii = false;
+				}
+				else
+				{
+					name_offset = name.offset();
+					name_length = name.length;
+					ascii = name.ascii();
+				}
+
+				// List root directory at top level, its attributes at level 1
+				if (frs != kRootFRS || ((depth > 0) ^ (k->type_name_id == 0)))
+				{
+					traverse += func(
+						(buffered_matching ? path->data() : &*me->names.begin()) + static_cast<ptrdiff_t>(name_offset),
+						name_length, ascii, new_key, depth);
+				}
+
+				if (buffered_matching)
+				{
+					path->erase(old_size, path->size() - old_size);
+				}
+			}
+
+			if ((frs != kRootFRS || depth == 0) && traverse > 0)
+			{
+				size_t const old_size = path->size();
+				NameInfo const old_name = name;
+				size_t const old_basename_index_in_path = basename_index_in_path;
+				++depth;
+				if (buffered_matching)
+				{
+					if (match_paths_or_streams)
+					{
+						path->push_back(_T('\\'));
+					}
+					basename_index_in_path = path->size();
+				}
+
+				unsigned short ii = 0;
+				for (ChildInfos::value_type const* i = me->childinfo(fr);
+					i && ~i->record_number;
+					i = me->childinfo(i->next_entry), ++ii)
+				{
+					unsigned short name_index = i->name_index;
+					unsigned int record_number = i->record_number;
+
+					// Process this child and potentially the root directory
+					bool process_root_after = false;
+					do
+					{
+						Records::value_type const* const fr2 = me->find(record_number);
+						unsigned short ji_target = name_index;
+						unsigned short ji = 0;
+						for (LinkInfos::value_type const* j = me->nameinfo(fr2); j;
+							j = me->nameinfo(j->next_entry), ++ji)
+						{
+							if (j->parent == frs && ji == ji_target)
+							{
+								if (buffered_matching)
+								{
+									append_directional(*path, &me->names[j->name.offset()],
+										j->name.length, j->name.ascii() ? -1 : 0);
+								}
+								name = j->name;
+								this->operator()(static_cast<key_type::frs_type>(record_number), ji, nullptr, 0);
+								if (buffered_matching)
+								{
+									path->erase(path->end() - static_cast<ptrdiff_t>(j->name.length), path->end());
+								}
+							}
+						}
+
+						// Check if we need to also process root directory
+						if (record_number == kVolumeFRS && depth == 1)
+						{
+							name_index = 0;
+							record_number = kRootFRS;
+							process_root_after = true;
+						}
+						else
+						{
+							process_root_after = false;
+						}
+					} while (process_root_after);
+				}
+
+				--depth;
+				basename_index_in_path = old_basename_index_in_path;
+				name = old_name;
+				if (buffered_matching)
+				{
+					path->erase(old_size, path->size() - old_size);
+				}
+			}
+		}
+	}
+};
 
 #endif // UFFS_NTFS_INDEX_IMPL_HPP

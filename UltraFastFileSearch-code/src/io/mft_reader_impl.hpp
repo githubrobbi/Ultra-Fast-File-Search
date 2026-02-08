@@ -777,25 +777,25 @@ inline void OverlappedNtfsMftReadPayload::initialize_volume_info(
 {
     // Store cluster size for I/O calculations
     cluster_size_ = static_cast<unsigned int>(volume_info.BytesPerCluster);
-    index->cluster_size = volume_info.BytesPerCluster;
+    index->set_cluster_size(static_cast<unsigned int>(volume_info.BytesPerCluster));
 
     // Store MFT record size (typically 1024 bytes)
-    index->mft_record_size = volume_info.BytesPerFileRecordSegment;
+    index->set_mft_record_size(volume_info.BytesPerFileRecordSegment);
 
     // Calculate MFT capacity (number of records)
-    index->mft_capacity = static_cast<unsigned int>(
-        volume_info.MftValidDataLength.QuadPart / volume_info.BytesPerFileRecordSegment);
+    index->set_mft_capacity(static_cast<unsigned int>(
+        volume_info.MftValidDataLength.QuadPart / volume_info.BytesPerFileRecordSegment));
 
     // Store MFT zone information
-    index->mft_zone_start = volume_info.MftZoneStart.QuadPart;
-    index->mft_zone_end = volume_info.MftZoneEnd.QuadPart;
+    index->set_mft_zone_start(volume_info.MftZoneStart.QuadPart);
+    index->set_mft_zone_end(volume_info.MftZoneEnd.QuadPart);
 
     // Suppress MFT zone inclusion in "size on disk" calculation
-    index->mft_zone_end = index->mft_zone_start;
+    index->set_mft_zone_end(index->mft_zone_start());
 
     // Store reserved cluster count
-    index->reserved_clusters.store(
-        volume_info.TotalReserved.QuadPart + index->mft_zone_end - index->mft_zone_start);
+    index->set_reserved_clusters(
+        volume_info.TotalReserved.QuadPart + index->mft_zone_end() - index->mft_zone_start());
 }
 
 /**
