@@ -816,5 +816,33 @@ inline void NtfsIndex::set_mft_capacity(unsigned int value) noexcept
 	_mft_capacity = value;
 }
 
+// ============================================================================
+// SECTION: Performance Tracking
+// ============================================================================
+
+/**
+ * @brief Reports I/O speed for performance monitoring.
+ *
+ * Records the speed of an I/O operation for performance tracking and
+ * averaging. Uses a circular buffer to maintain recent speed samples.
+ *
+ * @param size Number of bytes transferred
+ * @param tfrom Start time (clock_t)
+ * @param tto End time (clock_t)
+ *
+ * @note Thread-safe via atomic operations on _perf_avg_speed.
+ */
+inline void NtfsIndex::report_speed(unsigned long long const size,
+	clock_t const tfrom,
+	clock_t const tto)
+{
+	clock_t const duration = tto - tfrom;
+	Speed const speed(size, duration);
+	this->_perf_avg_speed.fetch_add(speed, atomic_namespace::memory_order_acq_rel);
+	Speed const prev = this->_perf_reports_circ[this->_perf_reports_begin];
+	this->_perf_reports_circ[this->_perf_reports_begin] = speed;
+	this->_perf_reports_begin = (this->_perf_reports_begin + 1) % this->_perf_reports_circ.size();
+}
+
 #endif // UFFS_NTFS_INDEX_ACCESSORS_HPP
 
