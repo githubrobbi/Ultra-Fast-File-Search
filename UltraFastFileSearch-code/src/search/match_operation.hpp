@@ -7,81 +7,77 @@
  * for file search operations. It supports multiple pattern types and includes
  * optimizations for path-based matching.
  *
- * ## Pattern Types
+ * Pattern Types:
  *
- * | Prefix | Type     | Example           | Description                    |
- * |--------|----------|-------------------|--------------------------------|
- * | (none) | Glob     | `*.txt`           | Standard wildcard matching     |
- * | `>`    | Regex    | `>.*\.txt$`       | Full regular expression        |
- * | `**`   | Globstar | `src/**/*.cpp`    | Recursive directory matching   |
+ *   Prefix   Type       Example             Description
+ *   ------   --------   -----------------   --------------------------------
+ *   (none)   Glob       *.txt               Standard wildcard matching
+ *   >        Regex      >.*\.txt$           Full regular expression
+ *   **       Globstar   src/ ** /*.cpp      Recursive directory matching
  *
- * ## Pattern Matching Flow
+ * Pattern Matching Flow:
  *
- * ```
- * ┌─────────────────────────────────────────────────────────────────┐
- * │                    Pattern Processing                           │
- * ├─────────────────────────────────────────────────────────────────┤
- * │                                                                 │
- * │  Input Pattern                                                  │
- * │       │                                                         │
- * │       v                                                         │
- * │  ┌─────────────────┐                                           │
- * │  │ Check for '>'   │──Yes──> is_regex = true                   │
- * │  │ prefix          │                                           │
- * │  └────────┬────────┘                                           │
- * │           │ No                                                  │
- * │           v                                                     │
- * │  ┌─────────────────┐                                           │
- * │  │ Check for '\\'  │──Yes──> is_path_pattern = true            │
- * │  │ or '**'         │                                           │
- * │  └────────┬────────┘                                           │
- * │           │ No                                                  │
- * │           v                                                     │
- * │  ┌─────────────────┐                                           │
- * │  │ Check for ':'   │──Yes──> is_stream_pattern = true          │
- * │  │ (ADS)           │                                           │
- * │  └────────┬────────┘                                           │
- * │           │                                                     │
- * │           v                                                     │
- * │  ┌─────────────────┐                                           │
- * │  │ Root path       │──Yes──> Extract root for optimization     │
- * │  │ optimization?   │                                           │
- * │  └────────┬────────┘                                           │
- * │           │                                                     │
- * │           v                                                     │
- * │  ┌─────────────────┐                                           │
- * │  │ Create matcher  │                                           │
- * │  └─────────────────┘                                           │
- * └─────────────────────────────────────────────────────────────────┘
- * ```
+ *   +-------------------------------------------------------------------+
+ *   |                    Pattern Processing                             |
+ *   +-------------------------------------------------------------------+
+ *   |                                                                   |
+ *   |  Input Pattern                                                    |
+ *   |       |                                                           |
+ *   |       v                                                           |
+ *   |  +-------------------+                                            |
+ *   |  | Check for '>'     |--Yes--> is_regex = true                    |
+ *   |  | prefix            |                                            |
+ *   |  +---------+---------+                                            |
+ *   |            | No                                                   |
+ *   |            v                                                      |
+ *   |  +-------------------+                                            |
+ *   |  | Check for '\\'    |--Yes--> is_path_pattern = true             |
+ *   |  | or '**'           |                                            |
+ *   |  +---------+---------+                                            |
+ *   |            | No                                                   |
+ *   |            v                                                      |
+ *   |  +-------------------+                                            |
+ *   |  | Check for ':'     |--Yes--> is_stream_pattern = true           |
+ *   |  | (ADS)             |                                            |
+ *   |  +---------+---------+                                            |
+ *   |            |                                                      |
+ *   |            v                                                      |
+ *   |  +-------------------+                                            |
+ *   |  | Root path         |--Yes--> Extract root for optimization      |
+ *   |  | optimization?     |                                            |
+ *   |  +---------+---------+                                            |
+ *   |            |                                                      |
+ *   |            v                                                      |
+ *   |  +-------------------+                                            |
+ *   |  | Create matcher    |                                            |
+ *   |  +-------------------+                                            |
+ *   +-------------------------------------------------------------------+
  *
- * ## Root Path Optimization
+ * Root Path Optimization:
  *
- * When a pattern starts with a specific path (e.g., `C:\Users\*.txt`),
- * the root path (`C:\Users\`) is extracted and used to skip volumes
+ * When a pattern starts with a specific path (e.g., C:\Users\*.txt),
+ * the root path (C:\Users\) is extracted and used to skip volumes
  * that don't match, improving search performance.
  *
- * ## Thread Safety
+ * Thread Safety:
  *
  * - MatchOperation is NOT thread-safe for concurrent modification
  * - Once initialized via init(), it is safe for concurrent reads
  * - The underlying string_matcher is immutable after construction
  *
- * ## Usage Example
+ * Usage Example:
  *
- * ```cpp
- * MatchOperation op;
- * op.init(_T("*.txt"));  // Simple glob pattern
+ *   MatchOperation op;
+ *   op.init(_T("*.txt"));  // Simple glob pattern
  *
- * // Check if a volume should be searched
- * if (op.prematch(root_path)) {
- *     std::tvstring current = op.get_current_path(root_path);
- *     // Search files in current path
- *     if (op.matcher.is_match(filename.data(), filename.size())) {
- *         // File matches pattern
- *     }
- * }
- * ```
+ *   // Check if a volume should be searched
+ *   if (op.prematch(root_path)) {
+ *       std::tvstring current = op.get_current_path(root_path);
+ *       // Search files in current path
+ *       if (op.matcher.is_match(filename.data(), filename.size())) {
+ *           // File matches pattern
+ *       }
+ *   }
  *
  * @see string_matcher - The underlying pattern matching engine
  */
