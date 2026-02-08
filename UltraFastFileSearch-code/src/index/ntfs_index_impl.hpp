@@ -317,6 +317,7 @@ inline void NtfsIndex::load(unsigned long long virtual_offset,
 			}
 		}
 	}
+	}  // end of outer for loop (line 104-109)
 
 	unsigned int const records_so_far = this->_records_so_far.load(atomic_namespace::memory_order_acquire);
 	bool const finished = records_so_far >= this->mft_capacity;
