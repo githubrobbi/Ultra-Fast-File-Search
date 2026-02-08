@@ -195,7 +195,7 @@ void CMainDlg::Search()
                 {
                     ss << _T('\n');
                     ss << this->stringLoader_(IDS_TEXT_AVERAGE_SPEED) << this->stringLoader_(IDS_TEXT_COLON) << this->stringLoader_(IDS_TEXT_SPACE) <<
-                        nformat_ui(static_cast<size_t>((average_speed.first - initial_average_amount) * static_cast<double>(CLOCKS_PER_SEC) / ((tnow != initial_time ? tnow - initial_time : 1) * static_cast<double>(1ULL << 20)))) <<
+                        nformat_ui(static_cast<size_t>((static_cast<double>(average_speed.first) - static_cast<double>(initial_average_amount)) * static_cast<double>(CLOCKS_PER_SEC) / ((tnow != initial_time ? tnow - initial_time : 1) * static_cast<double>(1ULL << 20)))) <<
                         this->stringLoader_(IDS_TEXT_SPACE) << this->stringLoader_(IDS_TEXT_MIB_S);
                     ss << this->stringLoader_(IDS_TEXT_SPACE);
                     ss << this->stringLoader_(IDS_TEXT_PAREN_OPEN) << nformat_ui(average_speed.first / (1 << 20)) << this->stringLoader_(IDS_TEXT_SPACE) << this->stringLoader_(IDS_TEXT_MIB_READ) << this->stringLoader_(IDS_TEXT_PAREN_CLOSE);

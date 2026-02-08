@@ -165,11 +165,9 @@ int main(int argc, char* argv[])
 
 		// searchPathCopy already defined above from opts.searchPath
 
-		std::tvstring laufwerke;
-		std::tvstring tvtemp;
-		std::wstring laufwerkeW;
+		// Drive letters are ASCII only - use narrow strings for CLI
+		std::string driveLetters;  // e.g., "C:|D:|E:"
 		static int gotdrives = 0;
-		laufwerke = L"";
 
 		std::filesystem::path tempath;
 		static char driveletter = '\0';
@@ -195,9 +193,8 @@ int main(int argc, char* argv[])
 
 		//OS << "searchPathCopy =" << searchPathCopy << "\n\n";
 
-		tempath = searchdrivestr;
-		tvtemp = tempath.c_str();
-		laufwerke += tvtemp;
+		// Add the search drive to driveLetters if specified
+		driveLetters = searchdrivestr;
 
 		// Create a mutable copy of drives for processing
 		std::vector<std::string> drivesCopy = drives;
@@ -229,9 +226,7 @@ int main(int argc, char* argv[])
 						else
 							drivesCopy[i] += ":";
 
-						tempath = drivesCopy[i];
-						tvtemp = tempath.c_str();
-						laufwerke += tvtemp;
+						driveLetters += drivesCopy[i];
 						gotdrives += 1;
 					}
 					else
@@ -241,16 +236,12 @@ int main(int argc, char* argv[])
 						OS << "\n\n";
 						exit(-13);
 					}
-
-					//OS << drivesCopy[i];
 				}
-
-				//OS << '\n';
 			}
 			else
-				laufwerke = L"*";
+				driveLetters = "*";
 		}
-		else if (searchdrive == '\0') laufwerke = L"*";
+		else if (searchdrive == '\0') driveLetters = "*";
 
 		static
 			const std::string
@@ -278,7 +269,7 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				if (drivesCopy.size() == 1) searchPathCopy = std::string(laufwerke.begin(), laufwerke.end()) + searchPathCopy;
+				if (drivesCopy.size() == 1) searchPathCopy = driveLetters + searchPathCopy;
 			}
 
 			tempath = searchPathCopy;
@@ -454,7 +445,7 @@ int main(int argc, char* argv[])
 				const& nformat = nformat_io;
 			MatchOperation matchop;
 			//OS << "\n\nSEARCH pattern passed to MATCHER: \t" << searchPathCopy;
-			if (gotdrives > 0) OS << "\nDrives? \t" << gotdrives << "\t" << std::string(laufwerke.begin(), laufwerke.end());
+			if (gotdrives > 0) OS << "\nDrives? \t" << gotdrives << "\t" << driveLetters;
 			OS << "\n\n";
 
 			// FIRST argument (check for regex etc.)
@@ -491,20 +482,24 @@ int main(int argc, char* argv[])
 				std::vector<std::tvstring > path_names;
 				if (gotdrives)
 				{
-					//std::tvstring arg(argv[2]);
-					std::tvstring arg(laufwerke);
+					// Parse driveLetters (e.g., "C:|D:|E:") into individual wide-string paths
+					// Drive letters are ASCII, so direct char-to-wchar_t widening is safe
 					for (size_t i = 0;; ++i)
 					{
-						size_t
-							const j = arg.find(_T('|'), i);
-						std::tvstring path_name(arg.data() + static_cast<ptrdiff_t> (i), (~j ? j : arg.size()) - i);
+						size_t const j = driveLetters.find('|', i);
+						size_t const len = (j != std::string::npos ? j : driveLetters.size()) - i;
+						std::tvstring path_name;
+						path_name.reserve(len);
+						for (size_t k = 0; k < len; ++k)
+						{
+							path_name.push_back(static_cast<TCHAR>(driveLetters[i + k]));
+						}
 						adddirsep(path_name);
 						path_names.push_back(path_name);
-						if (!~j)
+						if (j == std::string::npos)
 						{
 							break;
 						}
-
 						i = j;
 					}
 				}
