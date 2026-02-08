@@ -62,8 +62,12 @@
 
 namespace winnt = uffs::winnt;
 
-// Forward declaration for global_exception_handler (defined in UltraFastFileSearch.cpp)
+// global_exception_handler is provided by exception_handler.hpp
+// (included before this file in UltraFastFileSearch.cpp)
+// Forward declaration for standalone compilation:
+#ifndef UFFS_EXCEPTION_HANDLER_HPP
 long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo);
+#endif
 
 /**
  * @brief High-performance I/O Completion Port wrapper for async file operations

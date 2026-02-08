@@ -310,9 +310,6 @@ ATL::CWindow topmostWindow;
 // Note: This provides global_exception_handler() and global_exception_mutex
 #include "src/util/exception_handler.hpp"
 
-// Bring uffs::topmostWindow into scope for the header
-namespace uffs { ATL::CWindow& topmostWindow = ::topmostWindow; }
-
 
 // is_ascii and DisplayError extracted to src/util/error_utils.hpp
 

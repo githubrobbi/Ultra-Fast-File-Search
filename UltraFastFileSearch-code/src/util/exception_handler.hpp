@@ -60,22 +60,20 @@
 #include "atomic_compat.hpp"
 #include "error_utils.hpp"
 
-namespace uffs {
-
 // ============================================================================
-// EXTERNAL DECLARATIONS
+// EXTERNAL DECLARATIONS (at global scope)
 // ============================================================================
 
 /**
  * @brief The topmost window handle for displaying error dialogs.
  *
- * This variable is defined in the GUI code (main_dialog.hpp) and provides
+ * This variable is defined in UltraFastFileSearch.cpp and provides
  * the parent window for MessageBox calls. For CLI builds, this will be
  * an empty/null window handle.
- *
- * @note Declared extern here, defined in UltraFastFileSearch.cpp
  */
 extern ATL::CWindow topmostWindow;
+
+namespace uffs {
 
 // ============================================================================
 // GLOBAL STATE
