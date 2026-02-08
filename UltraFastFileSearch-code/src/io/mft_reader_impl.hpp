@@ -352,7 +352,7 @@ private:
 
         // Check if this chunk is within valid MFT capacity
         const unsigned long long bitmap_bit_offset = voffset() * kBitsPerBitmapByte;
-        if (bitmap_bit_offset > parent->index_->mft_capacity)
+        if (bitmap_bit_offset > parent->index_->mft_capacity())
         {
             // This chunk is beyond MFT capacity, skip processing
             check_if_last_bitmap_chunk(parent);
@@ -361,7 +361,7 @@ private:
 
         // Calculate how many bytes to process (may be truncated at MFT end)
         size_t bytes_to_process = size;
-        const unsigned long long max_bitmap_offset = parent->index_->mft_capacity / kBitsPerBitmapByte;
+        const unsigned long long max_bitmap_offset = parent->index_->mft_capacity() / kBitsPerBitmapByte;
         if (voffset() + bytes_to_process > max_bitmap_offset)
         {
             bytes_to_process = static_cast<size_t>(max_bitmap_offset - voffset());
@@ -425,9 +425,9 @@ private:
         {
             // Calculate which MFT records this chunk covers
             const size_t first_record =
-                static_cast<size_t>(chunk.vcn * parent->cluster_size_ / parent->index_->mft_record_size);
+                static_cast<size_t>(chunk.vcn * parent->cluster_size_ / parent->index_->mft_record_size());
             const size_t record_count =
-                static_cast<size_t>(chunk.cluster_count * parent->cluster_size_ / parent->index_->mft_record_size);
+                static_cast<size_t>(chunk.cluster_count * parent->cluster_size_ / parent->index_->mft_record_size());
 
             // Find first in-use record from start (using bitmap_utils)
             const size_t skip_records_begin =
@@ -440,11 +440,11 @@ private:
             // Convert record counts to cluster counts
             const size_t skip_clusters_begin = static_cast<size_t>(
                 static_cast<unsigned long long>(skip_records_begin) *
-                parent->index_->mft_record_size / parent->cluster_size_);
+                parent->index_->mft_record_size() / parent->cluster_size_);
 
             const size_t skip_clusters_end = static_cast<size_t>(
                 static_cast<unsigned long long>(skip_records_end) *
-                parent->index_->mft_record_size / parent->cluster_size_);
+                parent->index_->mft_record_size() / parent->cluster_size_);
 
             // Sanity check: can't skip more clusters than exist
             if (skip_clusters_begin + skip_clusters_end > chunk.cluster_count)
@@ -816,7 +816,7 @@ inline void OverlappedNtfsMftReadPayload::build_bitmap_chunk_list(
         (index->root_path() + std::tvstring(_T("$MFT::$BITMAP"))).c_str(),
         &bitmap_size_bytes,
         volume_info.MftStartLcn.QuadPart,
-        index_->mft_record_size);
+        index_->mft_record_size());
 
     // Convert extents to chunks
     build_chunk_list_from_extents(extents, bitmap_chunks_);
@@ -848,7 +848,7 @@ inline void OverlappedNtfsMftReadPayload::build_data_chunk_list(
         (index->root_path() + std::tvstring(_T("$MFT::$DATA"))).c_str(),
         &data_size_bytes,
         volume_info.MftStartLcn.QuadPart,
-        index->mft_record_size);
+        index->mft_record_size());
 
     // Validate that we got extent data
     if (extents.empty())

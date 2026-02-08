@@ -18,7 +18,7 @@ inline void NtfsIndex::preload_concurrent(unsigned long long virtual_offset,
 	size_t size) volatile
 {
 	unsigned int max_frs_plus_one = 0;
-	unsigned int const mft_record_size = this->mft_record_size;
+	unsigned int const mft_record_size = this->_mft_record_size;
 	unsigned int mft_record_size_log2 = 0;
 	for (;;)
 	{
@@ -75,7 +75,7 @@ inline void NtfsIndex::load(unsigned long long virtual_offset,
 	unsigned long long skipped_begin,
 	unsigned long long skipped_end)
 {
-	unsigned int const mft_record_size = this->mft_record_size;
+	unsigned int const mft_record_size = this->_mft_record_size;
 	unsigned int mft_record_size_log2 = 0;
 	for (;;)
 	{

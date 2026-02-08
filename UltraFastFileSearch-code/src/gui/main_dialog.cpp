@@ -93,8 +93,8 @@ void CMainDlg::Search()
                     wait_indices.push_back(p.get());
                     expected_results += p->expected_records();
                     size_t const records_so_far = p->records_so_far();
-                    any_io_pending |= records_so_far < p->mft_capacity;
-                    overall_progress_denominator += p->mft_capacity * 2;
+                    any_io_pending |= records_so_far < p->mft_capacity();
+                    overall_progress_denominator += p->mft_capacity() * 2;
                 }
             }
 
@@ -166,7 +166,7 @@ void CMainDlg::Search()
                 {
                     size_t const records_so_far = j->records_so_far();
                     temp_overall_progress_numerator += records_so_far;
-                    unsigned int const mft_capacity = j->mft_capacity;
+                    unsigned int const mft_capacity = j->mft_capacity();
                     if (records_so_far != mft_capacity)
                     {
                         if (any) { ss << this->stringLoader_(IDS_TEXT_COMMA) << this->stringLoader_(IDS_TEXT_SPACE); }
@@ -258,7 +258,7 @@ void CMainDlg::Search()
                             if (name_length) { append_directional(text, name, name_length, ascii ? -1 : 0); }
 
                             dlg.SetProgressText(text);
-                            dlg.SetProgress(temp_overall_progress_numerator + static_cast<unsigned long long>(i->mft_capacity) * static_cast<unsigned long long>(current_progress_numerator) / static_cast<unsigned long long>(current_progress_denominator), static_cast<long long>(overall_progress_denominator));
+                            dlg.SetProgress(temp_overall_progress_numerator + static_cast<unsigned long long>(i->mft_capacity()) * static_cast<unsigned long long>(current_progress_numerator) / static_cast<unsigned long long>(current_progress_denominator), static_cast<long long>(overall_progress_denominator));
                             dlg.Flush();
                         }
 
@@ -288,10 +288,10 @@ void CMainDlg::Search()
                     if (ex.GetSENumber() != ERROR_CANCELLED) { throw; }
                 }
 
-                if (any_io_pending) { overall_progress_numerator += i->mft_capacity; }
+                if (any_io_pending) { overall_progress_numerator += i->mft_capacity(); }
                 if (current_progress_denominator)
                 {
-                    overall_progress_numerator += static_cast<size_t>(static_cast<unsigned long long>(i->mft_capacity) * static_cast<unsigned long long>(current_progress_numerator) / static_cast<unsigned long long>(current_progress_denominator));
+                    overall_progress_numerator += static_cast<size_t>(static_cast<unsigned long long>(i->mft_capacity()) * static_cast<unsigned long long>(current_progress_numerator) / static_cast<unsigned long long>(current_progress_denominator));
                 }
             }
 
