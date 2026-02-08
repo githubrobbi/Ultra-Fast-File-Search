@@ -1,8 +1,58 @@
-// ============================================================================
-// Time Utilities
-// ============================================================================
-// Extracted from UltraFastFileSearch.cpp for proper modular architecture
-// ============================================================================
+/**
+ * @file time_utils.hpp
+ * @brief Time zone and timestamp formatting utilities for NTFS timestamps
+ *
+ * @details
+ * This file provides utilities for working with NTFS timestamps:
+ * - Converting UTC timestamps to local time
+ * - Formatting timestamps as human-readable strings
+ *
+ * ## NTFS Timestamp Format
+ *
+ * NTFS stores timestamps as 64-bit values representing 100-nanosecond
+ * intervals since January 1, 1601 (UTC). This is the same as FILETIME.
+ *
+ * ```
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │                    NTFS Timestamp (64-bit)                      │
+ * ├─────────────────────────────────────────────────────────────────┤
+ * │  100-nanosecond intervals since 1601-01-01 00:00:00 UTC         │
+ * │                                                                 │
+ * │  Example: 132456789012345678                                    │
+ * │           = 2020-10-15 14:35:01.234567 UTC                      │
+ * └─────────────────────────────────────────────────────────────────┘
+ * ```
+ *
+ * ## Time Zone Conversion
+ *
+ * ```
+ * UTC Timestamp ──> + time_zone_bias ──> Local Timestamp
+ *                   (from get_time_zone_bias())
+ * ```
+ *
+ * ## Thread Safety
+ *
+ * - get_time_zone_bias() is thread-safe (reads system state)
+ * - SystemTimeToString() is thread-safe (no shared state)
+ *
+ * ## Usage Example
+ *
+ * ```cpp
+ * // Get time zone bias once at startup
+ * long long bias = get_time_zone_bias();
+ *
+ * // Format a file's modification time
+ * std::tvstring formatted;
+ * SystemTimeToString(file_record.mtime, formatted,
+ *                    true,   // sortable format
+ *                    true,   // include time
+ *                    bias,
+ *                    LOCALE_USER_DEFAULT);
+ * // formatted = "2020-10-15 14:35:01"
+ * ```
+ *
+ * @see core/ntfs_record_types.hpp - NTFS record structures with timestamps
+ */
 
 #pragma once
 
@@ -11,21 +61,24 @@
 
 #include <Windows.h>
 #include "core_types.hpp"       // For std::tvstring
-#include "io/winnt_types.hpp" // For winnt::TIME_FIELDS, winnt::RtlTimeToTimeFields
+#include "io/winnt_types.hpp"   // For winnt::TIME_FIELDS, winnt::RtlTimeToTimeFields
 #include "nformat.hpp"          // For basic_conv
 
 namespace uffs {
 
-// ============================================================================
-// Time Zone Utilities
-// ============================================================================
-
 /**
  * @brief Gets the current time zone bias in 100-nanosecond intervals
+ *
  * @return The difference between local time and UTC (positive = ahead of UTC)
  *
+ * @details
  * This is used to convert NTFS timestamps (which are in UTC) to local time.
  * The bias is calculated as: local_time - utc_time
+ *
+ * For example, if you're in UTC+2:
+ * - bias = +2 hours = +72,000,000,000 (100-ns intervals)
+ *
+ * @note Cache this value at startup for performance; it rarely changes.
  */
 [[nodiscard]] inline long long get_time_zone_bias()
 {

@@ -1,8 +1,70 @@
-// ============================================================================
-// Volume Utilities
-// ============================================================================
-// Extracted from UltraFastFileSearch.cpp for proper modular architecture
-// ============================================================================
+/**
+ * @file volume_utils.hpp
+ * @brief Volume information and extent mapping utilities for NTFS
+ *
+ * @details
+ * This file provides utilities for querying volume information and
+ * retrieving file extent maps (retrieval pointers) for NTFS volumes.
+ *
+ * ## Key Functions
+ *
+ * | Function                | Description                              |
+ * |-------------------------|------------------------------------------|
+ * | get_cluster_size()      | Query cluster size for a volume          |
+ * | get_volume_path_names() | Enumerate all logical drives             |
+ * | get_retrieval_pointers()| Get file extent map (VCN/LCN pairs)      |
+ *
+ * ## Retrieval Pointers (Extent Map)
+ *
+ * NTFS stores file data in "extents" - contiguous runs of clusters.
+ * The retrieval pointers describe where each extent is located:
+ *
+ * ```
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │                    File Extent Map                              │
+ * ├─────────────────────────────────────────────────────────────────┤
+ * │                                                                 │
+ * │  File Data (logical view):                                      │
+ * │  ┌──────────────────────────────────────────────────────────┐  │
+ * │  │ Cluster 0-99 │ Cluster 100-199 │ Cluster 200-299 │ ...   │  │
+ * │  └──────────────────────────────────────────────────────────┘  │
+ * │                                                                 │
+ * │  Disk Layout (physical):                                        │
+ * │  ┌────────┐     ┌────────┐     ┌────────┐                      │
+ * │  │LCN 1000│     │LCN 5000│     │LCN 2000│                      │
+ * │  │100 clus│     │100 clus│     │100 clus│                      │
+ * │  └────────┘     └────────┘     └────────┘                      │
+ * │                                                                 │
+ * │  Retrieval Pointers:                                            │
+ * │  [(100, 1000), (200, 5000), (300, 2000)]                       │
+ * │   ^VCN  ^LCN    ^VCN  ^LCN   ^VCN  ^LCN                        │
+ * └─────────────────────────────────────────────────────────────────┘
+ * ```
+ *
+ * ## Thread Safety
+ *
+ * All functions are thread-safe (no shared state).
+ *
+ * ## Usage Example
+ *
+ * ```cpp
+ * // Get all NTFS volumes
+ * auto volumes = get_volume_path_names();
+ * for (const auto& vol : volumes) {
+ *     // Open volume and get cluster size
+ *     Handle h = open_volume(vol);
+ *     unsigned int cluster_size = get_cluster_size(h);
+ *
+ *     // Get MFT extent map
+ *     long long mft_size;
+ *     auto extents = get_retrieval_pointers(
+ *         (vol + _T("$MFT::$DATA")).c_str(),
+ *         &mft_size, 0, 0);
+ * }
+ * ```
+ *
+ * @see io/mft_reader.hpp - Uses these utilities for MFT reading
+ */
 
 #pragma once
 
@@ -17,20 +79,26 @@
 
 #include "handle.hpp"
 #include "error_utils.hpp"
-#include "core_types.hpp"  // For std::tvstring
-#include "io/winnt_types.hpp"  // For winnt:: types
+#include "core_types.hpp"       // For std::tvstring
+#include "io/winnt_types.hpp"   // For winnt:: types
 
 namespace uffs {
 
-// ============================================================================
-// Cluster Size Query
-// ============================================================================
-
 /**
  * @brief Gets the cluster size for a volume
+ *
  * @param volume Handle to the volume (opened with appropriate access)
- * @return Cluster size in bytes
+ * @return Cluster size in bytes (typically 4096 for NTFS)
  * @throws CStructured_Exception on failure
+ *
+ * @details
+ * Queries the volume using NtQueryVolumeInformationFile to get
+ * the bytes per sector and sectors per allocation unit, then
+ * multiplies them to get the cluster size.
+ *
+ * Common cluster sizes:
+ * - 4 KB (4096 bytes) - default for volumes < 16 TB
+ * - 8 KB, 16 KB, 32 KB, 64 KB - for larger volumes
  */
 [[nodiscard]] inline unsigned int get_cluster_size(void* const volume)
 {

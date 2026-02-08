@@ -1,12 +1,92 @@
 /**
  * @file ntfs_index.hpp
- * @brief NTFS index engine - public interface.
+ * @brief NTFS index engine - public interface for in-memory file system index
  *
+ * @details
  * This header declares the NtfsIndex class, which owns the in-memory
  * representation of an NTFS volume's file records, names, streams, and
- * directory hierarchy. Heavy implementation details live in
- * ntfs_index_impl.hpp, which is included at the end of this file to
- * preserve header-only usage where needed.
+ * directory hierarchy.
+ *
+ * ## Architecture Overview
+ *
+ * ```
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │                    NtfsIndex Architecture                       │
+ * ├─────────────────────────────────────────────────────────────────┤
+ * │                                                                 │
+ * │  ┌─────────────────────────────────────────────────────────┐   │
+ * │  │                    NtfsIndex                             │   │
+ * │  ├─────────────────────────────────────────────────────────┤   │
+ * │  │                                                         │   │
+ * │  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │   │
+ * │  │  │ Records     │  │ LinkInfos   │  │ StreamInfos │     │   │
+ * │  │  │ (FRS data)  │  │ (names)     │  │ (ADS)       │     │   │
+ * │  │  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘     │   │
+ * │  │         │                │                │             │   │
+ * │  │         └────────────────┼────────────────┘             │   │
+ * │  │                          │                              │   │
+ * │  │                          v                              │   │
+ * │  │              ┌───────────────────────┐                  │   │
+ * │  │              │ ChildInfos            │                  │   │
+ * │  │              │ (directory tree)      │                  │   │
+ * │  │              └───────────────────────┘                  │   │
+ * │  │                                                         │   │
+ * │  │  ┌─────────────────────────────────────────────────┐   │   │
+ * │  │  │ names (std::tvstring)                            │   │   │
+ * │  │  │ Concatenated file/stream names                   │   │   │
+ * │  │  └─────────────────────────────────────────────────┘   │   │
+ * │  └─────────────────────────────────────────────────────────┘   │
+ * └─────────────────────────────────────────────────────────────────┘
+ * ```
+ *
+ * ## Data Structures
+ *
+ * | Structure   | Description                                      |
+ * |-------------|--------------------------------------------------|
+ * | Record      | Core file record (FRS, stdinfo, first link/stream)|
+ * | LinkInfo    | Hard link (name, parent FRS, name offset)        |
+ * | StreamInfo  | Alternate data stream (name, size, type)         |
+ * | ChildInfo   | Directory child entry (for tree traversal)       |
+ *
+ * ## Key Operations
+ *
+ * | Method          | Description                                    |
+ * |-----------------|------------------------------------------------|
+ * | init()          | Initialize volume handle and metadata          |
+ * | load()          | Parse MFT records into index                   |
+ * | matches()       | Search files matching a pattern                |
+ * | get_path()      | Build full path for a file                     |
+ *
+ * ## Thread Safety
+ *
+ * - Construction and init() must be single-threaded
+ * - load() can be called from multiple threads (uses internal locking)
+ * - matches() and get_path() are read-only and thread-safe after loading
+ * - Progress accessors (records_so_far, etc.) are atomic
+ *
+ * ## Usage Example
+ *
+ * ```cpp
+ * // Create index for C: drive
+ * intrusive_ptr<NtfsIndex> index(new NtfsIndex(_T("C:\\")));
+ * index->init();
+ *
+ * // Load MFT (typically done via OverlappedNtfsMftReadPayload)
+ * // ... async loading ...
+ *
+ * // Wait for completion
+ * WaitForSingleObject(index->finished_event(), INFINITE);
+ *
+ * // Search for files
+ * std::tvstring path;
+ * index->matches([](NtfsIndex::key_type key, ...) {
+ *     // Process matching file
+ * }, path, true, false, false);
+ * ```
+ *
+ * @see ntfs_index_impl.hpp - Implementation details
+ * @see mft_reader.hpp - MFT reading pipeline
+ * @see core/ntfs_record_types.hpp - Record type definitions
  */
 
 #ifndef UFFS_NTFS_INDEX_HPP
@@ -39,6 +119,52 @@
 #include "core/ntfs_key_type.hpp"
 #include "mapping_pair_iterator.hpp"
 
+/**
+ * @class NtfsIndex
+ * @brief In-memory index of an NTFS volume's file system structure
+ *
+ * @details
+ * NtfsIndex is the core data structure for fast file searching. It maintains:
+ * - All file records from the MFT
+ * - Hard link information (multiple names per file)
+ * - Alternate data streams
+ * - Directory hierarchy for path construction
+ *
+ * ## Memory Layout
+ *
+ * The index uses several parallel vectors for cache-efficient access:
+ *
+ * ```
+ * records_data:   [Record0][Record1][Record2]...
+ *                     │        │        │
+ *                     v        v        v
+ * nameinfos:      [Link0 ]──>[Link1 ]  [Link2 ]──>[Link3 ]
+ *                     │                    │
+ *                     v                    v
+ * names:          "file1.txt\0""file2.txt\0""dir\0"...
+ * ```
+ *
+ * ## FRS (File Record Segment) Numbers
+ *
+ * NTFS reserves the first 16 FRS numbers for system files:
+ *
+ * | FRS | File          | Description                    |
+ * |-----|---------------|--------------------------------|
+ * | 0   | $MFT          | Master File Table itself       |
+ * | 1   | $MFTMirr      | MFT mirror (first 4 records)   |
+ * | 2   | $LogFile      | Transaction log                |
+ * | 3   | $Volume       | Volume information             |
+ * | 4   | $AttrDef      | Attribute definitions          |
+ * | 5   | . (root)      | Root directory                 |
+ * | 6   | $Bitmap       | Cluster allocation bitmap      |
+ * | 7   | $Boot         | Boot sector                    |
+ * | 8   | $BadClus      | Bad cluster list               |
+ * | 9   | $Secure       | Security descriptors           |
+ * | 10  | $UpCase       | Uppercase table                |
+ * | 11  | $Extend       | Extended metadata directory    |
+ * | 12-15 | (reserved)  | Reserved for future use        |
+ * | 16+ | (user files)  | User files and directories     |
+ */
 class NtfsIndex : public RefCounted<NtfsIndex>
 {
 	typedef NtfsIndex this_type;

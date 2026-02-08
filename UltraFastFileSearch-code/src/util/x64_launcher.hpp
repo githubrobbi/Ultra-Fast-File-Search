@@ -1,9 +1,97 @@
-// ============================================================================
-// x64_launcher.hpp - x64 binary extraction and launch utilities
-// ============================================================================
-// Extracted from UltraFastFileSearch.cpp during Wave 2 refactoring
-// ============================================================================
+/**
+ * @file x64_launcher.hpp
+ * @brief x64 binary extraction and launch utilities for WoW64 environments
+ *
+ * @details
+ * This file provides utilities for automatically launching the 64-bit version
+ * of the application when running as a 32-bit process on a 64-bit Windows
+ * system (WoW64).
+ *
+ * ## Why This Exists
+ *
+ * The application ships as a 32-bit executable with an embedded 64-bit binary.
+ * When run on a 64-bit system, the 32-bit process extracts and launches the
+ * 64-bit version for better performance (larger address space, more registers).
+ *
+ * ## Extraction Flow
+ *
+ * ```
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │                    x64 Launch Decision                          │
+ * ├─────────────────────────────────────────────────────────────────┤
+ * │                                                                 │
+ * │  ┌──────────────────┐                                          │
+ * │  │ Is WoW64?        │──No──> Continue as x86                   │
+ * │  └────────┬─────────┘                                          │
+ * │           │ Yes                                                 │
+ * │           v                                                     │
+ * │  ┌──────────────────┐                                          │
+ * │  │ Is debugger      │──Yes──> Continue as x86 (for debugging)  │
+ * │  │ attached?        │                                          │
+ * │  └────────┬─────────┘                                          │
+ * │           │ No                                                  │
+ * │           v                                                     │
+ * │  ┌──────────────────┐                                          │
+ * │  │ Is exe name      │──Yes──> Continue as x86 (explicit x86)   │
+ * │  │ *_x86.exe?       │                                          │
+ * │  └────────┬─────────┘                                          │
+ * │           │ No                                                  │
+ * │           v                                                     │
+ * │  ┌──────────────────┐                                          │
+ * │  │ Extract AMD64    │                                          │
+ * │  │ resource to temp │                                          │
+ * │  └────────┬─────────┘                                          │
+ * │           │                                                     │
+ * │           v                                                     │
+ * │  ┌──────────────────┐                                          │
+ * │  │ Launch x64       │                                          │
+ * │  │ process & wait   │                                          │
+ * │  └────────┬─────────┘                                          │
+ * │           │                                                     │
+ * │           v                                                     │
+ * │  ┌──────────────────┐                                          │
+ * │  │ Return x64       │                                          │
+ * │  │ exit code        │                                          │
+ * │  └──────────────────┘                                          │
+ * └─────────────────────────────────────────────────────────────────┘
+ * ```
+ *
+ * ## Extraction Locations
+ *
+ * The x64 binary is extracted to one of:
+ * 1. An Alternate Data Stream (ADS) on the original exe (preferred)
+ * 2. A temp file in %TEMP% (fallback)
+ *
+ * ## Thread Safety
+ *
+ * - extract_and_run_if_needed() should only be called once at startup
+ * - It is NOT thread-safe (modifies global process state)
+ *
+ * ## Usage Example
+ *
+ * ```cpp
+ * int _tmain(int argc, TCHAR* argv[])
+ * {
+ *     auto [exit_code, module_path] = extract_and_run_if_needed(
+ *         GetModuleHandle(nullptr), argc, argv);
+ *
+ *     if (exit_code >= 0) {
+ *         // x64 process ran and exited
+ *         return exit_code;
+ *     }
+ *
+ *     // Continue running as x86 (or native x64)
+ *     return run_application(argc, argv);
+ * }
+ * ```
+ *
+ * @see wow64.hpp - WoW64 detection utilities
+ */
+
 #pragma once
+
+#ifndef UFFS_X64_LAUNCHER_HPP
+#define UFFS_X64_LAUNCHER_HPP
 
 #include <fstream>
 #include <string>
@@ -18,23 +106,41 @@
 
 namespace uffs {
 
-// ============================================================================
-// Application GUID for unique temp file naming
-// ============================================================================
+/**
+ * @brief Gets the application GUID for unique temp file naming
+ * @return A unique GUID string for this application
+ */
 inline std::tstring get_app_guid()
 {
 	return std::tstring(_T("{40D41A33-D1FF-4759-9551-0A7201E9F829}"));
 }
 
-// ============================================================================
-// extract_and_run_if_needed - Extract and run x64 binary on WoW64
-// ============================================================================
-// On 32-bit process running under WoW64, extracts embedded AMD64 binary
-// to temp directory and runs it, returning the exit code.
-// Returns: pair<exit_code, module_path>
-//   - exit_code: -1 if not launched (continue in x86), otherwise child exit code
-//   - module_path: path to current executable
-// ============================================================================
+/**
+ * @brief Extract and run x64 binary if running under WoW64
+ *
+ * @param hInstance Application instance handle
+ * @param argc Argument count from main()
+ * @param argv Argument vector from main()
+ * @return pair<exit_code, module_path>
+ *         - exit_code: -1 if not launched (continue in x86), otherwise child exit code
+ *         - module_path: path to current executable
+ *
+ * @details
+ * On a 32-bit process running under WoW64, this function:
+ * 1. Extracts the embedded AMD64 binary from resources
+ * 2. Writes it to a temp file or ADS
+ * 3. Launches it with the same command line
+ * 4. Waits for it to complete
+ * 5. Returns its exit code
+ *
+ * The function returns -1 if:
+ * - Not running under WoW64 (already native)
+ * - Debugger is attached (for debugging the x86 version)
+ * - Executable name contains "_x86" or similar (explicit x86 mode)
+ * - Resource extraction fails
+ *
+ * @note The temp file is automatically deleted when the function returns.
+ */
 inline std::pair<int, std::tstring> extract_and_run_if_needed(
 	HINSTANCE hInstance, int argc, TCHAR* const argv[])
 {
@@ -194,3 +300,5 @@ inline std::pair<int, std::tstring> extract_and_run_if_needed(
 }
 
 } // namespace uffs
+
+#endif // UFFS_X64_LAUNCHER_HPP

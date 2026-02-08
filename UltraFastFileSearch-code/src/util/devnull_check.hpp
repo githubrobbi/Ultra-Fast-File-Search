@@ -1,8 +1,35 @@
-// ============================================================================
-// Device Null Check Utilities
-// ============================================================================
-// Extracted from UltraFastFileSearch.cpp for proper modular architecture
-// ============================================================================
+/**
+ * @file devnull_check.hpp
+ * @brief Utilities for detecting the Windows null device (NUL)
+ *
+ * @details
+ * This file provides functions to check if a file descriptor or FILE*
+ * points to the Windows null device (NUL), equivalent to /dev/null on Unix.
+ *
+ * ## Why Check for NUL?
+ *
+ * When output is redirected to NUL, we can skip expensive formatting
+ * and I/O operations entirely, improving performance significantly.
+ *
+ * ## How It Works
+ *
+ * Uses NtQueryVolumeInformationFile to query the device type:
+ * - DeviceType 0x00000015 = FILE_DEVICE_NULL
+ *
+ * ## Usage Example
+ *
+ * ```cpp
+ * if (isdevnull(stdout)) {
+ *     // Skip expensive output formatting
+ *     return;
+ * }
+ *
+ * // Normal output path
+ * fprintf(stdout, "Results: %d files found\n", count);
+ * ```
+ *
+ * @see io/winnt_types.hpp - Windows NT native API declarations
+ */
 
 #pragma once
 
@@ -20,8 +47,15 @@ namespace uffs {
 
 /**
  * @brief Check if a file descriptor points to the null device (NUL)
- * @param fd File descriptor to check
+ *
+ * @param fd File descriptor to check (from _fileno() or open())
  * @return true if the file descriptor is the null device
+ *
+ * @details
+ * Queries the device type using NtQueryVolumeInformationFile.
+ * FILE_DEVICE_NULL (0x15) indicates the null device.
+ *
+ * @note This is a low-overhead check suitable for hot paths.
  */
 [[nodiscard]] inline bool isdevnull(int fd)
 {

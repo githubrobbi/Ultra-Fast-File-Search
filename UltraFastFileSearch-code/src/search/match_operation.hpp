@@ -1,8 +1,90 @@
-// ============================================================================
-// MatchOperation - Pattern matching for file search
-// ============================================================================
-// Extracted from UltraFastFileSearch.cpp for proper modular architecture
-// ============================================================================
+/**
+ * @file match_operation.hpp
+ * @brief Pattern matching operation for file search with glob and regex support
+ *
+ * @details
+ * This file provides the MatchOperation class which handles pattern matching
+ * for file search operations. It supports multiple pattern types and includes
+ * optimizations for path-based matching.
+ *
+ * ## Pattern Types
+ *
+ * | Prefix | Type     | Example           | Description                    |
+ * |--------|----------|-------------------|--------------------------------|
+ * | (none) | Glob     | `*.txt`           | Standard wildcard matching     |
+ * | `>`    | Regex    | `>.*\.txt$`       | Full regular expression        |
+ * | `**`   | Globstar | `src/**/*.cpp`    | Recursive directory matching   |
+ *
+ * ## Pattern Matching Flow
+ *
+ * ```
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │                    Pattern Processing                           │
+ * ├─────────────────────────────────────────────────────────────────┤
+ * │                                                                 │
+ * │  Input Pattern                                                  │
+ * │       │                                                         │
+ * │       v                                                         │
+ * │  ┌─────────────────┐                                           │
+ * │  │ Check for '>'   │──Yes──> is_regex = true                   │
+ * │  │ prefix          │                                           │
+ * │  └────────┬────────┘                                           │
+ * │           │ No                                                  │
+ * │           v                                                     │
+ * │  ┌─────────────────┐                                           │
+ * │  │ Check for '\\'  │──Yes──> is_path_pattern = true            │
+ * │  │ or '**'         │                                           │
+ * │  └────────┬────────┘                                           │
+ * │           │ No                                                  │
+ * │           v                                                     │
+ * │  ┌─────────────────┐                                           │
+ * │  │ Check for ':'   │──Yes──> is_stream_pattern = true          │
+ * │  │ (ADS)           │                                           │
+ * │  └────────┬────────┘                                           │
+ * │           │                                                     │
+ * │           v                                                     │
+ * │  ┌─────────────────┐                                           │
+ * │  │ Root path       │──Yes──> Extract root for optimization     │
+ * │  │ optimization?   │                                           │
+ * │  └────────┬────────┘                                           │
+ * │           │                                                     │
+ * │           v                                                     │
+ * │  ┌─────────────────┐                                           │
+ * │  │ Create matcher  │                                           │
+ * │  └─────────────────┘                                           │
+ * └─────────────────────────────────────────────────────────────────┘
+ * ```
+ *
+ * ## Root Path Optimization
+ *
+ * When a pattern starts with a specific path (e.g., `C:\Users\*.txt`),
+ * the root path (`C:\Users\`) is extracted and used to skip volumes
+ * that don't match, improving search performance.
+ *
+ * ## Thread Safety
+ *
+ * - MatchOperation is NOT thread-safe for concurrent modification
+ * - Once initialized via init(), it is safe for concurrent reads
+ * - The underlying string_matcher is immutable after construction
+ *
+ * ## Usage Example
+ *
+ * ```cpp
+ * MatchOperation op;
+ * op.init(_T("*.txt"));  // Simple glob pattern
+ *
+ * // Check if a volume should be searched
+ * if (op.prematch(root_path)) {
+ *     std::tvstring current = op.get_current_path(root_path);
+ *     // Search files in current path
+ *     if (op.matcher.is_match(filename.data(), filename.size())) {
+ *         // File matches pattern
+ *     }
+ * }
+ * ```
+ *
+ * @see string_matcher - The underlying pattern matching engine
+ */
 
 #pragma once
 
@@ -15,15 +97,29 @@
 
 #include "io/overlapped.hpp"      // For value_initialized
 #include "util/core_types.hpp"    // For std::tstring, std::tvstring
-#include "string_matcher.hpp"        // For string_matcher
+#include "string_matcher.hpp"     // For string_matcher
 
 namespace uffs {
 
 /**
+ * @struct MatchOperation
  * @brief Pattern matching operation for file search
- * 
- * Handles glob patterns, regex patterns, and path-based matching.
- * Supports case-insensitive matching and path optimization.
+ *
+ * @details
+ * Encapsulates a search pattern and provides methods for matching
+ * file paths against it. Supports glob patterns, regex patterns,
+ * and path-based matching with case-insensitive comparison.
+ *
+ * ## Member Variables
+ *
+ * | Member                    | Description                              |
+ * |---------------------------|------------------------------------------|
+ * | is_regex                  | True if pattern uses regex syntax        |
+ * | is_path_pattern           | True if pattern includes path separators |
+ * | is_stream_pattern         | True if pattern matches ADS (has ':')    |
+ * | requires_root_path_match  | True if pattern starts with specific path|
+ * | root_path_optimized_away  | Extracted root path for optimization     |
+ * | matcher                   | The compiled pattern matcher             |
  */
 struct MatchOperation
 {
