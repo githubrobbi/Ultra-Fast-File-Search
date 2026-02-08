@@ -300,41 +300,18 @@ template<> HOOK_TYPE(NtUserRedrawWindow) HOOK_IMPLEMENT(NtUserRedrawWindow, BOOL
 
 
 
-// safe_stprintf() extracted to src/util/error_utils.hpp
-
+// ============================================================================
+// Exception Handler (extracted to src/util/exception_handler.hpp)
+// ============================================================================
+// The topmostWindow global is defined here (used by exception_handler.hpp)
 ATL::CWindow topmostWindow;
-atomic_namespace::recursive_mutex global_exception_mutex;
 
-// Note: Not static - needs external linkage for io_completion_port.hpp
-long global_exception_handler(struct _EXCEPTION_POINTERS* ExceptionInfo)
-{
-	long result;
-	if (ExceptionInfo->ExceptionRecord->ExceptionCode == 0x40010006 /*DBG_PRINTEXCEPTION_C*/ ||
-		ExceptionInfo->ExceptionRecord->ExceptionCode == 0x4001000A /*DBG_PRINTEXCEPTION_WIDE_C*/ ||
-		ExceptionInfo->ExceptionRecord->ExceptionCode == 0xE06D7363 /*C++ exception*/ ||
-		ExceptionInfo->ExceptionRecord->ExceptionCode == RPC_S_SERVER_UNAVAILABLE)
-	{
-		result = EXCEPTION_CONTINUE_SEARCH;
-	}
-	else
-	{
-		atomic_namespace::unique_lock<atomic_namespace::recursive_mutex>
-			const guard(global_exception_mutex);
-		TCHAR buf[512];
-		safe_stprintf(buf, _T("The program encountered an error 0x%lX.\r\n\r\nPLEASE send me an email, so I can try to fix it.!\r\n\r\nIf you see OK, press OK.\r\nOtherwise:\r\n- Press Retry to attempt to handle the error (recommended)\r\n- Press Abort to quit\r\n- Press Ignore to continue (NOT recommended)"), ExceptionInfo->ExceptionRecord->ExceptionCode);
-		buf[_countof(buf) - 1] = _T('\0');  // Ensure null termination for static analysis
-		int
-			const r = MessageBox(topmostWindow.m_hWnd, buf, _T("Fatal Error"), MB_ICONERROR | ((ExceptionInfo->ExceptionRecord->ExceptionFlags & EXCEPTION_NONCONTINUABLE) ? MB_OK : MB_ABORTRETRYIGNORE) | MB_TASKMODAL);
-		if (r == IDABORT)
-		{
-			_exit(ExceptionInfo->ExceptionRecord->ExceptionCode);
-		}
+// Include the exception handler implementation
+// Note: This provides global_exception_handler() and global_exception_mutex
+#include "src/util/exception_handler.hpp"
 
-		result = r == IDIGNORE ? EXCEPTION_CONTINUE_EXECUTION : EXCEPTION_CONTINUE_SEARCH;
-	}
-
-	return result;
-}
+// Bring uffs::topmostWindow into scope for the header
+namespace uffs { ATL::CWindow& topmostWindow = ::topmostWindow; }
 
 
 // is_ascii and DisplayError extracted to src/util/error_utils.hpp
@@ -505,123 +482,10 @@ using uffs::s2ws;
 // ============================================================================
 // dump_raw_mft, dump_mft_extents, benchmark_mft_read extracted to:
 //   src/cli/mft_diagnostics.cpp
-// benchmark_index_build remains here (depends on NtfsIndex, IoCompletionPort)
+// benchmark_index_build extracted to:
+//   src/cli/benchmark.hpp
 // ============================================================================
-
-namespace uffs {
-
-// benchmark_index_build - Benchmark full index building
-// This function depends on NtfsIndex and IoCompletionPort which are still
-// defined via textual inclusion, so it must remain in the monolith for now.
-int benchmark_index_build(char drive_letter, std::ostream& OS)
-{
-    OS << "\n=== Index Build Benchmark Tool ===\n";
-    OS << "Drive: " << drive_letter << ":\n";
-    OS << "This measures the full UFFS indexing pipeline (async I/O + parsing + index building)\n\n";
-
-    // Build path name (e.g., "C:\")
-    TCHAR path_buf[4] = { static_cast<TCHAR>(toupper(drive_letter)), _T(':'), _T('\\'), _T('\0') };
-    std::tvstring path_name(path_buf);
-
-    OS << "Creating index for " << static_cast<char>(toupper(drive_letter)) << ":\\ ...\n";
-    OS.flush();
-
-    // Start timing
-    auto start_time = std::chrono::high_resolution_clock::now();
-    clock_t tbegin = clock();
-
-    // Create the index
-    intrusive_ptr<NtfsIndex> index(new NtfsIndex(path_name), true);
-
-    // Create IOCP and closing event
-    IoCompletionPort iocp;
-    Handle closing_event;
-
-    // Post the read payload to start async indexing
-    typedef OverlappedNtfsMftReadPayload T;
-    intrusive_ptr<T> payload(new T(iocp, index, closing_event));
-    iocp.post(0, 0, payload);
-
-    // Wait for indexing to complete
-    OS << "Indexing in progress...\n";
-    OS.flush();
-
-    HANDLE wait_handle = reinterpret_cast<HANDLE>(index->finished_event());
-    DWORD wait_result = WaitForSingleObject(wait_handle, INFINITE);
-
-    if (wait_result != WAIT_OBJECT_0) {
-        OS << "ERROR: Wait failed (result=" << wait_result << ")\n";
-        return ERROR_WAIT_1;
-    }
-
-    // Stop timing
-    auto end_time = std::chrono::high_resolution_clock::now();
-    clock_t tend = clock();
-
-    // Check for indexing errors
-    unsigned int task_result = index->get_finished();
-    if (task_result != 0) {
-        OS << "ERROR: Indexing failed with error code " << task_result << "\n";
-        if (task_result == ERROR_ACCESS_DENIED) {
-            OS << "Make sure you are running as Administrator.\n";
-        } else if (task_result == ERROR_UNRECOGNIZED_VOLUME) {
-            OS << "The volume is not NTFS formatted.\n";
-        }
-        return static_cast<int>(task_result);
-    }
-
-    // Calculate timing
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
-    double seconds = static_cast<double>(duration.count()) / 1000.0;
-    double clock_seconds = static_cast<double>(tend - tbegin) / CLOCKS_PER_SEC;
-
-    // Get index statistics from public accessors
-    size_t total_records = index->records_so_far();
-    size_t total_names = index->total_names();
-    size_t total_names_and_streams = index->total_names_and_streams();
-    unsigned int mft_capacity = index->mft_capacity();
-    unsigned int mft_record_size = index->mft_record_size();
-    unsigned long long mft_bytes = static_cast<unsigned long long>(mft_capacity) * mft_record_size;
-
-    // Calculate throughput
-    double mb_per_sec = (seconds > 0) ? (mft_bytes / (1024.0 * 1024.0)) / seconds : 0;
-    double records_per_sec = (seconds > 0) ? static_cast<double>(total_records) / seconds : 0;
-    double names_per_sec = (seconds > 0) ? static_cast<double>(total_names) / seconds : 0;
-
-    // Output results
-    OS << "\n=== Volume Information ===\n";
-    OS << "MFT Capacity: " << mft_capacity << " records\n";
-    OS << "MFT Record Size: " << mft_record_size << " bytes\n";
-    OS << "MFT Total Size: " << mft_bytes << " bytes (" << (mft_bytes / (1024 * 1024)) << " MB)\n";
-
-    OS << "\n=== Index Statistics ===\n";
-    OS << "Records Processed: " << total_records << "\n";
-    OS << "Name Entries: " << total_names << "\n";
-    OS << "Names + Streams: " << total_names_and_streams << "\n";
-
-    OS << "\n=== Benchmark Results ===\n";
-    OS << "Time Elapsed: " << duration.count() << " ms (" << std::fixed << std::setprecision(3) << seconds << " seconds)\n";
-    OS << "CPU Time: " << std::fixed << std::setprecision(3) << clock_seconds << " seconds\n";
-    OS << "MFT Read Speed: " << std::fixed << std::setprecision(2) << mb_per_sec << " MB/s\n";
-    OS << "Record Processing: " << std::fixed << std::setprecision(0) << records_per_sec << " records/sec\n";
-    OS << "Name Indexing: " << std::fixed << std::setprecision(0) << names_per_sec << " names/sec\n";
-
-    // Summary line for easy comparison
-    OS << "\n=== Summary ===\n";
-    OS << "Indexed " << total_names << " names in "
-       << std::fixed << std::setprecision(3) << seconds << " seconds\n";
-
-    return 0;
-}
-
-// ============================================================================
-// End MFT Diagnostic Tools
-// ============================================================================
-
-} // namespace uffs
-
-// Expose MFT diagnostic functions at global scope for backward compatibility
-using uffs::benchmark_index_build;
+#include "src/cli/benchmark.hpp"
 // dump_raw_mft, dump_mft_extents, benchmark_mft_read are in mft_diagnostics.cpp
 
 // ============================================================================
