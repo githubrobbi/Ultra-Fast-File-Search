@@ -269,7 +269,7 @@ int main(int argc, char* argv[])
 			}
 			else
 			{
-				if (drivesCopy.size() == 1) searchPathCopy = driveLetters + searchPathCopy;
+				if (drivesCopy.size() == 1 && searchPathCopy.find('\\') != std::string::npos) searchPathCopy = driveLetters + searchPathCopy;
 			}
 
 			tempath = searchPathCopy;
